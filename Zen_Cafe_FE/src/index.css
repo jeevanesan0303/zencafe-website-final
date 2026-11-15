@@ -11891,7 +11891,7 @@ html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover{background:linear-gradie
   top: auto !important;
   left: -12px !important;
   right: auto !important;
-  bottom: 25px !important;
+  bottom: 10px !important;
   transform: none !important;
   margin: 0 !important;
   z-index: 5;
