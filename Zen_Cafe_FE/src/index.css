@@ -11880,7 +11880,7 @@ html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover{background:linear-gradie
 .v61-responsive-hero .video-hero-brand {
   position: relative !important;
   top: -5px !important;
-  left: -5px !important;
+  left: -3px !important;
   right: auto !important;
   bottom: auto !important;
   transform: none !important;
