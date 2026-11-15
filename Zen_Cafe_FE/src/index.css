@@ -11888,10 +11888,10 @@ html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover{background:linear-gradie
 /* Move Zen Café card upward and left */
 .v61-responsive-hero .video-hero-brand {
   position: absolute !important;
-  top: 10px !important;
+  top: auto !important;
   left: -12px !important;
   right: auto !important;
-  bottom: auto !important;
+  bottom: 25px !important;
   transform: none !important;
   margin: 0 !important;
   z-index: 5;
