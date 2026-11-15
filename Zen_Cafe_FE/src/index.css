@@ -11864,35 +11864,26 @@ html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover{background:linear-gradie
   margin-top: 14px !important;
   margin-bottom: 0 !important;
 }
-
-/* Preserve the kicker's existing layout spacing */
-.v61-responsive-hero .video-hero-kicker {
-  margin-top: 0 !important;
-}
-
-@media (max-width: 640px) {
-  .v61-responsive-hero .video-hero-brand {
-    margin-top: 10px !important;
-  }
-}
 /* ==========================================
-   ZEN HERO — FINAL POSITION ADJUSTMENT
+   ZEN HERO — CORRECT LOGO POSITION
    ========================================== */
 
 /* Move A QUIET SURPRISE slightly upward */
 .v61-responsive-hero .video-hero-kicker {
   position: relative !important;
-  top: -12px !important;
+  top: -8px !important;
+  left: 0 !important;
+  margin-bottom: 12px !important;
 }
 
-/* Move Zen Café card upward and left */
+/* Keep the logo directly below A QUIET SURPRISE */
 .v61-responsive-hero .video-hero-brand {
-  position: absolute !important;
-  top: auto !important;
-  left: -12px !important;
+  position: relative !important;
+  top: -5px !important;
+  left: -5px !important;
   right: auto !important;
-  bottom: 10px !important;
+  bottom: auto !important;
   transform: none !important;
   margin: 0 !important;
-  z-index: 5;
+  z-index: 5 !important;
 }
