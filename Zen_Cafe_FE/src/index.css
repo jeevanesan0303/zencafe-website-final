@@ -11875,16 +11875,21 @@ html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover{background:linear-gradie
     margin-top: 10px !important;
   }
 }
-/* Move ONLY Zen Café logo card below A Quiet Surprise */
+/* ==========================================
+   ZEN HERO — FINAL POSITION ADJUSTMENT
+   ========================================== */
 
-.v61-responsive-hero .video-hero-copy-block {
-  position: relative;
+/* Move A QUIET SURPRISE slightly upward */
+.v61-responsive-hero .video-hero-kicker {
+  position: relative !important;
+  top: -12px !important;
 }
 
+/* Move Zen Café card upward and left */
 .v61-responsive-hero .video-hero-brand {
   position: absolute !important;
-  top: 1px !important;
-  left: 10px !important;
+  top: 10px !important;
+  left: -12px !important;
   right: auto !important;
   bottom: auto !important;
   transform: none !important;
