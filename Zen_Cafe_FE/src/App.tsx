@@ -2,18 +2,22 @@
 import { useEffect, useRef, useState } from 'react'
 
 import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  BadgePercent,
   ClipboardCheck,
   Clock3,
   Images,
   Users,
   UtensilsCrossed,
+  X,
 } from 'lucide-react'
 
 import type { LucideIcon } from 'lucide-react'
 
 import Header from './components/Header'
 import HeroSection from './components/HeroSection'
-import PromotionalBanner from './components/PromotionalBanner'
 import HomeOffersSlider from './components/HomeOffersSlider'
 import MenuCarousel from './components/MenuCarousel'
 import { RoomBooking } from './components/BookingForms'
@@ -26,6 +30,13 @@ import PageReveal from './components/PageReveal'
 import RopePanda from './components/RopePanda'
 import CommunityGallery from './components/CommunityGallery'
 
+import {
+  activeOffers,
+  loadOffers,
+  subscribeOffers,
+  type ZenOffer,
+} from './data/offerStore'
+
 /* ==========================================
    TYPES
 ========================================== */
@@ -35,6 +46,15 @@ type OverviewCard = {
   meta: string
   icon: LucideIcon
 }
+
+/* ==========================================
+   SETTINGS
+========================================== */
+
+const OFFER_POPUP_DELAY_MS = 1500
+
+const OFFER_POPUP_SESSION_KEY =
+  'zen_cafe_offer_popup_dismissed'
 
 /* ==========================================
    OVERVIEW CARDS
@@ -62,6 +82,390 @@ const overviewCards: OverviewCard[] = [
     icon: Images,
   },
 ]
+
+/* ==========================================
+   SESSION HELPERS
+========================================== */
+
+function wasOfferPopupDismissed(): boolean {
+  try {
+    return (
+      window.sessionStorage.getItem(
+        OFFER_POPUP_SESSION_KEY
+      ) === 'true'
+    )
+  } catch {
+    return false
+  }
+}
+
+function rememberOfferPopupDismissed(): void {
+  try {
+    window.sessionStorage.setItem(
+      OFFER_POPUP_SESSION_KEY,
+      'true'
+    )
+  } catch {
+    // Continue without session storage.
+  }
+}
+
+/* ==========================================
+   SPECIAL OFFERS POPUP
+
+   - Loads active offers from offerStore
+   - Opens automatically after a short delay
+   - Does not open if no offers are active
+   - Supports multiple offers
+   - Closes using X, Escape or backdrop
+   - Shows once per browser session
+   - Responsive desktop/mobile design
+========================================== */
+
+function SpecialOffersPopup() {
+  const [offers, setOffers] = useState<ZenOffer[]>(
+    () => activeOffers()
+  )
+
+  const [open, setOpen] = useState(false)
+  const [index, setIndex] = useState(0)
+
+  const dismissedRef = useRef(false)
+  const openedRef = useRef(false)
+  const popupTimerRef = useRef<number | null>(null)
+
+  /* ------------------------------------------
+     LOAD OFFERS
+  ------------------------------------------ */
+
+  useEffect(() => {
+    let mounted = true
+
+    const updateOffers = (items: ZenOffer[]) => {
+      if (!mounted) return
+
+      setOffers(items.filter(offer => offer.active))
+    }
+
+    void loadOffers()
+      .then(updateOffers)
+      .catch(error => {
+        console.error(
+          'Unable to load Zen Café offers:',
+          error
+        )
+      })
+
+    const unsubscribe = subscribeOffers(() => {
+      updateOffers(activeOffers())
+    })
+
+    return () => {
+      mounted = false
+      unsubscribe()
+    }
+  }, [])
+
+  /* ------------------------------------------
+     SHOW POPUP ONCE PER SESSION
+  ------------------------------------------ */
+
+  useEffect(() => {
+    if (
+      offers.length === 0 ||
+      dismissedRef.current ||
+      openedRef.current ||
+      wasOfferPopupDismissed()
+    ) {
+      return
+    }
+
+    popupTimerRef.current = window.setTimeout(() => {
+      if (
+        dismissedRef.current ||
+        wasOfferPopupDismissed()
+      ) {
+        return
+      }
+
+      openedRef.current = true
+      setIndex(0)
+      setOpen(true)
+    }, OFFER_POPUP_DELAY_MS)
+
+    return () => {
+      if (popupTimerRef.current !== null) {
+        window.clearTimeout(popupTimerRef.current)
+        popupTimerRef.current = null
+      }
+    }
+  }, [offers.length])
+
+  /* ------------------------------------------
+     CLOSE POPUP
+  ------------------------------------------ */
+
+  const closePopup = () => {
+    dismissedRef.current = true
+
+    rememberOfferPopupDismissed()
+
+    if (popupTimerRef.current !== null) {
+      window.clearTimeout(popupTimerRef.current)
+      popupTimerRef.current = null
+    }
+
+    setOpen(false)
+  }
+
+  /* ------------------------------------------
+     KEYBOARD SUPPORT
+  ------------------------------------------ */
+
+  useEffect(() => {
+    if (!open) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closePopup()
+      }
+
+      if (event.key === 'ArrowRight') {
+        setIndex(current =>
+          offers.length
+            ? (current + 1) % offers.length
+            : 0
+        )
+      }
+
+      if (event.key === 'ArrowLeft') {
+        setIndex(current =>
+          offers.length
+            ? (current - 1 + offers.length) %
+              offers.length
+            : 0
+        )
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      window.removeEventListener(
+        'keydown',
+        onKeyDown
+      )
+    }
+  }, [open, offers.length])
+
+  /* ------------------------------------------
+     LOCK BACKGROUND SCROLL
+  ------------------------------------------ */
+
+  useEffect(() => {
+    if (!open) return
+
+    const previousOverflow =
+      document.body.style.overflow
+
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow =
+        previousOverflow
+    }
+  }, [open])
+
+  /* ------------------------------------------
+     OFFER NAVIGATION
+  ------------------------------------------ */
+
+  const nextOffer = () => {
+    setIndex(current =>
+      (current + 1) % offers.length
+    )
+  }
+
+  const previousOffer = () => {
+    setIndex(current =>
+      (current - 1 + offers.length) %
+      offers.length
+    )
+  }
+
+  if (!open || offers.length === 0) {
+    return null
+  }
+
+  const safeIndex = index % offers.length
+  const offer = offers[safeIndex]
+
+  const offerImage =
+    offer.image || '/assets/menu-panda-main.png'
+
+  return (
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto bg-[#130b08]/65 px-4 py-6 backdrop-blur-[7px] sm:px-6"
+      onMouseDown={event => {
+        if (event.target === event.currentTarget) {
+          closePopup()
+        }
+      }}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="zen-offer-popup-title"
+        aria-describedby="zen-offer-popup-description"
+        className="relative my-auto w-full max-w-[520px] overflow-hidden rounded-[28px] border border-[#f1dfd0] bg-[#fffaf5] shadow-[0_35px_100px_rgba(0,0,0,0.35)] sm:rounded-[34px]"
+      >
+        {/* CLOSE BUTTON */}
+
+        <button
+          type="button"
+          data-no-magnet
+          onClick={closePopup}
+          aria-label="Close special offer"
+          className="absolute right-4 top-4 z-20 grid h-10 w-10 place-items-center rounded-full border border-[#ead7c9] bg-white/95 text-[#50372d] shadow-md transition hover:scale-105 hover:bg-[#f8ebe1]"
+        >
+          <X size={19} />
+        </button>
+
+        {/* IMAGE SECTION */}
+
+        <div className="relative h-[190px] overflow-hidden bg-gradient-to-br from-[#f5e1cf] via-[#f9ece0] to-[#e8c5ac] sm:h-[240px]">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-40"
+            style={{
+              backgroundImage:
+                'radial-gradient(circle at 20% 20%, #fff 0, transparent 48%)',
+            }}
+          />
+
+          <img
+            src={offerImage}
+            alt={offer.title}
+            className="relative z-[1] h-full w-full object-contain p-5 drop-shadow-xl sm:p-7"
+          />
+
+          <div className="absolute bottom-3 left-4 z-10 inline-flex items-center gap-2 rounded-full border border-white/30 bg-[#9e2822] px-3 py-2 text-[10px] font-extrabold uppercase tracking-[0.12em] text-white shadow-lg sm:left-6">
+            <BadgePercent size={15} />
+            {offer.badge || 'Special Offer'}
+          </div>
+        </div>
+
+        {/* CONTENT */}
+
+        <div className="px-5 pb-6 pt-6 sm:px-8 sm:pb-8">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="h-[2px] w-6 bg-[#aa3328]" />
+
+            <span className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-[#a3382c]">
+              Zen Café · Exclusive Offers
+            </span>
+          </div>
+
+          <h2
+            id="zen-offer-popup-title"
+            className="font-serif text-[28px] font-semibold leading-tight text-[#2b1912] sm:text-[36px]"
+          >
+            {offer.title}
+          </h2>
+
+          {offer.subtitle && (
+            <p className="mt-2 text-[12px] font-bold text-[#a13b2c] sm:text-[13px]">
+              {offer.subtitle}
+            </p>
+          )}
+
+          {offer.description && (
+            <p
+              id="zen-offer-popup-description"
+              className="mt-3 max-h-24 overflow-y-auto text-[13px] leading-6 text-[#746057] sm:text-[14px]"
+            >
+              {offer.description}
+            </p>
+          )}
+
+          {offer.code && (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-xl border border-dashed border-[#cb8c76] bg-[#f9eae1] px-4 py-2.5">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#8b5b4d]">
+                Offer code
+              </span>
+
+              <span className="font-mono text-[13px] font-extrabold text-[#a12e25]">
+                {offer.code}
+              </span>
+            </div>
+          )}
+
+          {/* MAIN ACTION */}
+
+          <a
+            href="/offers.html"
+            onClick={closePopup}
+            className="mt-6 flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-[#a52c27] px-6 py-3 text-[12px] font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_10px_25px_rgba(165,44,39,0.22)] transition hover:-translate-y-0.5 hover:bg-[#84221e]"
+          >
+            View Special Offer
+            <ArrowUpRight size={17} />
+          </a>
+
+          {/* MULTIPLE OFFERS */}
+
+          {offers.length > 1 && (
+            <div className="mt-5 flex items-center justify-between border-t border-[#eadbd0] pt-4">
+              <button
+                type="button"
+                data-no-magnet
+                onClick={previousOffer}
+                aria-label="Previous offer"
+                className="grid h-9 w-9 place-items-center rounded-full border border-[#e8d5c8] bg-white text-[#744c3d] transition hover:bg-[#f7e8de]"
+              >
+                <ArrowLeft size={17} />
+              </button>
+
+              <div className="flex items-center gap-2">
+                {offers.map((item, itemIndex) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    data-no-magnet
+                    onClick={() => setIndex(itemIndex)}
+                    aria-label={`Show offer ${itemIndex + 1}`}
+                    aria-current={
+                      itemIndex === safeIndex
+                        ? 'true'
+                        : undefined
+                    }
+                    className={`h-2 rounded-full transition-all duration-300 ${
+                      itemIndex === safeIndex
+                        ? 'w-6 bg-[#a52c27]'
+                        : 'w-2 bg-[#dfc8b9] hover:bg-[#c9a18e]'
+                    }`}
+                  />
+                ))}
+              </div>
+
+              <button
+                type="button"
+                data-no-magnet
+                onClick={nextOffer}
+                aria-label="Next offer"
+                className="grid h-9 w-9 place-items-center rounded-full border border-[#e8d5c8] bg-white text-[#744c3d] transition hover:bg-[#f7e8de]"
+              >
+                <ArrowRight size={17} />
+              </button>
+            </div>
+          )}
+
+          <p className="mt-4 text-center text-[10px] text-[#a28c7e]">
+            Discover more delicious moments at Zen Café.
+          </p>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 /* ==========================================
    APP
@@ -150,7 +554,10 @@ export default function App() {
     }
 
     window.addEventListener('pageshow', onPageShow)
-    window.addEventListener('beforeunload', onBeforeUnload)
+    window.addEventListener(
+      'beforeunload',
+      onBeforeUnload
+    )
 
     return () => {
       if (raf) {
@@ -159,7 +566,10 @@ export default function App() {
 
       window.clearTimeout(timer)
 
-      window.removeEventListener('pageshow', onPageShow)
+      window.removeEventListener(
+        'pageshow',
+        onPageShow
+      )
 
       window.removeEventListener(
         'beforeunload',
@@ -198,55 +608,51 @@ export default function App() {
       <FloatingSocialRail />
 
       {/* ======================================
-          TOP HEADER AREA
+          CLEAN NAVIGATION HEADER
 
-          SPECIAL OFFERS ABOVE NAVIGATION
+          Scrolling promotional banner removed.
 
-          The previous PromotionalBanner
-          rendering inside Header.tsx must
-          be removed to avoid duplication.
+          Important:
+          Also remove PromotionalBanner
+          from Header.tsx to prevent it
+          appearing inside the navbar.
       ====================================== */}
 
-      <div className="zen-top-header-layout">
-
-        {/* SCROLLING SPECIAL OFFERS */}
-
-        <div className="zen-top-promotional-banner">
-          <PromotionalBanner />
-        </div>
-
-        {/* NAVIGATION HEADER */}
-
-        <Header />
-
-      </div>
+      <Header />
 
       {/* ======================================
           HANGING PANDA
 
-          Keep the existing panda component
-          and its animation unchanged.
+          Original component and animation
+          are preserved.
       ====================================== */}
 
       <RopePanda />
 
+      {/* ======================================
+          AUTOMATIC SPECIAL OFFERS POPUP
+
+          Uses existing offerStore.
+
+          Shows once per browsing session.
+
+          No backend modification required.
+      ====================================== */}
+
+      <SpecialOffersPopup />
+
       <main>
 
         {/* ======================================
-            HERO + SPECIAL OFFERS
+            HERO SECTION
 
-            The hero remains unchanged.
+            Hero animation is preserved.
 
-            The large offers slider remains
-            below the complete hero section.
-
-            The small scrolling banner is
-            now rendered above the header.
+            Large offers slider stays below
+            the hero section.
         ====================================== */}
 
         <div className="zen-hero-offers-layout">
-
-          {/* HERO SECTION */}
 
           <HeroSection />
 
@@ -337,7 +743,6 @@ export default function App() {
           aria-labelledby="zen-party-room-heading"
           className="zen-room-section section-shell zen-reveal relative overflow-hidden bg-[#eee1d4]"
         >
-
           <div className="room-section-inner mx-auto max-w-[1500px] px-5 py-20 sm:px-10 sm:py-24 lg:px-12 lg:py-28">
 
             {/* SECTION INTRO */}

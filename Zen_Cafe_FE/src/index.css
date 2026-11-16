@@ -12358,3 +12358,129 @@ html {
     padding-top: 0 !important;
   }
 }
+/* Clean header positioning without the offers ticker */
+
+.zen-header-fixed,
+.zen-header-fixed.is-scrolled {
+  top: 0 !important;
+  padding-top: 12px !important;
+}
+
+@media (max-width: 640px) {
+  .zen-header-fixed,
+  .zen-header-fixed.is-scrolled {
+    top: 0 !important;
+    padding-top: 8px !important;
+  }
+}
+/* ==========================================
+   ZEN CAFÉ — CLEAN HEADER POSITION
+   No scrolling offer banner
+========================================== */
+
+.zen-header-fixed,
+.zen-header-fixed.is-scrolled {
+  top: 0 !important;
+  padding-top: 8px !important;
+}
+
+/* Remove obsolete promotional banner spacing */
+.zen-top-header-layout {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+@media (max-width: 640px) {
+  .zen-header-fixed,
+  .zen-header-fixed.is-scrolled {
+    top: 0 !important;
+    padding-top: 6px !important;
+  }
+}
+
+/* ============================================================
+   ZEN CAFÉ — FINAL HEADER + HANGING PANDA FIX
+
+   - Navbar stays at the top
+   - No space reserved for scrolling offers
+   - Panda starts below the navbar
+   - Existing panda animation is preserved
+   - Desktop, tablet and mobile supported
+   ============================================================ */
+
+/* Remove the obsolete offers-banner offset */
+
+:root {
+  --zen-offers-top: 0px;
+  --zen-offers-height: 0px;
+  --zen-navbar-gap: 0px;
+}
+
+/* Navbar position */
+
+.zen-header-fixed,
+.zen-header-fixed.is-scrolled {
+  position: fixed;
+  top: 0 !important;
+  right: 0;
+  left: 0;
+  padding-top: 8px !important;
+  z-index: 90 !important;
+}
+
+/* Preserve the existing premium glass navbar */
+
+.zen-header-fixed .zen-header-glass {
+  position: relative;
+}
+
+/* Hanging panda placement */
+
+.rope-panda-anchor {
+  top: 82px !important;
+  z-index: 86 !important;
+}
+
+/* Do not change the panda's active animation,
+   visibility, opacity or transform rules. */
+
+/* No extra top spacing from the old offers layout */
+
+.zen-top-header-layout {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Tablet */
+
+@media (max-width: 1279px) {
+  .zen-header-fixed,
+  .zen-header-fixed.is-scrolled {
+    padding-top: 7px !important;
+  }
+
+  .rope-panda-anchor {
+    top: 78px !important;
+  }
+}
+
+/* Mobile */
+
+@media (max-width: 640px) {
+  .zen-header-fixed,
+  .zen-header-fixed.is-scrolled {
+    padding-top: 6px !important;
+  }
+
+  .rope-panda-anchor {
+    top: 70px !important;
+  }
+}
+
+/* Respect accessibility preferences */
+
+@media (prefers-reduced-motion: reduce) {
+  .rope-panda-anchor {
+    display: none !important;
+  }
+}

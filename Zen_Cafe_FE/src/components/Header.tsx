@@ -12,7 +12,12 @@ import {
   X,
 } from 'lucide-react'
 
-import { useEffect, useMemo, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react'
 
 import ThemeToggle from './ThemeToggle'
 
@@ -29,7 +34,7 @@ const links = [
 ] as const
 
 /* ==========================================
-   MOBILE NAVIGATION
+   MOBILE NAVIGATION LINKS
 ========================================== */
 
 const mobileLinks = [
@@ -72,6 +77,14 @@ const mobileLinks = [
 
 /* ==========================================
    HEADER COMPONENT
+
+   Updates:
+   - No scrolling promotional banner
+   - Navbar positioned at the top
+   - Existing navigation preserved
+   - Existing theme toggle preserved
+   - Existing mobile menu preserved
+   - Works with App.tsx offers popup
 ========================================== */
 
 export default function Header() {
@@ -98,14 +111,18 @@ export default function Header() {
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(Math.max(0, window.scrollY) > 22)
+      setScrolled(
+        Math.max(0, window.scrollY) > 22
+      )
     }
 
     onScroll()
 
-    window.addEventListener('scroll', onScroll, {
-      passive: true,
-    })
+    window.addEventListener(
+      'scroll',
+      onScroll,
+      { passive: true }
+    )
 
     const observer = new IntersectionObserver(
       entries => {
@@ -113,7 +130,8 @@ export default function Header() {
           .filter(entry => entry.isIntersecting)
           .sort(
             (a, b) =>
-              b.intersectionRatio - a.intersectionRatio
+              b.intersectionRatio -
+              a.intersectionRatio
           )[0]
 
         if (visibleEntry?.target.id) {
@@ -127,7 +145,8 @@ export default function Header() {
     )
 
     links.forEach(([, id]) => {
-      const element = document.getElementById(id)
+      const element =
+        document.getElementById(id)
 
       if (element) {
         observer.observe(element)
@@ -135,7 +154,11 @@ export default function Header() {
     })
 
     return () => {
-      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener(
+        'scroll',
+        onScroll
+      )
+
       observer.disconnect()
     }
   }, [])
@@ -159,30 +182,79 @@ export default function Header() {
       }
     }
 
-    window.addEventListener('keydown', onKey)
-    window.addEventListener('resize', onResize)
+    window.addEventListener(
+      'keydown',
+      onKey
+    )
+
+    window.addEventListener(
+      'resize',
+      onResize
+    )
 
     return () => {
-      window.removeEventListener('keydown', onKey)
-      window.removeEventListener('resize', onResize)
+      window.removeEventListener(
+        'keydown',
+        onKey
+      )
+
+      window.removeEventListener(
+        'resize',
+        onResize
+      )
     }
   }, [open])
 
   /* ==========================================
      SECTION NAVIGATION
+
+     Preserve smooth scrolling.
+     Add a small scroll offset so section
+     headings are not covered by navbar.
   ========================================== */
 
-  const go = (id: string) => {
+  const go = useCallback((id: string) => {
     setActive(id)
     setOpen(false)
 
     window.requestAnimationFrame(() => {
-      document.getElementById(id)?.scrollIntoView({
+      const target =
+        document.getElementById(id)
+
+      if (!target) {
+        if (id === 'home') {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth',
+          })
+        }
+
+        return
+      }
+
+      const header =
+        document.querySelector<HTMLElement>(
+          '.zen-header-fixed'
+        )
+
+      const headerHeight =
+        header?.getBoundingClientRect().height ??
+        90
+
+      const targetTop =
+        target.getBoundingClientRect().top +
+        window.scrollY
+
+      const offset = id === 'home'
+        ? 0
+        : headerHeight + 12
+
+      window.scrollTo({
+        top: Math.max(0, targetTop - offset),
         behavior: 'smooth',
-        block: 'start',
       })
     })
-  }
+  }, [])
 
   /* ==========================================
      RENDER
@@ -191,21 +263,26 @@ export default function Header() {
   return (
     <header
       className={`zen-header-fixed fixed inset-x-0 top-0 z-[90] px-4 sm:px-7 lg:px-12 ${
-        scrolled ? 'is-scrolled pt-2.5' : 'pt-4'
+        scrolled
+          ? 'is-scrolled pt-2'
+          : 'pt-2.5'
       }`}
+      aria-label="Zen Café main header"
     >
 
       {/* ======================================
           MAIN NAVIGATION BAR
 
-          PromotionalBanner is intentionally
-          NOT rendered inside Header.
+          PromotionalBanner is completely
+          removed from this component.
 
-          App.tsx now renders it separately
-          above the navbar.
+          Special Offers now appear through
+          the popup inside App.tsx.
       ====================================== */}
 
-      <div className="zen-header-glass zen-header-clean zen-header-always zen-mobile-header-bar relative z-[3] mx-auto flex max-w-[1500px] items-center justify-between rounded-full border px-3 py-2">
+      <div
+        className="zen-header-glass zen-header-clean zen-header-always zen-mobile-header-bar relative z-[3] mx-auto flex max-w-[1500px] items-center justify-between rounded-full border px-3 py-2"
+      >
 
         {/* ======================================
             ZEN CAFÉ BRAND
@@ -216,6 +293,7 @@ export default function Header() {
           data-no-magnet
           onClick={() => go('home')}
           className="zen-mobile-brand-button flex items-center gap-3 rounded-full pr-3 text-left"
+          aria-label="Zen Café — Go to home"
         >
 
           <img
@@ -242,7 +320,10 @@ export default function Header() {
             DESKTOP NAVIGATION
         ====================================== */}
 
-        <nav className="zen-nav-glass hidden items-center gap-1 rounded-full p-1 xl:flex">
+        <nav
+          className="zen-nav-glass hidden items-center gap-1 rounded-full p-1 xl:flex"
+          aria-label="Desktop navigation"
+        >
 
           {links.map(([label, id]) => (
             <button
@@ -255,7 +336,9 @@ export default function Header() {
                   : 'text-[#56473f]'
               }`}
               aria-current={
-                active === id ? 'page' : undefined
+                active === id
+                  ? 'page'
+                  : undefined
               }
             >
               {label}
@@ -268,7 +351,11 @@ export default function Header() {
             href="/games.html"
             className="zen-nav-pill inline-flex items-center gap-2 rounded-full px-4 py-3 text-[9px] font-semibold uppercase tracking-[.1em] text-[#56473f]"
           >
-            <Gamepad2 size={15} aria-hidden="true" />
+            <Gamepad2
+              size={15}
+              aria-hidden="true"
+            />
+
             <span>Games</span>
           </a>
 
@@ -287,6 +374,7 @@ export default function Header() {
             aria-live="polite"
           >
             <span className="zen-mobile-current-dot" />
+
             <span>{activeLabel}</span>
           </div>
 
@@ -302,6 +390,7 @@ export default function Header() {
             aria-label="Customer registration"
           >
             <UserPlus size={15} />
+
             <span>Register</span>
           </a>
 
@@ -330,6 +419,7 @@ export default function Header() {
             className="zen-glass-red hidden items-center gap-2 rounded-full px-5 py-3 text-[9px] font-semibold uppercase tracking-[.1em] text-white sm:inline-flex"
           >
             <DoorOpen size={15} />
+
             Book Room
           </button>
 
@@ -343,12 +433,17 @@ export default function Header() {
               open ? 'is-open' : ''
             }`}
             aria-label={
-              open ? 'Close navigation' : 'Open navigation'
+              open
+                ? 'Close navigation'
+                : 'Open navigation'
             }
             aria-expanded={open}
             aria-controls="zen-mobile-navigation"
           >
-            {open ? <X size={20} /> : <Menu size={20} />}
+            {open
+              ? <X size={20} />
+              : <Menu size={20} />
+            }
           </button>
 
         </div>
@@ -403,10 +498,12 @@ export default function Header() {
             {mobileLinks.map(item => {
               const Icon = item.icon
 
-              const isSection = 'id' in item
+              const isSection =
+                'id' in item
 
               const isActive =
-                isSection && active === item.id
+                isSection &&
+                active === item.id
 
               const content = (
                 <>
@@ -435,10 +532,14 @@ export default function Header() {
                     key={item.label}
                     onClick={() => go(item.id)}
                     className={`zen-mobile-link zen-mobile-nav-item zen-mobile-nav-item-compact ${
-                      isActive ? 'is-active' : ''
+                      isActive
+                        ? 'is-active'
+                        : ''
                     }`}
                     aria-current={
-                      isActive ? 'page' : undefined
+                      isActive
+                        ? 'page'
+                        : undefined
                     }
                   >
                     {content}
@@ -493,6 +594,7 @@ export default function Header() {
               className="zen-mobile-quick-action zen-mobile-quick-book"
             >
               <DoorOpen size={16} />
+
               <span>Book Room</span>
             </button>
 
