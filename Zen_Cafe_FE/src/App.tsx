@@ -195,21 +195,38 @@ export default function App() {
 
       <Header />
 
+      {/* EXISTING HANGING PANDA - UNCHANGED */}
+
       <RopePanda />
 
       <main>
 
         {/* ======================================
-            HERO SECTION
+            HERO + SPECIAL OFFERS
+
+            Keep the hero and offers together
+            in a dedicated layout container.
+
+            The offers component is rendered
+            after the hero, not over the panda.
+
+            Final positioning is controlled
+            by the CSS rules below.
         ====================================== */}
 
-        <HeroSection />
+        <div className="zen-hero-offers-layout">
 
-        {/* ======================================
-            HOME OFFERS
-        ====================================== */}
+          {/* HERO SECTION - UNCHANGED */}
 
-        <HomeOffersSlider />
+          <HeroSection />
+
+          {/* SPECIAL OFFERS - BOTTOM OF HERO */}
+
+          <div className="zen-hero-offers-bottom">
+            <HomeOffersSlider />
+          </div>
+
+        </div>
 
         {/* ======================================
             ZEN ESSENTIALS
@@ -235,7 +252,6 @@ export default function App() {
               </div>
 
               <p className="section-copy">
-                
               </p>
             </div>
 
@@ -306,7 +322,6 @@ export default function App() {
               </div>
 
               <p className="section-copy max-w-[420px]">
-                
               </p>
             </div>
 
