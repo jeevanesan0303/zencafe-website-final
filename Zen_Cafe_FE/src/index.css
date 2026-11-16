@@ -12026,7 +12026,7 @@ html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover{background:linear-gradie
 :root {
   --zen-offers-top: 0px;
   --zen-offers-height: 42px;
-  --zen-navbar-gap: 10px;
+  --zen-navbar-gap: 0px;
 }
 
 /* Fixed navbar positioning */
@@ -12340,5 +12340,21 @@ html {
 
   .zen-promotional-banner .zen-promo-marquee {
     overflow-x: auto;
+  }
+}
+/* Move navbar upward, directly beneath Special Offers */
+
+.zen-header-fixed,
+.zen-header-fixed.is-scrolled {
+  top: 42px !important;
+  padding-top: 0 !important;
+}
+
+/* Keep navbar positioning consistent on mobile */
+@media (max-width: 640px) {
+  .zen-header-fixed,
+  .zen-header-fixed.is-scrolled {
+    top: 42px !important;
+    padding-top: 0 !important;
   }
 }
