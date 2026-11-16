@@ -1,5 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react'
+
 import {
   ClipboardCheck,
   Clock3,
@@ -7,10 +8,12 @@ import {
   Users,
   UtensilsCrossed,
 } from 'lucide-react'
+
 import type { LucideIcon } from 'lucide-react'
 
 import Header from './components/Header'
 import HeroSection from './components/HeroSection'
+import PromotionalBanner from './components/PromotionalBanner'
 import HomeOffersSlider from './components/HomeOffersSlider'
 import MenuCarousel from './components/MenuCarousel'
 import { RoomBooking } from './components/BookingForms'
@@ -157,6 +160,7 @@ export default function App() {
       window.clearTimeout(timer)
 
       window.removeEventListener('pageshow', onPageShow)
+
       window.removeEventListener(
         'beforeunload',
         onBeforeUnload
@@ -183,7 +187,9 @@ export default function App() {
   return (
     <div className="zen-dark-scope zen-app-shell min-h-screen bg-[#f8f0e8] text-[#201713]">
 
-      {/* GLOBAL WEBSITE COMPONENTS */}
+      {/* ======================================
+          GLOBAL WEBSITE COMPONENTS
+      ====================================== */}
 
       <MagneticButtons />
       <GlobalPetals />
@@ -191,11 +197,36 @@ export default function App() {
       <ScrollToTop />
       <FloatingSocialRail />
 
-      {/* EXISTING HEADER - UNCHANGED */}
+      {/* ======================================
+          TOP HEADER AREA
 
-      <Header />
+          SPECIAL OFFERS ABOVE NAVIGATION
 
-      {/* EXISTING HANGING PANDA - UNCHANGED */}
+          The previous PromotionalBanner
+          rendering inside Header.tsx must
+          be removed to avoid duplication.
+      ====================================== */}
+
+      <div className="zen-top-header-layout">
+
+        {/* SCROLLING SPECIAL OFFERS */}
+
+        <div className="zen-top-promotional-banner">
+          <PromotionalBanner />
+        </div>
+
+        {/* NAVIGATION HEADER */}
+
+        <Header />
+
+      </div>
+
+      {/* ======================================
+          HANGING PANDA
+
+          Keep the existing panda component
+          and its animation unchanged.
+      ====================================== */}
 
       <RopePanda />
 
@@ -204,23 +235,22 @@ export default function App() {
         {/* ======================================
             HERO + SPECIAL OFFERS
 
-            Keep the hero and offers together
-            in a dedicated layout container.
+            The hero remains unchanged.
 
-            The offers component is rendered
-            after the hero, not over the panda.
+            The large offers slider remains
+            below the complete hero section.
 
-            Final positioning is controlled
-            by the CSS rules below.
+            The small scrolling banner is
+            now rendered above the header.
         ====================================== */}
 
         <div className="zen-hero-offers-layout">
 
-          {/* HERO SECTION - UNCHANGED */}
+          {/* HERO SECTION */}
 
           <HeroSection />
 
-          {/* SPECIAL OFFERS - BOTTOM OF HERO */}
+          {/* LARGE SPECIAL OFFERS SLIDER */}
 
           <div className="zen-hero-offers-bottom">
             <HomeOffersSlider />
@@ -239,7 +269,9 @@ export default function App() {
           <div className="zen-overview-inner mx-auto max-w-[1500px] px-5 sm:px-10 lg:px-12">
 
             <div className="zen-overview-head">
+
               <div className="zen-overview-heading-copy">
+
                 <p className="kicker">
                   Zen essentials
                 </p>
@@ -249,13 +281,16 @@ export default function App() {
                   <br />
                   <span>Nothing extra.</span>
                 </h2>
+
               </div>
 
               <p className="section-copy">
               </p>
+
             </div>
 
             <div className="zen-overview-grid">
+
               {overviewCards.map(item => {
                 const Icon = item.icon
 
@@ -269,28 +304,31 @@ export default function App() {
                     </span>
 
                     <div className="zen-overview-card-copy">
+
                       <h3>{item.title}</h3>
 
                       <span className="zen-overview-meta">
                         {item.meta}
                       </span>
+
                     </div>
                   </article>
                 )
               })}
+
             </div>
+
           </div>
         </section>
 
         {/* ======================================
-            MENU SECTION - UNCHANGED
+            MENU SECTION
         ====================================== */}
 
         <MenuCarousel />
 
         {/* ======================================
             PARTY ROOM BOOKING
-            FRONTEND REDESIGN ONLY
         ====================================== */}
 
         <section
@@ -299,12 +337,15 @@ export default function App() {
           aria-labelledby="zen-party-room-heading"
           className="zen-room-section section-shell zen-reveal relative overflow-hidden bg-[#eee1d4]"
         >
+
           <div className="room-section-inner mx-auto max-w-[1500px] px-5 py-20 sm:px-10 sm:py-24 lg:px-12 lg:py-28">
 
             {/* SECTION INTRO */}
 
             <div className="room-section-head room-section-head-v121 mb-10 lg:mb-14">
+
               <div>
+
                 <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.3em] text-[#a83d2b]">
                   Zen Café · Private Celebrations
                 </p>
@@ -319,37 +360,47 @@ export default function App() {
                 </h2>
 
                 <div className="mt-5 h-[2px] w-16 bg-[#a83d2b]" />
+
               </div>
 
               <p className="section-copy max-w-[420px]">
               </p>
+
             </div>
 
-            {/* ROOM INFORMATION STRIP */}
+            {/* ======================================
+                ROOM INFORMATION STRIP
+            ====================================== */}
 
             <div
               className="room-essentials-v121 mb-8 overflow-hidden rounded-2xl border border-[#e3c6b2] bg-[#f7e4d5] shadow-[0_12px_35px_rgba(73,39,25,0.05)]"
               aria-label="Party room essentials"
             >
+
               <div className="room-essential-v121">
+
                 <Users size={21} strokeWidth={1.6} />
 
                 <span>
                   <small>Room capacity</small>
                   <b>01–15 guests</b>
                 </span>
+
               </div>
 
               <div className="room-essential-v121">
+
                 <Clock3 size={21} strokeWidth={1.6} />
 
                 <span>
                   <small>Maximum duration</small>
                   <b>Up to 3 hours</b>
                 </span>
+
               </div>
 
               <div className="room-essential-v121">
+
                 <ClipboardCheck
                   size={21}
                   strokeWidth={1.6}
@@ -359,7 +410,9 @@ export default function App() {
                   <small>Booking confirmation</small>
                   <b>Via email</b>
                 </span>
+
               </div>
+
             </div>
 
             {/* EXISTING BOOKING COMPONENT */}
@@ -374,10 +427,11 @@ export default function App() {
             className="room-to-gallery-fade"
             aria-hidden="true"
           />
+
         </section>
 
         {/* ======================================
-            COMMUNITY GALLERY - UNCHANGED
+            COMMUNITY GALLERY
         ====================================== */}
 
         <CommunityGallery toast={toastNow} />
@@ -385,7 +439,7 @@ export default function App() {
       </main>
 
       {/* ======================================
-          FOOTER - UNCHANGED
+          FOOTER
       ====================================== */}
 
       <PremiumFooter />
@@ -410,6 +464,7 @@ export default function App() {
       >
         {toast}
       </div>
+
     </div>
   )
 }
