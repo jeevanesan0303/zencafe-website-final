@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 
 import ThemeToggle from './ThemeToggle'
+import './RegisterPage.css'
 
 /* =========================================================
    ZEN CAFÉ — CUSTOMER REGISTRATION
@@ -310,8 +311,8 @@ export default function RegisterPage() {
         if (!response.ok || !data.success) {
           throw new Error(
             data.error ||
-              data.message ||
-              'The verification link is invalid or expired.',
+            data.message ||
+            'The verification link is invalid or expired.',
           )
         }
 
@@ -507,8 +508,8 @@ export default function RegisterPage() {
 
         throw new Error(
           data.error ||
-            data.message ||
-            'Registration failed. Please try again.',
+          data.message ||
+          'Registration failed. Please try again.',
         )
       }
 
@@ -526,7 +527,7 @@ export default function RegisterPage() {
 
       setMessage(
         data.message ||
-          'Registration received. Please check your email for the verification link.',
+        'Registration received. Please check your email for the verification link.',
       )
 
       if (
@@ -599,14 +600,14 @@ export default function RegisterPage() {
       if (!response.ok || !data.success) {
         throw new Error(
           data.error ||
-            data.message ||
-            'Unable to resend the verification email.',
+          data.message ||
+          'Unable to resend the verification email.',
         )
       }
 
       setMessage(
         data.message ||
-          'If your email is awaiting verification, a new verification link will be sent.',
+        'If your email is awaiting verification, a new verification link will be sent.',
       )
 
       if (
@@ -643,150 +644,143 @@ export default function RegisterPage() {
      RENDER
   ======================================================= */
 
+
   return (
-    <main className="zen-register-page min-h-screen">
-      <header className="zen-standalone-header">
-        <a
-          href="/"
-          className="zen-standalone-back"
-          aria-label="Back to Zen Café"
-        >
+    <main className="zen-register-page">
+      <header className="zen-register-header">
+        <a href="/" className="zen-register-back">
           <ArrowLeft size={18} />
+          <span>Back to Home</span>
         </a>
 
-        <a
-          href="/"
-          className="zen-standalone-brand"
-        >
-          <img
-            src="/assets/zen-logo.png"
-            alt="Zen Café"
-          />
-
-          <span>
-            <b>ZEN CAFÉ</b>
-            <small>Customer registration</small>
-          </span>
+        <a href="/" className="zen-register-brand">
+          <img src="/assets/zen-logo.png" alt="Zen Café" />
+          <span>ZEN CAFÉ</span>
         </a>
 
         <ThemeToggle />
       </header>
 
-      <section className="zen-register-hero">
-        <div className="zen-register-orb orb-a" />
-        <div className="zen-register-orb orb-b" />
+      <section className="zen-register-layout">
+        {/* LEFT: HERO IMAGE */}
+        <div className="zen-register-visual">
+          <div className="zen-register-visual-overlay" />
 
-        <div className="zen-register-copy">
-          <p className="kicker">
-            <Sparkles size={13} />
-            Customer Access & Verification
-          </p>
+          <div className="zen-register-visual-content">
+            <div className="zen-register-eyebrow">
+              <Sparkles size={15} />
+              THE ZEN CAFÉ EXPERIENCE
+            </div>
 
-          <h1>
-            Share your moments.
-            <br />
-            <span>Stay connected.</span>
-          </h1>
+            <h1>
+              Every moment
+              <br />
+              has a <em>story.</em>
+            </h1>
 
-          <p>
-            Join the Zen Café community, verify your
-            email, and share up to two photos from your
-            café experience. Your photos appear in the
-            gallery after a successful upload. You can
-            upload again after 24 hours.
-          </p>
+            <p>
+              Good food, beautiful memories and meaningful
+              connections. Become part of our community
+              and share your favourite café moments.
+            </p>
+
+            <div className="zen-register-visual-bottom">
+              <span className="zen-register-japanese">
+                禅カフェ
+              </span>
+              <span>CREATE • CONNECT • SHARE</span>
+            </div>
+          </div>
         </div>
 
-        <div className="zen-register-card zen-customer-register-card">
-          <div className="zen-register-icon">
-            {verifiedCustomer ? (
-              <ShieldCheck size={25} />
-            ) : (
-              <UserRound size={25} />
-            )}
-          </div>
-
-          <p className="kicker">
-            Customer registration
-          </p>
-
-          <h2>
-            {verifiedCustomer
-              ? 'Email verified'
-              : registrationSubmitted
-                ? 'Check your inbox'
-                : 'Your details'}
-          </h2>
-
-          {verifiedCustomer && (
-            <div className="mb-5 mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-3 text-emerald-900">
-              <div className="flex items-center gap-2 text-sm font-bold">
-                <CheckCircle2 size={17} />
-                Registration complete
+        {/* RIGHT: REGISTRATION FORM */}
+        <div className="zen-register-form-side">
+          <div className="zen-register-form-shell">
+            <div className="zen-register-form-heading">
+              <div className="zen-register-heading-icon">
+                {verifiedCustomer ? (
+                  <ShieldCheck size={24} />
+                ) : (
+                  <UserRound size={24} />
+                )}
               </div>
 
-              <p className="mt-1 text-xs">
-                Your email has been verified.
-                You can now access the Community Gallery.
+              <span className="zen-register-small-heading">
+                WELCOME TO OUR COMMUNITY
+              </span>
+
+              <h2>
+                {verifiedCustomer
+                  ? 'Email verified'
+                  : registrationSubmitted
+                    ? 'Check your inbox'
+                    : 'Create your account'}
+              </h2>
+
+              <p>
+                {verifiedCustomer
+                  ? 'Your registration is complete. You can now explore our Community Gallery.'
+                  : registrationSubmitted
+                    ? 'We have received your registration. Please verify your email address.'
+                    : 'Register to share your Zen Café moments with our community.'}
               </p>
-
-              <a
-                href="/#gallery"
-                className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-[#a32722] underline"
-              >
-                Open Community Gallery
-              </a>
             </div>
-          )}
 
-          <form
-            onSubmit={submitRegistration}
-            noValidate
-          >
-            <div className="zen-register-fields">
+            {verifiedCustomer && (
+              <div className="zen-register-success">
+                <CheckCircle2 size={19} />
+                <div>
+                  <strong>Registration complete</strong>
+                  <p>
+                    Your email has been verified successfully.
+                  </p>
+                  <a href="/#gallery">
+                    Open Community Gallery
+                  </a>
+                </div>
+              </div>
+            )}
 
-              {/* FULL NAME */}
-
-              <label className="field-label">
-                Full name
-
+            <form
+              className="zen-register-form"
+              onSubmit={submitRegistration}
+              noValidate
+            >
+              <label className="zen-register-field">
+                <span>Full name</span>
                 <div className="zen-register-input">
-                  <UserRound size={17} />
-
+                  <UserRound size={18} />
                   <input
+                    type="text"
                     value={name}
                     disabled={formDisabled}
-                    onChange={event => {
+                    onChange={(event) => {
                       setName(event.target.value)
                       setMessage('')
+                      setIsError(false)
                     }}
-                    type="text"
+                    placeholder="Enter your full name"
                     autoComplete="name"
-                    placeholder="Your name"
                     maxLength={100}
                     required
                   />
                 </div>
               </label>
 
-              {/* PHONE NUMBER */}
-
-              <label className="field-label">
-                Phone number
-
+              <label className="zen-register-field">
+                <span>Phone number</span>
                 <div className="zen-register-input">
-                  <Phone size={17} />
-
+                  <Phone size={18} />
                   <input
+                    type="tel"
                     value={phone}
                     disabled={formDisabled}
-                    onChange={event =>
+                    onChange={(event) =>
                       handlePhoneChange(event.target.value)
                     }
-                    type="tel"
+                    placeholder="0771234567"
                     inputMode="numeric"
                     autoComplete="tel-national"
-                    placeholder="0771234567"
                     maxLength={10}
                     minLength={10}
                     pattern="0[0-9]{9}"
@@ -794,162 +788,132 @@ export default function RegisterPage() {
                     required
                   />
                 </div>
-
-                <span className="mt-1 block text-xs text-[#a99b93]">
+                <small>
                   Enter 10 digits, starting with 0.
-                </span>
+                </small>
               </label>
 
-              {/* EMAIL */}
-
-              <label className="field-label zen-register-field-full">
-                Email address
-
+              <label className="zen-register-field">
+                <span>Email address</span>
                 <div className="zen-register-input">
-                  <Mail size={17} />
-
+                  <Mail size={18} />
                   <input
+                    type="email"
                     value={email}
                     disabled={formDisabled}
-                    onChange={event => {
+                    onChange={(event) => {
                       setEmail(event.target.value)
                       setMessage('')
+                      setIsError(false)
                     }}
-                    type="email"
-                    autoComplete="email"
                     placeholder="you@example.com"
+                    autoComplete="email"
                     maxLength={254}
                     required
                   />
                 </div>
               </label>
-            </div>
 
-            {/* REGISTER */}
-
-            <button
-              className="primary-pill zen-register-submit"
-              type="submit"
-              disabled={formDisabled}
-            >
-              <ShieldCheck size={15} />
-
-              {verifying
-                ? 'Verifying email...'
-                : loading
-                  ? 'Registering...'
-                  : 'Register Customer'}
-            </button>
-
-            {/* RESEND VERIFICATION */}
-
-            <button
-              type="button"
-              disabled={formDisabled}
-              onClick={() => {
-                void handleResend()
-              }}
-              className="mt-3 inline-flex w-full items-center justify-center gap-1.5 py-1.5 text-xs font-bold text-[#a32722] hover:underline disabled:opacity-50"
-            >
-              <RefreshCw
-                size={12}
-                className={
-                  resending ? 'animate-spin' : ''
-                }
-              />
-
-              {resending
-                ? 'Sending link...'
-                : 'Resend verification email'}
-            </button>
-          </form>
-
-          {/* MESSAGE */}
-
-          {message && (
-            <div
-              className={`zen-register-message mt-3 flex items-center gap-2 rounded-xl p-2.5 text-xs ${
-                isError
-                  ? 'border border-red-200 bg-red-50 text-red-800'
-                  : 'border border-emerald-200 bg-emerald-50 text-emerald-800'
-              }`}
-              role={isError ? 'alert' : 'status'}
-            >
-              {isError ? (
-                <ShieldAlert size={14} />
-              ) : (
-                <CheckCircle2 size={14} />
-              )}
-
-              <span>{message}</span>
-            </div>
-          )}
-
-          {/* DEVELOPMENT VERIFICATION LINK */}
-
-          {devVerifyUrl && (
-            <div className="mt-3 rounded-2xl border border-[#a32722]/15 bg-[#fff8ef] p-3 text-xs text-[#695950]">
-              <span className="mb-1 block font-bold text-[#a32722]">
-                Local Email Test
-              </span>
-
-              <a
-                href={devVerifyUrl}
-                className="break-all font-semibold text-[#a32722] underline"
+              <button
+                className="zen-register-submit"
+                type="submit"
+                disabled={formDisabled}
               >
-                Open verification link
+                <ShieldCheck size={18} />
+                {verifying
+                  ? 'Verifying email...'
+                  : loading
+                    ? 'Registering...'
+                    : 'Create Account'}
+              </button>
+
+              <button
+                type="button"
+                className="zen-register-resend"
+                disabled={formDisabled}
+                onClick={() => void handleResend()}
+              >
+                <RefreshCw
+                  size={15}
+                  className={
+                    resending ? 'animate-spin' : ''
+                  }
+                />
+                {resending
+                  ? 'Sending verification link...'
+                  : 'Resend verification email'}
+              </button>
+            </form>
+
+            {message && (
+              <div
+                className={`zen-register-alert ${isError ? 'is-error' : 'is-success'
+                  }`}
+                role={isError ? 'alert' : 'status'}
+              >
+                {isError ? (
+                  <ShieldAlert size={18} />
+                ) : (
+                  <CheckCircle2 size={18} />
+                )}
+                <span>{message}</span>
+              </div>
+            )}
+
+            {devVerifyUrl && (
+              <div className="zen-register-dev-link">
+                <strong>Local Email Test</strong>
+                <a href={devVerifyUrl}>
+                  Open verification link
+                </a>
+              </div>
+            )}
+
+            <div className="zen-register-verification">
+              <div className="zen-register-verification-icon">
+                {verifiedCustomer ? (
+                  <ShieldCheck size={20} />
+                ) : (
+                  <Clock3 size={20} />
+                )}
+              </div>
+              <div>
+                <strong>
+                  {verifying
+                    ? 'Verifying your email'
+                    : verifiedCustomer
+                      ? 'Registration completed'
+                      : registrationSubmitted
+                        ? 'Email verification pending'
+                        : 'Secure email verification'}
+                </strong>
+                <p>
+                  {verifying
+                    ? 'Please wait while we confirm your verification link.'
+                    : verifiedCustomer
+                      ? 'You can now access the Community Gallery.'
+                      : registrationSubmitted
+                        ? 'Click the verification link sent to your email.'
+                        : 'Verify your email once to access the Community Gallery.'}
+                </p>
+              </div>
+            </div>
+
+            <div className="zen-register-bottom">
+              <span>Already registered?</span>
+              <a href="/#gallery">
+                Explore Community Gallery
               </a>
             </div>
-          )}
 
-          {/* REGISTRATION STATUS */}
-
-          <div
-            className={`zen-register-status ${
-              verifiedCustomer
-                ? 'is-registered is-ready'
-                : ''
-            }`}
-          >
-            <span>
-              {verifiedCustomer ? (
-                <CheckCircle2 size={19} />
-              ) : (
-                <Clock3 size={19} />
-              )}
-            </span>
-
-            <div>
-              <b>
-                {verifying
-                  ? 'Verifying your email'
-                  : verifiedCustomer
-                    ? 'Registration completed'
-                    : registrationSubmitted
-                      ? 'Email verification pending'
-                      : 'Email verification required'}
-              </b>
-
-              <small>
-                {verifying
-                  ? 'Please wait while we confirm your verification link.'
-                  : verifiedCustomer
-                    ? 'Open the gallery and check your registered email to upload photos.'
-                    : registrationSubmitted
-                      ? 'Click the verification link sent to your email address.'
-                      : 'Register and verify your email once. After that, you can return to the gallery anytime.'}
-              </small>
+            <div className="zen-register-footer">
+              © {new Date().getFullYear()} Zen Café.
+              All rights reserved.
             </div>
           </div>
-
-          <a
-            className="secondary-pill zen-register-gallery-link"
-            href="/#gallery"
-          >
-            Open Gallery
-          </a>
         </div>
       </section>
     </main>
   )
+
 }

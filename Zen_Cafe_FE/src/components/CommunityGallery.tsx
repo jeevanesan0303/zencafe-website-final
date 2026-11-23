@@ -239,7 +239,9 @@ function normalizePublicPhotos(
 
 export default function CommunityGallery({
   toast,
+  grid = false,
 }: {
+  grid?: boolean
   toast: (message: string) => void
 }) {
   const [posts, setPosts] = useState<Post[]>([])
@@ -485,7 +487,7 @@ export default function CommunityGallery({
 
   useEffect(() => {
     if (
-      posts.length <= 1 ||
+      grid || posts.length <= 1 ||
       paused ||
       lightbox
     ) {
@@ -499,7 +501,7 @@ export default function CommunityGallery({
     }, AUTO_SLIDE_MS)
 
     return () => window.clearInterval(timer)
-  }, [posts.length, paused, lightbox])
+  }, [posts.length, paused, lightbox, grid])
 
   useEffect(() => {
     if (active >= posts.length) {
@@ -1070,7 +1072,7 @@ export default function CommunityGallery({
     <section
       id="gallery"
       data-zen-reveal
-      className="zen-gallery-section section-shell zen-reveal relative overflow-hidden bg-[#eee2d5]"
+      className={`zen-gallery-section section-shell ${grid ? "zen-gallery-grid-mode" : "zen-reveal"} relative overflow-hidden bg-[#eee2d5]`}
     >
       <div className="gallery-section-inner mx-auto max-w-[1500px] px-5 py-24 sm:px-10 lg:px-12">
         <div className="gallery-section-head mb-10 grid gap-6 lg:grid-cols-[1fr_.7fr] lg:items-end">
@@ -1097,6 +1099,7 @@ export default function CommunityGallery({
         <div className="gallery-main-grid grid gap-7 xl:grid-cols-[.78fr_1.22fr]">
           <form
             onSubmit={submit}
+            id="share-moment"
             className="gallery-upload-form panel p-6 sm:p-8"
           >
             <div className="gallery-upload-head flex items-center gap-3">
@@ -1327,7 +1330,16 @@ export default function CommunityGallery({
             )}
           </form>
 
-          <div
+          {grid ? <div className="zen-moments-collection">
+            <div className="zen-moments-toolbar"><div><p className="kicker">Our community</p><h2>Moments at Zen</h2></div><span>{galleryStatus}</span></div>
+            {galleryLoading && <p role="status">Loading guest moments…</p>}
+            {galleryError && <div role="alert" className="zen-gallery-empty"><h3>Unable to load photos</h3><p>{galleryError}</p><button type="button" onClick={() => void loadApprovedPhotos()}>Try again</button></div>}
+            {!galleryLoading && !galleryError && posts.length === 0 && <div className="zen-gallery-empty"><Camera size={32}/><h3>Your moments belong here</h3><p>Be the first to share a memory from Zen Café.</p><a href="#share-moment">Share a moment ↓</a></div>}
+            <div className="zen-moments-grid">{posts.map(post => <article className="zen-moment-card" key={post.id}>
+              <button type="button" className="zen-moment-image" onClick={() => openLightbox(post)} aria-label={`Open photo by ${post.user}`}><img src={post.image} alt={post.caption || `Zen Café moment shared by ${post.user}`} loading="lazy"/><span>View moment ↗</span></button>
+              <div className="zen-moment-caption"><div><h3>{post.user}</h3>{post.caption && <p>{post.caption}</p>}</div><button type="button" onClick={() => like(post.id)} aria-label={`Like photo by ${post.user}`} aria-pressed={Boolean(likedIds[post.id])}><Heart size={18} fill={Boolean(likedIds[post.id]) ? 'currentColor' : 'none'}/><span>{post.likes}</span></button></div>
+            </article>)}</div>
+          </div> : (<div
             className="gallery-carousel-shell"
             onTouchStart={event => {
               touch.current =
@@ -1581,7 +1593,8 @@ export default function CommunityGallery({
                 </div>
               )}
             </div>
-          </div>
+          </div>)}
+
         </div>
       </div>
 

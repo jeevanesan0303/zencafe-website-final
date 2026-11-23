@@ -1,0 +1,253 @@
+.zen-reference-footer{position:relative;isolation:isolate;overflow:hidden;background:#0b0c0b url('/assets/footer/zen-footer-background.png') center/cover no-repeat;color:#e7dfd1;border-top:1px solid #b49a6538;scroll-margin-top:90px}
+.zen-reference-footer::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,transparent 0%,#080a08b3 15%,#080a08d9 50%,#080a08b3 85%,transparent 100%)}
+.zen-reference-footer__inner{width:min(1440px,80%);margin-inline:auto;padding:48px 0 22px}
+.zen-reference-footer__grid{display:grid;grid-template-columns:1.65fr .85fr .85fr .95fr 1fr 1.2fr;gap:0}
+.zen-reference-footer__brand{padding-right:30px}
+.zen-reference-footer a{color:#e7dfd1!important;text-decoration:none;transition:color .18s,border-color .18s,background-color .18s}
+.zen-reference-footer__logo{display:inline-flex;align-items:center;gap:12px}
+.zen-reference-footer__logo img{width:58px;height:58px;object-fit:contain;border-radius:50%;flex-shrink:0}
+.zen-reference-footer__logo b{display:block;font-family:Georgia,'Times New Roman',serif!important;font-size:22px;font-weight:500;line-height:1.15;letter-spacing:.04em;color:inherit!important}
+.zen-reference-footer__logo small{display:block;font:600 8px/1.5 Inter,sans-serif;letter-spacing:.12em;text-transform:uppercase;margin-top:6px;color:#ccbfa8}
+.zen-reference-footer__brand>p{margin:17px 0 16px;font:400 11px/1.9 Inter,sans-serif;color:#d0c8bb}
+.zen-reference-footer__socials{display:flex;gap:9px}
+.zen-reference-footer__socials a{width:30px;height:30px;display:grid;place-items:center;border:1px solid #b49a6566;border-radius:50%;color:#c8ad77!important}
+.zen-reference-footer__column{border-left:1px solid #b49a652b;padding:5px 17px 0}
+.zen-reference-footer .zen-reference-footer__column h2{font:700 10px/1.4 Inter,sans-serif!important;text-transform:uppercase;letter-spacing:.045em;color:#ccb57f!important;margin:0 0 18px}
+.zen-reference-footer__column ul{list-style:none;padding:0;margin:0;display:grid;gap:11px}
+.zen-reference-footer__column li{margin:0;font:400 11px/1.5 Inter,sans-serif}
+.zen-reference-footer__contact{padding-right:0}
+.zen-reference-footer__contact address{display:grid;gap:14px;font:400 11px/1.65 Inter,sans-serif}
+.zen-reference-footer__contact address>div{display:flex;align-items:flex-start;gap:10px}
+.zen-reference-footer__contact svg{color:#c8ad77;flex-shrink:0;margin-top:2px}
+.zen-reference-footer__bottom{display:flex;align-items:center;justify-content:space-between;gap:20px;border-top:1px solid #b49a6540;margin-top:30px;padding-top:20px;font:400 10px/1.6 Inter,sans-serif;color:#c9c1b4}
+.zen-reference-footer__bottom p{margin:0}
+.zen-reference-footer__bottom>div{display:flex;gap:26px;flex-wrap:wrap}
+.zen-reference-footer__bottom a{display:inline-flex;align-items:center;gap:5px}
+.zen-reference-footer a:hover,.zen-reference-footer a:focus-visible{color:#e54b42!important}
+.zen-reference-footer__socials a:hover,.zen-reference-footer__socials a:focus-visible{border-color:#e54b42;background:#a327221c}
+.zen-reference-footer a:focus-visible{outline:2px solid #e54b42;outline-offset:5px;border-radius:3px}
+@media(min-width:1800px){.zen-reference-footer__inner{padding-top:58px;padding-bottom:28px}.zen-reference-footer__column li,.zen-reference-footer__brand>p,.zen-reference-footer__contact address{font-size:12px}}
+@media(max-width:1200px){.zen-reference-footer__inner{width:84%}.zen-reference-footer__grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:30px 0}.zen-reference-footer__brand{grid-column:span 2}.zen-reference-footer__contact{grid-column:span 2}.zen-reference-footer__column{padding-inline:18px}}
+@media(max-width:700px){.zen-reference-footer{background-position:center;background-size:auto 100%}.zen-reference-footer::before{background:#080a08ba}.zen-reference-footer__inner{width:calc(100% - 48px);padding-top:34px}.zen-reference-footer__grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 0}.zen-reference-footer__brand{grid-column:1/-1;padding-right:0}.zen-reference-footer__column{padding-left:14px;padding-right:10px}.zen-reference-footer__column h2{font-size:11px!important}.zen-reference-footer__column li,.zen-reference-footer__contact address,.zen-reference-footer__brand>p{font-size:12px}.zen-reference-footer__contact{grid-column:1/-1}.zen-reference-footer__bottom{align-items:flex-start;flex-direction:column;gap:12px;font-size:10px}.zen-reference-footer__bottom>div{gap:20px}}
+@media(prefers-reduced-motion:reduce){.zen-reference-footer a{transition:none}}
+/* Japanese-style headings + larger readable text */
+
+.zen-reference-footer__inner {
+  width: min(1560px, 86%);
+  padding-top: 56px;
+  padding-bottom: 28px;
+}
+
+.zen-reference-footer__grid {
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    repeat(4, minmax(0, 1fr))
+    minmax(0, 1.35fr);
+}
+
+.zen-reference-footer__grid > * {
+  min-width: 0;
+}
+
+.zen-reference-footer__column {
+  padding-inline: 16px;
+}
+
+/* Uses your website's existing MAREKA font */
+.zen-reference-footer__logo b {
+  font-family: 'Zen Mareka Local', Inter, sans-serif !important;
+  font-size: clamp(28px, 2.3vw, 36px);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.03em;
+}
+
+.zen-reference-footer__logo img {
+  width: 68px;
+  height: 68px;
+}
+
+.zen-reference-footer__logo small {
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.12em;
+}
+
+.zen-reference-footer .zen-reference-footer__column h2 {
+  font-family: 'Zen Mareka Local', Inter, sans-serif !important;
+  font-size: clamp(19px, 1.5vw, 24px) !important;
+  font-weight: 400 !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0.035em;
+  color: #d9be85 !important;
+  margin-bottom: 22px;
+  text-wrap: balance;
+}
+
+/* Keep longer text easy to read */
+.zen-reference-footer__brand > p {
+  font-size: 14px;
+  line-height: 1.9;
+}
+
+.zen-reference-footer__column li {
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.zen-reference-footer__column ul {
+  gap: 12px;
+}
+
+.zen-reference-footer__contact address {
+  font-size: 14px;
+  line-height: 1.75;
+  gap: 16px;
+}
+
+.zen-reference-footer__contact a {
+  overflow-wrap: anywhere;
+}
+
+.zen-reference-footer__socials {
+  gap: 12px;
+}
+
+.zen-reference-footer__socials a {
+  width: 40px;
+  height: 40px;
+}
+
+.zen-reference-footer__bottom {
+  font-size: 12px;
+  line-height: 1.8;
+  margin-top: 36px;
+  padding-top: 24px;
+}
+
+/* Red hover and keyboard focus */
+.zen-reference-footer a:hover,
+.zen-reference-footer a:focus-visible {
+  color: #e54b42 !important;
+}
+
+/* Tablet / smaller laptops */
+@media (max-width: 1300px) {
+  .zen-reference-footer__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 0;
+  }
+
+  .zen-reference-footer__brand,
+  .zen-reference-footer__contact {
+    grid-column: auto;
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .zen-reference-footer__inner {
+    width: calc(100% - 40px);
+    padding-top: 38px;
+  }
+
+  .zen-reference-footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 0;
+  }
+
+  .zen-reference-footer__brand,
+  .zen-reference-footer__contact {
+    grid-column: 1 / -1;
+  }
+
+  .zen-reference-footer__column {
+    padding-inline: 12px;
+  }
+
+  .zen-reference-footer__logo b {
+    font-size: 30px;
+  }
+
+  .zen-reference-footer .zen-reference-footer__column h2 {
+    font-size: 21px !important;
+  }
+
+  .zen-reference-footer__brand > p,
+  .zen-reference-footer__column li,
+  .zen-reference-footer__contact address {
+    font-size: 14px;
+  }
+
+  .zen-reference-footer__bottom {
+    font-size: 12px;
+  }
+}
+
+/* Move all footer content to the right */
+.zen-reference-footer__inner {
+  width: min(1560px, calc(100% - 80px));
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 55px;
+  padding-right: 0;
+  box-sizing: border-box;
+}
+
+/* Maintain all 6 footer columns */
+.zen-reference-footer__grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.5fr)
+    repeat(4, minmax(0, 1fr))
+    minmax(0, 1.35fr);
+  gap: 0;
+  width: 100%;
+}
+
+.zen-reference-footer__grid > * {
+  min-width: 0;
+}
+
+/* Keep column spacing */
+.zen-reference-footer__brand {
+  padding-right: 30px;
+}
+
+.zen-reference-footer__column {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Tablet */
+@media (max-width: 1300px) {
+  .zen-reference-footer__inner {
+    width: calc(100% - 64px);
+    padding-left: 24px;
+    padding-right: 0;
+  }
+
+  .zen-reference-footer__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 32px 0;
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .zen-reference-footer__inner {
+    width: calc(100% - 40px);
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .zen-reference-footer__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 30px 0;
+  }
+
+  .zen-reference-footer__brand,
+  .zen-reference-footer__contact {
+    grid-column: 1 / -1;
+  }
+}

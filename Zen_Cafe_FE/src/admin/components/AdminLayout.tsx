@@ -100,7 +100,7 @@ type Props = {
   ) => void
 
   // Existing authentication logout function
-  onLogout?: () => void | Promise<void>
+  onLogout: () => void | Promise<void>
 
   // SweetAlert confirmation from AdminApp
   onConfirmLogout?: (
@@ -239,9 +239,7 @@ export default function AdminLayout({
           onOpenSettings={
             handleOpenSettings
           }
-          onLogout={() => {
-            void handleLogout()
-          }}
+          onLogout={handleLogout}
         />
 
         {/* PAGE CONTENT */}

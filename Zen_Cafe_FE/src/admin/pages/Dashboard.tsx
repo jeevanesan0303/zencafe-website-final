@@ -9,6 +9,8 @@ import {
 } from 'react'
 
 import {
+  Moon,
+  Sun,
   CalendarDays,
   ChevronRight,
   Eye,
@@ -47,6 +49,7 @@ import type { ZenOffer } from '../../data/offerStore'
 import type { AdminPage } from '../AdminApp'
 
 import StatCard from '../components/StatCard'
+import './Dashboard.css'
 
 /* ==========================================
    ZEN CAFÉ — COMPACT ADMIN DASHBOARD
@@ -62,7 +65,7 @@ type ProductKind = 'all' | 'food' | 'drink'
 const FALLBACK_IMAGE = '/assets/menu-panda-main.png'
 const REFRESH_INTERVAL_MS = 30_000
 
-const MAX_PRODUCTS = 3
+const MAX_PRODUCTS = 6
 const MAX_BOOKINGS = 3
 const MAX_OFFERS = 3
 
@@ -200,354 +203,7 @@ function getErrorMessage(
    the dedicated Products or Bookings pages.
 ========================================== */
 
-const compactDashboardStyles = `
-  .za-dashboard .za-compact-panel {
-    min-width: 0;
-    align-self: start;
-    overflow: hidden;
-  }
 
-  .za-dashboard .za-compact-panel .za-panel-head {
-    margin-bottom: 16px;
-  }
-
-  .za-dashboard .za-compact-panel .za-panel-heading {
-    min-width: 0;
-  }
-
-  .za-dashboard .za-compact-panel .za-panel-heading h2 {
-    font-size: clamp(16px, 1.35vw, 21px);
-    line-height: 1.25;
-  }
-
-  .za-dashboard .za-compact-panel .za-panel-heading h2 svg {
-    width: 21px;
-    height: 21px;
-    flex-shrink: 0;
-  }
-
-  .za-dashboard .za-compact-panel .za-panel-heading p {
-    font-size: 12px;
-    line-height: 1.5;
-  }
-
-  .za-dashboard .za-compact-panel .za-primary {
-    flex-shrink: 0;
-  }
-
-  .za-dashboard .za-compact-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    min-width: 0;
-  }
-
-  .za-dashboard .za-compact-row {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-    padding: 11px 12px;
-    min-width: 0;
-    border: 1px solid #eee2d7;
-    border-radius: 14px;
-    background: #fffdfb;
-    transition:
-      background 180ms ease,
-      border-color 180ms ease,
-      transform 180ms ease,
-      box-shadow 180ms ease;
-  }
-
-  .za-dashboard .za-compact-row:hover {
-    background: #fff9f4;
-    border-color: #e7c9b7;
-    transform: translateY(-1px);
-    box-shadow: 0 5px 16px rgba(80, 35, 15, 0.045);
-  }
-
-  .za-dashboard .za-compact-image {
-    width: 49px;
-    height: 49px;
-    min-width: 49px;
-    object-fit: cover;
-    border-radius: 10px;
-    background: #f5ece6;
-  }
-
-  .za-dashboard .za-compact-main {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .za-dashboard .za-compact-title {
-    display: block;
-    margin: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 12.5px;
-    font-weight: 700;
-    line-height: 1.5;
-    color: #281b16;
-  }
-
-  .za-dashboard .za-compact-subtitle {
-    display: block;
-    margin-top: 3px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 11px;
-    line-height: 1.45;
-    color: #9b7d70;
-  }
-
-  .za-dashboard .za-compact-meta {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 5px 9px;
-    margin-top: 5px;
-    font-size: 10.5px;
-    color: #8b756b;
-  }
-
-  .za-dashboard .za-compact-meta span {
-    min-width: 0;
-  }
-
-  .za-dashboard .za-compact-side {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    flex-shrink: 0;
-    gap: 8px;
-  }
-
-  .za-dashboard .za-compact-side .za-pill {
-    white-space: nowrap;
-    font-size: 10px;
-    padding: 5px 8px;
-  }
-
-  .za-dashboard .za-compact-icon-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 31px;
-    height: 31px;
-    flex-shrink: 0;
-    border: 1px solid #eee0d5;
-    border-radius: 50%;
-    background: white;
-    color: #a51b16;
-    cursor: pointer;
-    transition: background 160ms ease, color 160ms ease;
-  }
-
-  .za-dashboard .za-compact-icon-button:hover {
-    background: #a51b16;
-    color: white;
-  }
-
-  .za-dashboard .za-compact-booking {
-    align-items: flex-start;
-  }
-
-  .za-dashboard .za-compact-booking-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 39px;
-    height: 39px;
-    min-width: 39px;
-    border-radius: 11px;
-    background: #fff0e8;
-    color: #aa251b;
-  }
-
-  .za-dashboard .za-compact-booking .za-compact-side {
-    align-self: center;
-  }
-
-  .za-dashboard .za-compact-booking .za-compact-title {
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
-
-  .za-dashboard .za-compact-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    width: 100%;
-    margin-top: 13px;
-    padding: 11px 14px;
-    border: 1px solid #ead9ce;
-    border-radius: 12px;
-    background: #fffaf6;
-    color: #a51b16;
-    font-size: 12px;
-    font-weight: 700;
-    cursor: pointer;
-    transition:
-      background 160ms ease,
-      border-color 160ms ease;
-  }
-
-  .za-dashboard .za-compact-footer:hover {
-    background: #fff0e8;
-    border-color: #d8b7a3;
-  }
-
-  .za-dashboard .za-compact-footer svg {
-    width: 15px;
-    height: 15px;
-  }
-
-  .za-dashboard .za-compact-empty {
-    padding: 24px 12px;
-    text-align: center;
-    color: #9b8174;
-    font-size: 12px;
-    border: 1px dashed #eaded5;
-    border-radius: 12px;
-  }
-
-  .za-dashboard .za-compact-error {
-    margin-top: 10px;
-    padding: 10px 12px;
-    border: 1px solid #f0cfbf;
-    border-radius: 10px;
-    background: #fff7f3;
-    color: #a3291e;
-    font-size: 11px;
-    line-height: 1.5;
-    overflow-wrap: anywhere;
-  }
-
-  .za-dashboard .za-compact-count {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 21px;
-    height: 21px;
-    padding: 0 6px;
-    border-radius: 7px;
-    background: #f8ebe3;
-    color: #9c392a;
-    font-size: 10px;
-    font-weight: 700;
-  }
-
-  .za-dashboard .za-product-controls {
-    margin-bottom: 14px;
-  }
-
-  .za-dashboard .za-compact-panel .za-offer-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-  }
-
-  .za-dashboard .za-compact-panel .za-offer {
-    margin: 0;
-    min-height: 0;
-    padding: 10px;
-    border: 1px solid #eee2d7;
-    border-radius: 13px;
-  }
-
-  .za-dashboard .za-compact-panel .za-offer > img {
-    width: 47px;
-    height: 47px;
-    flex-shrink: 0;
-    object-fit: cover;
-    border-radius: 9px;
-  }
-
-  .za-dashboard .za-compact-panel .za-offer-details {
-    min-width: 0;
-  }
-
-  .za-dashboard .za-compact-panel .za-offer-details strong {
-    font-size: 12px;
-  }
-
-  .za-dashboard .za-compact-panel .za-offer-details small {
-    font-size: 10.5px;
-  }
-
-  .za-dashboard .za-compact-panel .za-offer .za-pill {
-    font-size: 10px;
-  }
-
-  @media (max-width: 1300px) {
-    .za-dashboard .za-compact-panel .za-panel-head {
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .za-dashboard .za-compact-panel .za-primary {
-      font-size: 11px;
-    }
-
-    .za-dashboard .za-compact-row {
-      padding: 10px;
-      gap: 8px;
-    }
-
-    .za-dashboard .za-compact-image {
-      width: 42px;
-      height: 42px;
-      min-width: 42px;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .za-dashboard .za-compact-panel {
-      width: 100%;
-    }
-
-    .za-dashboard .za-compact-row {
-      padding: 11px;
-      gap: 9px;
-    }
-
-    .za-dashboard .za-compact-side {
-      gap: 5px;
-    }
-
-    .za-dashboard .za-compact-side .za-pill {
-      font-size: 9px;
-      padding: 4px 6px;
-    }
-
-    .za-dashboard .za-compact-booking-icon {
-      width: 34px;
-      height: 34px;
-      min-width: 34px;
-    }
-
-    .za-dashboard .za-compact-icon-button {
-      width: 29px;
-      height: 29px;
-    }
-
-    .za-dashboard .za-compact-meta {
-      font-size: 10px;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .za-dashboard .za-compact-row,
-    .za-dashboard .za-compact-footer,
-    .za-dashboard .za-compact-icon-button {
-      transition: none;
-      transform: none;
-    }
-  }
-`
 
 /* ==========================================
    MAIN COMPONENT
@@ -557,6 +213,16 @@ export default function Dashboard({
   onNavigate,
   query,
 }: Props) {
+  const [dark, setDark] = useState(() => {
+    try { return localStorage.getItem('zen-admin-dashboard-theme') === 'dark' } catch { return false }
+  })
+  const toggleTheme = () => {
+    setDark(value => {
+      try { localStorage.setItem('zen-admin-dashboard-theme', value ? 'light' : 'dark') } catch { /* Storage may be unavailable. */ }
+      return !value
+    })
+  }
+
   const [products, setProducts] =
     useState<MenuItem[]>(() => readMenuCatalog())
 
@@ -899,8 +565,14 @@ export default function Dashboard({
   ======================================== */
 
   return (
-    <div className="za-dashboard">
-      <style>{compactDashboardStyles}</style>
+    <div className="za-dashboard za-dashboard-redesign" data-dashboard-theme={dark ? 'dark' : 'light'}>
+      <div className="zd-toolbar">
+        <div><span className="zd-eyebrow">ZEN CAFÉ / MANAGEMENT</span><h2>Dashboard overview</h2></div>
+        <div className="zd-toolbar-actions">
+          <button type="button" onClick={() => void refreshDashboard()} disabled={refreshing} aria-label="Refresh all dashboard data"><RefreshCw size={17} className={refreshing ? 'animate-spin' : ''} /><span>{refreshing ? 'Refreshing…' : 'Refresh data'}</span></button>
+          <button type="button" onClick={toggleTheme} aria-label={dark ? 'Use light dashboard' : 'Use dark dashboard'} aria-pressed={dark}>{dark ? <Sun size={18}/> : <Moon size={18}/>}</button>
+        </div>
+      </div>
 
       {/* ====================================
           HERO BANNER
@@ -908,38 +580,12 @@ export default function Dashboard({
 
       <section className="za-hero">
         <div className="za-hero-copy">
-          <p className="za-kicker">
-            WELCOME BACK
-          </p>
-
-          <h1 className="za-hero-title">
-            Zen Café Admin
-
-            <span
-              className="za-hero-sparkles"
-              aria-hidden="true"
-            >
-              <span>✦</span>
-              <span>✦</span>
-            </span>
-          </h1>
-
-          <p className="za-hero-description">
-            Manage your menu, offers and room bookings
-            with ease.
-          </p>
-        </div>
-
-        <div
-          className="za-hero-art"
-          aria-label="Great Food, Happier Moments"
-        >
-          <div className="za-hero-handwriting">
-            <span>Great Food</span>
-            <span>Happier</span>
-            <span>
-              Moments <b>♥</b>
-            </span>
+          <p className="za-kicker">A LITTLE CALM. A LOT OF POSSIBILITIES.</p>
+          <h1 className="za-hero-title">Your café, beautifully managed.</h1>
+          <p className="za-hero-description">Keep the menu fresh, welcome your guests and make every Zen moment count.</p>
+          <div className="zd-hero-actions">
+            <button type="button" className="za-primary" onClick={() => onNavigate('add-product')}><Plus size={17}/> Add menu item</button>
+            <button type="button" className="zd-secondary" onClick={() => onNavigate('bookings')}>Manage bookings <ChevronRight size={16}/></button>
           </div>
         </div>
       </section>

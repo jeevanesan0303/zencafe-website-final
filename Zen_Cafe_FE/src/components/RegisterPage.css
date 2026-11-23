@@ -1,0 +1,674 @@
+
+/* ========================================
+   ZEN CAFÉ — PREMIUM REGISTER PAGE
+======================================== */
+
+.zen-register-page {
+  --zen-primary: #9b2828;
+  --zen-primary-dark: #752020;
+  --zen-cream: #faf6ef;
+  --zen-text: #30231d;
+  --zen-muted: #8d8178;
+  --zen-border: #e9e1d7;
+
+  min-height: 100vh;
+  background: var(--zen-cream);
+  color: var(--zen-text);
+  font-family: Inter, Arial, sans-serif;
+}
+
+/* HEADER */
+
+.zen-register-header {
+  height: 76px;
+  padding: 0 clamp(20px, 4vw, 65px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fffaf4;
+  border-bottom: 1px solid var(--zen-border);
+  position: relative;
+  z-index: 10;
+}
+
+.zen-register-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #67584e;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color .25s;
+}
+
+.zen-register-back:hover {
+  color: var(--zen-primary);
+}
+
+.zen-register-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-decoration: none;
+  color: var(--zen-text);
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.zen-register-brand img {
+  width: 43px;
+  height: 43px;
+  object-fit: contain;
+}
+
+/* MAIN LAYOUT */
+
+.zen-register-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  min-height: calc(100vh - 76px);
+}
+
+/* LEFT IMAGE */
+
+.zen-register-visual {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  min-height: 700px;
+
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(15, 12, 10, .08) 10%,
+      rgba(15, 12, 10, .42) 45%,
+      rgba(15, 12, 10, .88) 100%
+    ),
+    url('/assets/register-bg.png');
+
+  background-size: cover;
+  background-position: center;
+}
+
+.zen-register-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  background-size: cover;
+  background-position: center;
+  animation: zenImageZoom 18s ease-in-out infinite alternate;
+}
+
+.zen-register-visual-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    0deg,
+    rgba(20, 10, 8, .5),
+    transparent 70%
+  );
+}
+
+.zen-register-visual-content {
+  position: relative;
+  z-index: 2;
+  padding: clamp(35px, 6vw, 90px);
+  color: white;
+  max-width: 760px;
+  animation: zenFadeUp .8s ease both;
+}
+
+.zen-register-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 2.4px;
+  font-weight: 700;
+  color: #f5d5a8;
+  margin-bottom: 22px;
+}
+
+.zen-register-visual-content h1 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(44px, 5vw, 78px);
+  font-weight: 400;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  margin: 0 0 25px;
+}
+
+.zen-register-visual-content h1 em {
+  color: #f3c89a;
+  font-style: italic;
+}
+
+.zen-register-visual-content > p {
+  max-width: 490px;
+  font-size: 15px;
+  line-height: 1.9;
+  color: #f2e9de;
+}
+
+.zen-register-visual-bottom {
+  margin-top: 55px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255,255,255,.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.zen-register-japanese {
+  font-size: 24px;
+  letter-spacing: 4px;
+}
+
+.zen-register-visual-bottom > span:last-child {
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: #e7d7c7;
+}
+
+/* RIGHT FORM */
+
+.zen-register-form-side {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 55px clamp(22px, 5vw, 85px);
+  background:
+    radial-gradient(
+      circle at top right,
+      rgba(206, 175, 133, .13),
+      transparent 40%
+    ),
+    #faf6ef;
+}
+
+.zen-register-form-shell {
+  width: 100%;
+  max-width: 460px;
+  animation: zenFadeUp .7s ease both;
+}
+
+.zen-register-form-heading {
+  margin-bottom: 30px;
+}
+
+.zen-register-heading-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1e3d6;
+  color: var(--zen-primary);
+  margin-bottom: 22px;
+}
+
+.zen-register-small-heading {
+  display: block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.1px;
+  color: var(--zen-primary);
+  margin-bottom: 10px;
+}
+
+.zen-register-form-heading h2 {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(32px, 3vw, 43px);
+  font-weight: 500;
+  letter-spacing: -1px;
+  margin: 0 0 12px;
+}
+
+.zen-register-form-heading p {
+  color: var(--zen-muted);
+  font-size: 13px;
+  line-height: 1.8;
+  max-width: 390px;
+}
+
+/* FIELDS */
+
+.zen-register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+}
+
+.zen-register-field {
+  display: block;
+}
+
+.zen-register-field > span {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #55463e;
+  margin-bottom: 9px;
+}
+
+.zen-register-input {
+  height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border: 1px solid #e5dbcf;
+  border-radius: 12px;
+  background: #fffdf9;
+  transition: all .25s ease;
+}
+
+.zen-register-input svg {
+  color: #a79a8c;
+  flex-shrink: 0;
+}
+
+.zen-register-input:focus-within {
+  border-color: var(--zen-primary);
+  box-shadow: 0 0 0 4px rgba(155,40,40,.08);
+  background: white;
+}
+
+.zen-register-input input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--zen-text);
+  font-size: 13px;
+  min-width: 0;
+}
+
+.zen-register-input input::placeholder {
+  color: #b4a79b;
+}
+
+.zen-register-input input:disabled {
+  cursor: not-allowed;
+  opacity: .6;
+}
+
+.zen-register-field small {
+  display: block;
+  font-size: 11px;
+  color: var(--zen-muted);
+  margin-top: 6px;
+}
+
+/* BUTTONS */
+
+.zen-register-submit {
+  width: 100%;
+  height: 54px;
+  margin-top: 7px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background: var(--zen-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all .25s ease;
+  box-shadow: 0 9px 22px rgba(155,40,40,.18);
+}
+
+.zen-register-submit:hover:not(:disabled) {
+  background: var(--zen-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 13px 28px rgba(155,40,40,.25);
+}
+
+.zen-register-submit:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.zen-register-resend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  background: transparent;
+  color: var(--zen-primary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 7px;
+}
+
+.zen-register-resend:hover {
+  text-decoration: underline;
+}
+
+.zen-register-resend:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+/* VERIFICATION */
+
+.zen-register-verification {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 25px;
+  padding: 17px;
+  background: #f3eae0;
+  border: 1px solid #e9ddcf;
+  border-radius: 13px;
+}
+
+.zen-register-verification-icon {
+  color: var(--zen-primary);
+  padding-top: 2px;
+}
+
+.zen-register-verification strong {
+  font-size: 12px;
+  color: #4c3b31;
+}
+
+.zen-register-verification p {
+  font-size: 11px;
+  color: #88776b;
+  line-height: 1.7;
+  margin: 5px 0 0;
+}
+
+.zen-register-success {
+  display: flex;
+  gap: 12px;
+  background: #ecf8ef;
+  border: 1px solid #c4e6cf;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  color: #23683e;
+}
+
+.zen-register-success strong {
+  font-size: 13px;
+}
+
+.zen-register-success p {
+  font-size: 12px;
+  margin: 5px 0;
+}
+
+.zen-register-success a {
+  color: #23683e;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+/* MESSAGES */
+
+.zen-register-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin-top: 16px;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.zen-register-alert svg {
+  flex-shrink: 0;
+}
+
+.zen-register-alert.is-error {
+  color: #9f2929;
+  background: #fff0ef;
+  border: 1px solid #f3c5c5;
+}
+
+.zen-register-alert.is-success {
+  color: #286b41;
+  background: #eaf8ed;
+  border: 1px solid #c6e7cf;
+}
+
+.zen-register-dev-link {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 13px;
+  margin-top: 15px;
+  background: #fff4e8;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+.zen-register-dev-link a {
+  color: var(--zen-primary);
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
+
+/* BOTTOM */
+
+.zen-register-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 25px;
+  font-size: 12px;
+  color: #928478;
+}
+
+.zen-register-bottom a {
+  color: var(--zen-primary);
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.zen-register-bottom a:hover {
+  text-decoration: underline;
+}
+
+.zen-register-footer {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 11px;
+  color: #a99b8d;
+}
+
+/* DARK MODE */
+
+[data-theme="dark"] .zen-register-page {
+  --zen-cream: #1b1816;
+  --zen-text: #f3e9df;
+  --zen-muted: #b8a99e;
+  --zen-border: #3d332d;
+  background: #1b1816;
+}
+
+[data-theme="dark"] .zen-register-header {
+  background: #211c19;
+}
+
+[data-theme="dark"] .zen-register-form-side {
+  background: #1b1816;
+}
+
+[data-theme="dark"] .zen-register-back,
+[data-theme="dark"] .zen-register-field > span {
+  color: #dfd0c4;
+}
+
+[data-theme="dark"] .zen-register-input {
+  background: #28221e;
+  border-color: #463a33;
+}
+
+[data-theme="dark"] .zen-register-input input {
+  color: #f3e9df;
+}
+
+[data-theme="dark"] .zen-register-verification {
+  background: #302720;
+  border-color: #49382e;
+}
+
+[data-theme="dark"] .zen-register-verification strong {
+  color: #f3e9df;
+}
+
+[data-theme="dark"] .zen-register-verification p {
+  color: #c0ada0;
+}
+
+/* ANIMATIONS */
+
+@keyframes zenFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zenImageZoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.07);
+  }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1024px) {
+  .zen-register-layout {
+    grid-template-columns: 45% 55%;
+  }
+
+  .zen-register-visual-content {
+    padding: 40px;
+  }
+
+  .zen-register-form-side {
+    padding: 45px 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .zen-register-header {
+    height: 65px;
+    padding: 0 18px;
+  }
+
+  .zen-register-back span {
+    display: none;
+  }
+
+  .zen-register-brand {
+    font-size: 12px;
+  }
+
+  .zen-register-brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .zen-register-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .zen-register-visual {
+    min-height: 290px;
+    align-items: flex-end;
+    background-position: center 45%;
+  }
+
+  .zen-register-visual-content {
+    padding: 32px 25px;
+  }
+
+  .zen-register-visual-content h1 {
+    font-size: 39px;
+    margin-bottom: 10px;
+  }
+
+  .zen-register-visual-content > p {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .zen-register-eyebrow {
+    font-size: 9px;
+    margin-bottom: 13px;
+  }
+
+  .zen-register-visual-bottom {
+    display: none;
+  }
+
+  .zen-register-form-side {
+    padding: 38px 22px 45px;
+  }
+
+  .zen-register-form-shell {
+    max-width: 480px;
+  }
+
+  .zen-register-form-heading h2 {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 420px) {
+  .zen-register-visual {
+    min-height: 250px;
+  }
+
+  .zen-register-visual-content h1 {
+    font-size: 33px;
+  }
+
+  .zen-register-form-side {
+    padding: 32px 18px;
+  }
+
+  .zen-register-input {
+    height: 50px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen-register-visual::before,
+  .zen-register-form-shell,
+  .zen-register-visual-content {
+    animation: none;
+  }
+}

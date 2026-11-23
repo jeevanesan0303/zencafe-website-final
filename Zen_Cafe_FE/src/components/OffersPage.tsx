@@ -1,111 +1,355 @@
-import { ArrowDown, ArrowLeft, BadgePercent, Clock3, Sparkles } from 'lucide-react'
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowUpRight,
+  Gift,
+  RefreshCw,
+  Sparkles,
+  Ticket,
+} from 'lucide-react'
 import { useEffect, useState } from 'react'
+
 import ThemeToggle from './ThemeToggle'
-import { activeOffers, loadOffers, subscribeOffers, ZenOffer } from '../data/offerStore'
 import OfferArtwork from './OfferArtwork'
-import OfferComicBadge from './OfferComicBadge'
 
-function formatOfferTime(dateLike:string){
-  const date=new Date(dateLike)
-  if(Number.isNaN(date.getTime()))return 'Limited-time availability'
-  return `Live since ${date.toLocaleDateString(undefined,{month:'short',day:'numeric'})} · ${date.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'})}`
-}
+import {
+  activeOffers,
+  loadOffers,
+  subscribeOffers,
+  isOfferCurrentlyActive,
+  type ZenOffer,
+} from '../data/offerStore'
 
-export default function OffersPage(){
-  const [offers,setOffers]=useState<ZenOffer[]>(()=>activeOffers())
-  useEffect(()=>{
-    loadOffers().then(items=>setOffers(items.filter(o=>o.active))).catch(()=>{})
-    return subscribeOffers(()=>setOffers(activeOffers()))
-  },[])
+import './OffersPage.css'
 
-  const hasOffers=offers.length>0
-  const goToOffers=()=>document.getElementById('live-offers')?.scrollIntoView({behavior:'smooth',block:'start'})
+export default function OffersPage() {
+  const [offers, setOffers] = useState<ZenOffer[]>(
+    () => activeOffers(),
+  )
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
+  const [retry, setRetry] = useState(0)
 
-  return <main className="zen-offers-page zen-offers-v139 min-h-screen bg-[#f8f0e8] text-[#241713]">
-    <div className="zen-offers-v139-bg" aria-hidden="true">
-      <span className="zen-offers-v139-sun"/>
-      <span className="zen-offers-v139-wave wave-a"/>
-      <span className="zen-offers-v139-wave wave-b"/>
-    </div>
+  useEffect(() => {
+    let alive = true
 
-    <header className="zen-offers-header zen-offers-v139-header zen-offers-v140-header">
-      <a href="/" className="zen-offers-brand zen-offers-v139-brand zen-offers-v140-brand" aria-label="Zen Café home">
-        <img src="/assets/zen-logo.png" alt="Zen Café"/>
-        <div><b>ZEN CAFE</b><span>Live offers</span></div>
-      </a>
+    const sync = () => {
+      if (alive) {
+        setOffers(activeOffers())
+      }
+    }
 
-      <div className="zen-offers-v139-nav-actions zen-offers-v140-nav-actions">
-        <a href="/" className="zen-offers-back zen-offers-v139-back zen-offers-v140-back" aria-label="Back to Zen Café">
-          <ArrowLeft size={17}/><span>Back</span>
+    const unsubscribe = subscribeOffers(sync)
+
+    setLoading(true)
+
+    loadOffers()
+      .then((items) => {
+        if (!alive) return
+
+        setOffers(
+          items.filter((offer) =>
+            isOfferCurrentlyActive(offer),
+          ),
+        )
+        setError(false)
+      })
+      .catch(() => {
+        if (alive) {
+          setError(true)
+        }
+      })
+      .finally(() => {
+        if (alive) {
+          setLoading(false)
+        }
+      })
+
+    // Re-check scheduled availability using the existing store.
+    const timer = window.setInterval(sync, 30_000)
+
+    return () => {
+      alive = false
+      unsubscribe()
+      window.clearInterval(timer)
+    }
+  }, [retry])
+
+  const browseOffers = () => {
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches
+
+    document.getElementById('live-offers')?.scrollIntoView({
+      behavior: reducedMotion ? 'auto' : 'smooth',
+      block: 'start',
+    })
+  }
+
+  const statusText = loading
+    ? 'Checking specials…'
+    : error
+      ? 'Could not refresh offers'
+      : `${offers.length} ${
+          offers.length === 1 ? 'special' : 'specials'
+        } available`
+
+  return (
+    <div id="zen-specials">
+      <header className="zs-header">
+        <a
+          href="/"
+          className="zs-brand"
+          aria-label="Zen Café home"
+        >
+          <img src="/assets/zen-logo.png" alt="" />
+
+          <span>
+            <b>ZEN CAFÉ</b>
+            <small>Good food. Better moments.</small>
+          </span>
         </a>
-        <div className={`zen-offers-v139-live-pill zen-offers-v140-live-pill ${hasOffers?'is-live':'is-resting'}`} aria-live="polite">
-          <i aria-hidden="true"/>
-          <span>{hasOffers?`${offers.length} live`:'No live offer'}</span>
-        </div>
-        <ThemeToggle/>
-      </div>
-    </header>
 
-    <section className="zen-offers-hero zen-offers-v139-hero">
-      <div className="zen-offers-copy zen-offers-v139-copy">
-        <div className="zen-offers-v139-kicker"><Sparkles size={15}/><span>Zen specials</span></div>
-        <h1>Today's<br/><span>specials.</span></h1>
-        <p>Fresh café offers, updated live. No clutter — only the specials available right now.</p>
-        {hasOffers&&<button type="button" className="zen-offers-v139-view" onClick={goToOffers}>View offers <ArrowDown size={16}/></button>}
-      </div>
+        <nav aria-label="Offers navigation">
+          <a href="/" className="zs-home">
+            <ArrowLeft size={16} aria-hidden="true" />
+            Home
+          </a>
 
-      <div className={`zen-offers-v139-hero-card zen-offers-v141-hero-card ${hasOffers?'is-live':'is-resting'}`} aria-label={hasOffers?`${offers.length} live offers`:'No live offers'}>
-        <div className="zen-offers-v141-status-row" aria-hidden="true">
-          <i className="zen-offers-v141-status-dot"/>
-          <span>{hasOffers?'Live offers':'Offers board'}</span>
-        </div>
-        <div className="zen-offers-v141-hero-card-copy">
-          <small>{hasOffers?'Updated automatically':'Waiting for the next special'}</small>
-          <div className="zen-offers-v141-hero-stat">
-            <strong>{offers.length.toString().padStart(2,'0')}</strong>
-            <span>{offers.length===1?'offer available right now':'offers available right now'}</span>
+          <a href="/menu" className="zs-menu-link">
+            Our menu
+            <ArrowUpRight size={16} aria-hidden="true" />
+          </a>
+
+          <ThemeToggle />
+        </nav>
+      </header>
+
+      <main>
+        <section
+          className="zs-hero"
+          aria-labelledby="zs-title"
+        >
+          <div className="zs-hero-copy">
+            <span className="zs-eyebrow">
+              <Sparkles size={15} aria-hidden="true" />
+              A LITTLE EXTRA ZEN
+            </span>
+
+            <h1 id="zs-title">
+              Good moments.
+              <br />
+              <em>Lovely little offers.</em>
+            </h1>
+
+            <p>
+              Make your next café visit a little sweeter.
+              Explore the specials waiting for you at Zen Café.
+            </p>
+
+            <button
+              className="zs-primary"
+              type="button"
+              onClick={browseOffers}
+            >
+              Explore specials
+              <ArrowDown size={17} aria-hidden="true" />
+            </button>
           </div>
-          <p>{hasOffers?'Fresh Zen Café specials, shown cleanly without clutter.':'When the next Zen Café special goes live, it will appear here automatically.'}</p>
-        </div>
-      </div>
-    </section>
 
-    <section id="live-offers" className="zen-offers-grid-wrap zen-offers-v139-grid-wrap" aria-label="Live Zen Café offers">
-      <div className="zen-offers-v139-section-head">
-        <div><span>Live board</span><h2>{hasOffers?'Available now':'Next special'}</h2></div>
-        {hasOffers&&<p>{offers.length} active {offers.length===1?'offer':'offers'} · updates automatically</p>}
-      </div>
+          <span className="zs-hero-note">
+            <Gift size={18} aria-hidden="true" />
+            Something to smile about
+          </span>
+        </section>
 
-      {hasOffers?
-        <div className={`zen-offers-grid zen-offers-v139-grid ${offers.length===1?'is-single':''}`}>
-          {offers.map((offer,index)=><OfferCard key={offer.id} offer={offer} index={index}/>) }
-        </div>:
-        <div className="zen-offers-empty zen-offers-v139-empty">
-          <div className="zen-offers-v139-empty-icon"><Sparkles size={30}/><span>Z</span><span>Z</span></div>
-          <p className="zen-offers-v139-empty-kicker">Offers board is resting</p>
-          <h2>No live offers right now.</h2>
-          <p>When the next Zen Café special goes live, it will appear here automatically.</p>
-          <a href="/"><ArrowLeft size={15}/> Return to Zen Café</a>
-        </div>}
-    </section>
-  </main>
+        <section
+          id="live-offers"
+          className="zs-offers"
+          aria-labelledby="zs-offers-title"
+          aria-busy={loading}
+        >
+          <div className="zs-section-heading">
+            <div>
+              <span className="zs-eyebrow">
+                PICK YOUR HAPPY MOMENT
+              </span>
+
+              <h2 id="zs-offers-title">Fresh from Zen</h2>
+            </div>
+
+            <span className="zs-count" role="status">
+              {statusText}
+            </span>
+          </div>
+
+          {error && (
+            <div className="zs-error" role="alert">
+              <span>
+                We couldn’t refresh the offers.
+                {offers.length > 0 &&
+                  ' Showing previously loaded specials; please confirm availability.'}
+              </span>
+
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => setRetry((value) => value + 1)}
+              >
+                <RefreshCw size={15} aria-hidden="true" />
+                {loading ? 'Retrying…' : 'Try again'}
+              </button>
+            </div>
+          )}
+
+          {offers.length > 0 ? (
+            <div
+              className={`zs-grid ${
+                offers.length === 1 ? 'zs-single' : ''
+              }`}
+            >
+              {offers.map((offer, index) => (
+                <OfferCard
+                  key={offer.id}
+                  offer={offer}
+                  index={index}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="zs-empty">
+              <Gift size={36} aria-hidden="true" />
+
+              <h3>
+                {loading
+                  ? 'Finding your next treat…'
+                  : error
+                    ? 'Specials are temporarily unavailable'
+                    : 'A fresh special is on its way.'}
+              </h3>
+
+              <p>
+                {loading
+                  ? 'Just a moment while we check our offers.'
+                  : 'There’s still plenty to enjoy. Discover your favourites on our café menu.'}
+              </p>
+
+              <a href="/menu" className="zs-primary">
+                Explore our menu
+                <ArrowUpRight size={16} aria-hidden="true" />
+              </a>
+            </div>
+          )}
+        </section>
+
+        <section className="zs-invite">
+          <div>
+            <span className="zs-eyebrow">
+              STAY A LITTLE LONGER
+            </span>
+
+            <h2>
+              Bring your people.
+              <br />
+              We’ll bring the flavour.
+            </h2>
+          </div>
+
+          <a href="/room-booking" className="zs-primary">
+            Plan a celebration
+            <ArrowUpRight size={17} aria-hidden="true" />
+          </a>
+        </section>
+      </main>
+
+      <footer className="zs-footer">
+        <a href="/">ZEN CAFÉ</a>
+
+        <span>Kaladdy Junction, Kokkuvil</span>
+
+        <a href="/contact">
+          Get in touch
+          <ArrowUpRight size={15} aria-hidden="true" />
+        </a>
+      </footer>
+    </div>
+  )
 }
 
-function OfferCard({offer,index}:{offer:ZenOffer,index:number}){
-  return <article className="zen-offer-card zen-offer-card--comic zen-offer-card-v139 zen-offer-card-v141" style={{animationDelay:`${Math.min(index,7)*80}ms`}}>
-    <div className="zen-offer-card-media zen-offer-card-v139-media">
-      <div className="zen-offer-card-v139-live"><i/> Live</div>
-      <div className="zen-offer-card-v139-index">{String(index+1).padStart(2,'0')}</div>
-      <OfferArtwork src={offer.image||'/assets/menu-panda-main.png'} alt={offer.title}/>
-      <OfferComicBadge text={offer.badge||'SPECIAL OFFER'} className="zen-offer-card-comic-badge"/>
-      <span className="zen-offer-card-v139-shine" aria-hidden="true"/>
-    </div>
-    <div className="zen-offer-card-copy zen-offer-card-v139-copy">
-      <p className="zen-offer-subtitle">{offer.subtitle||'Zen Café special'}</p>
-      <h2>{offer.title}</h2>
-      <p>{offer.description}</p>
-      <div className="zen-offer-card-meta zen-offer-card-v139-meta"><Clock3 size={14}/><span>{formatOfferTime(offer.createdAt)}</span></div>
-      <div className="zen-offer-card-v139-foot"><BadgePercent size={15}/><span>Limited-time Zen special</span></div>
-    </div>
-  </article>
+type OfferCardProps = {
+  offer: ZenOffer
+  index: number
+}
+
+function OfferCard({ offer, index }: OfferCardProps) {
+  const end = offer.endDate
+    ? new Date(offer.endDate)
+    : null
+
+  const expires =
+    end && !Number.isNaN(end.getTime())
+      ? end.toLocaleDateString('en-LK', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        })
+      : ''
+
+  return (
+    <article
+      className="zs-card"
+      style={{
+        animationDelay: `${Math.min(index, 6) * 70}ms`,
+      }}
+    >
+      <div className="zs-media">
+        {offer.image ? (
+          <OfferArtwork
+            src={offer.image}
+            alt={offer.title}
+            className="zs-artwork"
+          />
+        ) : (
+          <div className="zs-no-image">
+            <Gift size={52} aria-hidden="true" />
+            <span>Zen Café special</span>
+          </div>
+        )}
+
+        <span className="zs-badge">
+          <Ticket size={15} aria-hidden="true" />
+          {offer.badge || 'ZEN SPECIAL'}
+        </span>
+      </div>
+
+      <div className="zs-card-copy">
+        <span className="zs-eyebrow">
+          {offer.subtitle || 'A TREAT FROM ZEN'}
+        </span>
+
+        <h3>{offer.title}</h3>
+
+        {offer.description && (
+          <p>{offer.description}</p>
+        )}
+
+        {offer.code && (
+          <div className="zs-code">
+            <span>Offer code</span>
+            <strong>{offer.code}</strong>
+          </div>
+        )}
+
+        {expires && (
+          <small className="zs-expiry">
+            Available until {expires}
+          </small>
+        )}
+
+        <small className="zs-terms">
+          Confirm availability and offer details with our team.
+        </small>
+      </div>
+    </article>
+  )
 }

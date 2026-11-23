@@ -5,26 +5,23 @@ import {
   ArrowRight,
   ClipboardCheck,
   Clock3,
-  Images,
   Users,
-  UtensilsCrossed,
   X,
 } from 'lucide-react'
-import type { LucideIcon } from 'lucide-react'
 
 import Header from './components/Header'
 import HeroSection from './components/HeroSection'
+import DiscoverZen from './components/DiscoverZen'
+import KitchenReviewsSection from './components/KitchenReviewsSection'
 import HomeOffersSlider from './components/HomeOffersSlider'
-import MenuCarousel from './components/MenuCarousel'
-import { RoomBooking } from './components/BookingForms'
 import PremiumFooter from './components/PremiumFooter'
+import ZenStoryVideo from './components/ZenStoryVideo'
 import GlobalPetals from './components/GlobalPetals'
 import MagneticButtons from './components/MagneticButtons'
 import ScrollToTop from './components/ScrollToTop'
 import FloatingSocialRail from './components/FloatingSocialRail'
 import PageReveal from './components/PageReveal'
 import RopePanda from './components/RopePanda'
-import CommunityGallery from './components/CommunityGallery'
 
 import {
   activeOffers,
@@ -38,37 +35,8 @@ import {
    TYPES AND CONFIGURATION
 ========================================================= */
 
-type OverviewCard = {
-  title: string
-  meta: string
-  icon: LucideIcon
-}
-
 const OFFER_POPUP_DELAY_MS = 1500
 const OFFER_POPUP_SESSION_KEY = 'zen_cafe_offer_popup_dismissed'
-
-const overviewCards: OverviewCard[] = [
-  {
-    title: 'Signature menu',
-    meta: 'Browse favourites',
-    icon: UtensilsCrossed,
-  },
-  {
-    title: 'Party room',
-    meta: '10–15 guests · max 3h',
-    icon: Users,
-  },
-  {
-    title: 'Quick booking',
-    meta: 'One simple request',
-    icon: ClipboardCheck,
-  },
-  {
-    title: 'Guest gallery',
-    meta: 'Upload · browse',
-    icon: Images,
-  },
-]
 
 /* =========================================================
    POPUP SESSION HELPERS
@@ -1105,145 +1073,19 @@ export default function App() {
           </div>
         </div>
 
-        {/* Zen essentials */}
+        {/* Discover Zen — directly below the existing live offers */}
 
-        <section
-          data-zen-reveal
-          className="zen-overview-band zen-reveal relative z-10 -mt-[1px] overflow-hidden border-y border-[#5b3c2c]/10 bg-[#efe2d4]"
-        >
-          <div className="zen-overview-inner mx-auto max-w-[1500px] px-5 sm:px-10 lg:px-12">
-            <div className="zen-overview-head">
-              <div className="zen-overview-heading-copy">
-                <p className="kicker">
-                  Zen essentials
-                </p>
+        <DiscoverZen />
 
-                <h2 className="section-title">
-                  Everything you need.
-                  <br />
-                  <span>Nothing extra.</span>
-                </h2>
-              </div>
+        {/* Kitchen delivery and customer reviews */}
+        <KitchenReviewsSection />
 
-              <p className="section-copy" />
-            </div>
-
-            <div className="zen-overview-grid">
-              {overviewCards.map(item => {
-                const Icon = item.icon
-
-                return (
-                  <article
-                    key={item.title}
-                    className="zen-overview-card"
-                  >
-                    <span className="zen-overview-icon">
-                      <Icon size={18} />
-                    </span>
-
-                    <div className="zen-overview-card-copy">
-                      <h3>{item.title}</h3>
-
-                      <span className="zen-overview-meta">
-                        {item.meta}
-                      </span>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* Menu section */}
-
-        <MenuCarousel />
-
-        {/* Party room booking */}
-
-        <section
-          id="room-booking"
-          data-zen-reveal
-          aria-labelledby="zen-party-room-heading"
-          className="zen-room-section section-shell zen-reveal relative overflow-hidden bg-[#eee1d4]"
-        >
-          <div className="room-section-inner mx-auto max-w-[1500px] px-5 py-20 sm:px-10 sm:py-24 lg:px-12 lg:py-28">
-            <div className="room-section-head room-section-head-v121 mb-10 lg:mb-14">
-              <div>
-                <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.3em] text-[#a83d2b]">
-                  Zen Café · Private Celebrations
-                </p>
-
-                <h2
-                  id="zen-party-room-heading"
-                  className="section-title room-booking-title"
-                >
-                  A space for
-                  <br />
-                  <span>beautiful moments.</span>
-                </h2>
-
-                <div className="mt-5 h-[2px] w-16 bg-[#a83d2b]" />
-              </div>
-
-              <p className="section-copy max-w-[420px]" />
-            </div>
-
-            {/* Room information strip */}
-
-            <div
-              className="room-essentials-v121 mb-8 overflow-hidden rounded-2xl border border-[#e3c6b2] bg-[#f7e4d5] shadow-[0_12px_35px_rgba(73,39,25,0.05)]"
-              aria-label="Party room essentials"
-            >
-              <div className="room-essential-v121">
-                <Users size={21} strokeWidth={1.6} />
-
-                <span>
-                  <small>Room capacity</small>
-                  <b>01–15 guests</b>
-                </span>
-              </div>
-
-              <div className="room-essential-v121">
-                <Clock3 size={21} strokeWidth={1.6} />
-
-                <span>
-                  <small>Maximum duration</small>
-                  <b>Up to 3 hours</b>
-                </span>
-              </div>
-
-              <div className="room-essential-v121">
-                <ClipboardCheck
-                  size={21}
-                  strokeWidth={1.6}
-                />
-
-                <span>
-                  <small>Booking confirmation</small>
-                  <b>Via email</b>
-                </span>
-              </div>
-            </div>
-
-            {/* Existing booking form */}
-
-            <RoomBooking toast={toastNow} />
-          </div>
-
-          <div
-            className="room-to-gallery-fade"
-            aria-hidden="true"
-          />
-        </section>
-
-        {/* Community gallery */}
-
-        <CommunityGallery toast={toastNow} />
+     
       </main>
 
       {/* Footer */}
 
+      <ZenStoryVideo />
       <PremiumFooter />
 
       {/* Global toast */}

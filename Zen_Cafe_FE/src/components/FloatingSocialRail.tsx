@@ -184,7 +184,7 @@ export default function FloatingSocialRail() {
         )}
       </a>
 
-      <a
+      {/* <a
         className="zen-quiet-dock__button zen-quiet-dock__link zen-quiet-dock__pickme"
         href={PICKME_URL}
         target="_blank"
@@ -216,7 +216,7 @@ export default function FloatingSocialRail() {
           height={32}
           draggable={false}
         />
-      </a>
+      </a> */}
 
       <button
         type="button"

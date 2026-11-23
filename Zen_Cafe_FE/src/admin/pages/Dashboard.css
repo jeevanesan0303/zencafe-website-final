@@ -1,0 +1,402 @@
+
+  .za-dashboard .za-compact-panel {
+    min-width: 0;
+    align-self: start;
+    overflow: hidden;
+  }
+
+  .za-dashboard .za-compact-panel .za-panel-head {
+    margin-bottom: 16px;
+  }
+
+  .za-dashboard .za-compact-panel .za-panel-heading {
+    min-width: 0;
+  }
+
+  .za-dashboard .za-compact-panel .za-panel-heading h2 {
+    font-size: clamp(16px, 1.35vw, 21px);
+    line-height: 1.25;
+  }
+
+  .za-dashboard .za-compact-panel .za-panel-heading h2 svg {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+  }
+
+  .za-dashboard .za-compact-panel .za-panel-heading p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .za-dashboard .za-compact-panel .za-primary {
+    flex-shrink: 0;
+  }
+
+  .za-dashboard .za-compact-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+  }
+
+  .za-dashboard .za-compact-row {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 11px 12px;
+    min-width: 0;
+    border: 1px solid #eee2d7;
+    border-radius: 14px;
+    background: #fffdfb;
+    transition:
+      background 180ms ease,
+      border-color 180ms ease,
+      transform 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .za-dashboard .za-compact-row:hover {
+    background: #fff9f4;
+    border-color: #e7c9b7;
+    transform: translateY(-1px);
+    box-shadow: 0 5px 16px rgba(80, 35, 15, 0.045);
+  }
+
+  .za-dashboard .za-compact-image {
+    width: 49px;
+    height: 49px;
+    min-width: 49px;
+    object-fit: cover;
+    border-radius: 10px;
+    background: #f5ece6;
+  }
+
+  .za-dashboard .za-compact-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .za-dashboard .za-compact-title {
+    display: block;
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: #281b16;
+  }
+
+  .za-dashboard .za-compact-subtitle {
+    display: block;
+    margin-top: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 11px;
+    line-height: 1.45;
+    color: #9b7d70;
+  }
+
+  .za-dashboard .za-compact-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 5px 9px;
+    margin-top: 5px;
+    font-size: 10.5px;
+    color: #8b756b;
+  }
+
+  .za-dashboard .za-compact-meta span {
+    min-width: 0;
+  }
+
+  .za-dashboard .za-compact-side {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    gap: 8px;
+  }
+
+  .za-dashboard .za-compact-side .za-pill {
+    white-space: nowrap;
+    font-size: 10px;
+    padding: 5px 8px;
+  }
+
+  .za-dashboard .za-compact-icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 31px;
+    height: 31px;
+    flex-shrink: 0;
+    border: 1px solid #eee0d5;
+    border-radius: 50%;
+    background: white;
+    color: #a51b16;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+
+  .za-dashboard .za-compact-icon-button:hover {
+    background: #a51b16;
+    color: white;
+  }
+
+  .za-dashboard .za-compact-booking {
+    align-items: flex-start;
+  }
+
+  .za-dashboard .za-compact-booking-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 39px;
+    height: 39px;
+    min-width: 39px;
+    border-radius: 11px;
+    background: #fff0e8;
+    color: #aa251b;
+  }
+
+  .za-dashboard .za-compact-booking .za-compact-side {
+    align-self: center;
+  }
+
+  .za-dashboard .za-compact-booking .za-compact-title {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .za-dashboard .za-compact-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    width: 100%;
+    margin-top: 13px;
+    padding: 11px 14px;
+    border: 1px solid #ead9ce;
+    border-radius: 12px;
+    background: #fffaf6;
+    color: #a51b16;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+      background 160ms ease,
+      border-color 160ms ease;
+  }
+
+  .za-dashboard .za-compact-footer:hover {
+    background: #fff0e8;
+    border-color: #d8b7a3;
+  }
+
+  .za-dashboard .za-compact-footer svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .za-dashboard .za-compact-empty {
+    padding: 24px 12px;
+    text-align: center;
+    color: #9b8174;
+    font-size: 12px;
+    border: 1px dashed #eaded5;
+    border-radius: 12px;
+  }
+
+  .za-dashboard .za-compact-error {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border: 1px solid #f0cfbf;
+    border-radius: 10px;
+    background: #fff7f3;
+    color: #a3291e;
+    font-size: 11px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+
+  .za-dashboard .za-compact-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 21px;
+    height: 21px;
+    padding: 0 6px;
+    border-radius: 7px;
+    background: #f8ebe3;
+    color: #9c392a;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .za-dashboard .za-product-controls {
+    margin-bottom: 14px;
+  }
+
+  .za-dashboard .za-compact-panel .za-offer-list {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .za-dashboard .za-compact-panel .za-offer {
+    margin: 0;
+    min-height: 0;
+    padding: 10px;
+    border: 1px solid #eee2d7;
+    border-radius: 13px;
+  }
+
+  .za-dashboard .za-compact-panel .za-offer > img {
+    width: 47px;
+    height: 47px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 9px;
+  }
+
+  .za-dashboard .za-compact-panel .za-offer-details {
+    min-width: 0;
+  }
+
+  .za-dashboard .za-compact-panel .za-offer-details strong {
+    font-size: 12px;
+  }
+
+  .za-dashboard .za-compact-panel .za-offer-details small {
+    font-size: 10.5px;
+  }
+
+  .za-dashboard .za-compact-panel .za-offer .za-pill {
+    font-size: 10px;
+  }
+
+  @media (max-width: 1300px) {
+    .za-dashboard .za-compact-panel .za-panel-head {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .za-dashboard .za-compact-panel .za-primary {
+      font-size: 11px;
+    }
+
+    .za-dashboard .za-compact-row {
+      padding: 10px;
+      gap: 8px;
+    }
+
+    .za-dashboard .za-compact-image {
+      width: 42px;
+      height: 42px;
+      min-width: 42px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .za-dashboard .za-compact-panel {
+      width: 100%;
+    }
+
+    .za-dashboard .za-compact-row {
+      padding: 11px;
+      gap: 9px;
+    }
+
+    .za-dashboard .za-compact-side {
+      gap: 5px;
+    }
+
+    .za-dashboard .za-compact-side .za-pill {
+      font-size: 9px;
+      padding: 4px 6px;
+    }
+
+    .za-dashboard .za-compact-booking-icon {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+    }
+
+    .za-dashboard .za-compact-icon-button {
+      width: 29px;
+      height: 29px;
+    }
+
+    .za-dashboard .za-compact-meta {
+      font-size: 10px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .za-dashboard .za-compact-row,
+    .za-dashboard .za-compact-footer,
+    .za-dashboard .za-compact-icon-button {
+      transition: none;
+      transform: none;
+    }
+  }
+/* Scoped redesign: does not change other admin pages or public website. */
+@font-face{font-family:'Zen Dashboard Display';src:url('/assets/fonts/MAREKA-ZenCafe-Letters.woff2') format('woff2');font-display:swap}
+.za-dashboard.za-dashboard-redesign{--zd-bg:#f7f1eb;--zd-card:#fffdf9;--zd-row:#fbf7f2;--zd-text:#3a2522;--zd-muted:#78645c;--zd-line:#e9dcd0;--zd-red:#a52626;--zd-soft:#f5e7df;background:var(--zd-bg);color:var(--zd-text);padding:24px;border-radius:24px;display:grid;gap:22px;max-width:1600px;margin:auto}
+.za-dashboard-redesign[data-dashboard-theme=dark]{--zd-bg:#211b1a;--zd-card:#302725;--zd-row:#382e2b;--zd-text:#f7e9da;--zd-muted:#c7b5a8;--zd-line:#55403b;--zd-red:#ffaaa0;--zd-soft:#50302c}
+.za-dashboard-redesign .zd-toolbar{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.za-dashboard-redesign .zd-eyebrow{font-size:10px;letter-spacing:.15em;font-weight:700;color:var(--zd-red)}
+.za-dashboard-redesign .zd-toolbar h2{font:600 24px/1.3 'DM Sans',Arial,sans-serif;margin:6px 0 0;color:var(--zd-text);text-transform:none}
+.za-dashboard-redesign .zd-toolbar-actions,.za-dashboard-redesign .zd-hero-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.za-dashboard-redesign .zd-toolbar-actions button,.za-dashboard-redesign .zd-secondary{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:1px solid var(--zd-line);border-radius:12px;min-height:44px;padding:10px 14px;background:var(--zd-card);color:var(--zd-text);font-size:12px;font-weight:600}
+.za-shell .za-dashboard-redesign .za-hero{min-height:250px;border-radius:20px;padding:32px;background:#f5e7cf url('/assets/admin/dashboard-tea-banner.png') right center/cover no-repeat;border:1px solid var(--zd-line);isolation:isolate}
+.za-dashboard-redesign .za-hero:before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,#fff8edee 0%,#fff8edcc 40%,transparent 72%);z-index:-1}
+.za-dashboard-redesign[data-dashboard-theme=dark] .za-hero:before{background:linear-gradient(90deg,#291c19fa 0%,#291c19e8 40%,#291c1940 100%)}
+.za-dashboard-redesign .za-hero-copy{max-width:62%;flex:0 1 62%}
+.za-shell .za-dashboard-redesign .za-hero h1.za-hero-title{font:400 clamp(28px,3vw,43px)/1.17 'Zen Dashboard Display',Georgia,serif!important;color:var(--zd-text)!important;white-space:normal!important;letter-spacing:0!important;display:block;margin:12px 0;text-transform:none!important}
+.za-dashboard-redesign .za-kicker{font-size:10px;letter-spacing:.12em;color:var(--zd-red)}
+.za-shell .za-dashboard-redesign .za-hero-description{font:400 14px/1.7 'DM Sans',Arial,sans-serif;color:var(--zd-muted);max-width:400px;margin-bottom:18px}
+.za-dashboard-redesign .za-primary{background:#a52626;color:#fff;border:1px solid #a52626;min-height:40px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:10px 14px;box-shadow:none;font-size:12px}
+.za-dashboard-redesign .za-primary:hover{background:#801c22;color:white}
+.za-dashboard-redesign .za-stats{margin:0;gap:16px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.za-dashboard-redesign .za-stat{background:var(--zd-card);border:1px solid var(--zd-line);color:var(--zd-text);border-radius:16px;min-height:122px;padding:22px;gap:14px;box-shadow:0 5px 16px #48241c05}
+.za-dashboard-redesign .za-stat-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:14px;background:var(--zd-soft);color:var(--zd-red);flex-shrink:0}
+.za-dashboard-redesign .za-stat-copy strong{font:700 32px/1.2 'DM Sans',Arial,sans-serif;color:var(--zd-text);font-variant-numeric:tabular-nums}
+.za-dashboard-redesign .za-stat-copy small{font-size:10px;letter-spacing:.08em;color:var(--zd-muted)}
+.za-dashboard-redesign .za-stat-copy span{color:var(--zd-muted);font-size:12px}
+.za-dashboard-redesign .za-stat-arrow{background:var(--zd-soft);color:var(--zd-red);width:28px;height:28px}
+.za-dashboard-redesign .za-panels{grid-template-columns:1.12fr 1fr;gap:18px;align-items:start}
+.za-dashboard-redesign .za-products-panel{grid-row:span 2}
+.za-dashboard-redesign .za-panel{padding:24px;background:var(--zd-card);border:1px solid var(--zd-line);border-radius:18px;box-shadow:0 8px 30px #48241c04}
+.za-dashboard-redesign .za-panel-heading h2{font:600 18px/1.4 'DM Sans',Arial,sans-serif!important;color:var(--zd-text)!important;text-transform:none!important;letter-spacing:0!important}
+.za-dashboard-redesign .za-panel-heading h2 svg{color:var(--zd-red)}
+.za-dashboard-redesign .za-panel-heading p{color:var(--zd-muted)}
+.za-dashboard-redesign .za-compact-row,.za-dashboard-redesign .za-compact-panel .za-offer{background:var(--zd-row);border:1px solid var(--zd-line);padding:14px;border-radius:12px}
+.za-dashboard-redesign .za-compact-row:hover{background:var(--zd-soft);border-color:var(--zd-red);box-shadow:none}
+.za-dashboard-redesign .za-compact-image{width:58px;height:58px;min-width:58px;object-fit:cover;background:var(--zd-soft)}
+.za-dashboard-redesign .za-compact-title,.za-dashboard-redesign .za-offer-details strong{color:var(--zd-text);font-size:14px;white-space:normal;overflow-wrap:anywhere}
+.za-dashboard-redesign .za-compact-subtitle,.za-dashboard-redesign .za-compact-meta,.za-dashboard-redesign .za-offer-details small{color:var(--zd-muted);font-size:12px}
+.za-dashboard-redesign .za-compact-icon-button{width:36px;height:36px;background:var(--zd-card);border-color:var(--zd-line);color:var(--zd-red)}
+.za-dashboard-redesign .za-compact-icon-button:hover{background:#a52626;color:white}
+.za-dashboard-redesign .za-compact-booking-icon,.za-dashboard-redesign .za-compact-count{background:var(--zd-soft);color:var(--zd-red)}
+.za-dashboard-redesign .za-compact-footer{background:var(--zd-card);color:var(--zd-red);border-color:var(--zd-line);min-height:44px}
+.za-dashboard-redesign .za-compact-footer:hover{background:var(--zd-soft);border-color:var(--zd-red)}
+.za-dashboard-redesign .za-product-controls{flex-wrap:wrap;gap:10px}
+.za-dashboard-redesign .za-product-search{background:var(--zd-row);border:1px solid var(--zd-line);color:var(--zd-muted);min-width:0;flex:1 1 150px}
+.za-dashboard-redesign .za-product-search input{background:transparent;color:var(--zd-text);min-width:0;width:100%}
+.za-dashboard-redesign input::placeholder{color:var(--zd-muted);opacity:1}
+.za-dashboard-redesign .za-filter-pills{background:var(--zd-row)}
+.za-dashboard-redesign .za-filter-pills button{color:var(--zd-muted);min-height:36px}
+.za-dashboard-redesign .za-filter-pills button.active{background:#a52626;color:#fff}
+.za-dashboard-redesign .za-compact-empty{color:var(--zd-muted);border-color:var(--zd-line);padding:32px 16px}
+.za-dashboard-redesign button:focus-visible,.za-dashboard-redesign input:focus-visible{outline:3px solid var(--zd-red);outline-offset:3px}
+.za-dashboard-redesign button:disabled{cursor:wait;opacity:.6}
+@media(max-width:1150px){.za-dashboard.za-dashboard-redesign{padding:18px}.za-dashboard-redesign .za-panels{grid-template-columns:1fr}.za-dashboard-redesign .za-products-panel{grid-row:auto}.za-dashboard-redesign .za-stat{padding:16px;gap:10px}.za-dashboard-redesign .za-stat-arrow{display:none}.za-dashboard-redesign .za-stat-icon{width:36px;height:36px}.za-dashboard-redesign .za-stat-copy small{letter-spacing:0}}
+@media(max-width:600px){.za-dashboard.za-dashboard-redesign{padding:12px;gap:16px;border-radius:16px}.za-dashboard-redesign .zd-toolbar{align-items:flex-start;flex-wrap:wrap}.za-dashboard-redesign .zd-toolbar h2{font-size:21px}.za-shell .za-dashboard-redesign .za-hero{padding:24px;min-height:265px;background-position:65% center}.za-dashboard-redesign .za-hero-copy{max-width:100%;flex:1}.za-dashboard-redesign .za-hero:before{background:#fff8ede8}.za-dashboard-redesign[data-dashboard-theme=dark] .za-hero:before{background:#291c19e8}.za-dashboard-redesign .za-stats{grid-template-columns:1fr}.za-dashboard-redesign .za-stat{min-height:96px}.za-dashboard-redesign .za-stat-arrow{display:grid}.za-dashboard-redesign .za-panel{padding:16px}.za-dashboard-redesign .za-compact-row{flex-wrap:wrap}.za-dashboard-redesign .za-compact-side{margin-left:auto}.za-dashboard-redesign .za-compact-image{width:48px;height:48px;min-width:48px}.za-dashboard-redesign .za-compact-title{font-size:13px}}
+@media(prefers-reduced-motion:no-preference){.za-dashboard-redesign .za-hero{animation:zd-enter .45s ease-out both}.za-dashboard-redesign .za-stats{animation:zd-enter .55s ease-out both}@keyframes zd-enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}}
+@media(prefers-reduced-motion:reduce){.za-dashboard-redesign *{animation:none!important;transition:none!important;transform:none!important}}

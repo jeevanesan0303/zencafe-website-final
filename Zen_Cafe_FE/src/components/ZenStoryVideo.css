@@ -1,0 +1,22 @@
+@font-face{font-family:'Zen Story Mareka';src:url('/assets/fonts/MAREKA-ZenCafe-Letters.woff2') format('woff2');font-style:normal;font-weight:400;font-display:swap;unicode-range:U+0041-005A,U+0061-007A}
+.zen-story{position:relative;isolation:isolate;overflow:hidden;width:100%;min-height:560px;display:flex;align-items:center;margin:0;padding:80px max(6vw,24px) 90px;background:#1c1111 url('/assets/videos/zen-team-story-poster.jpg') center/cover no-repeat;color:#fff4df;border:0;border-radius:0}
+.zen-story .zen-story__background{position:absolute;inset:0;z-index:0;width:100%;height:100%;max-width:none;object-fit:cover;object-position:center;display:block;border:0;border-radius:0;pointer-events:none}
+.zen-story__shade{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(14,8,8,.84) 0%,rgba(19,9,9,.57) 48%,rgba(16,8,8,.15) 100%),linear-gradient(0deg,rgba(10,6,6,.55),transparent 55%);pointer-events:none}
+.zen-story__content{position:relative;z-index:2;width:min(1200px,100%);margin-inline:auto}
+.zen-story .zen-story__eyebrow{margin:0 0 20px;font:700 12px/1.5 Inter,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#f3c68f}
+.zen-story #zen-story-title,.zen-story #zen-story-title span{font-family:'Zen Story Mareka',Inter,sans-serif!important;font-size:clamp(34px,4.8vw,68px)!important;font-weight:400!important;font-style:normal!important;line-height:1.15!important;letter-spacing:.02em!important;text-transform:none!important;color:#fff4df!important}
+.zen-story #zen-story-title{max-width:800px;margin:0 0 24px!important;text-shadow:0 3px 22px #0006}
+.zen-story #zen-story-title span{color:#ffaf9b!important}
+.zen-story__description{max-width:490px;margin:0 0 28px;font:400 15px/1.9 Inter,sans-serif;color:#f1e1d6}
+.zen-story__actions{display:flex;flex-wrap:wrap;gap:12px}
+.zen-story__actions a{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:48px;padding:13px 21px;border-radius:7px;font:700 12px/1.5 Inter,sans-serif;text-decoration:none;color:#fff8ec!important;transition:background-color .2s,transform .2s}
+.zen-story__primary{background:#a52525;border:1px solid #e16b58}.zen-story__secondary{background:#20141180;border:1px solid #f3d7b780;backdrop-filter:blur(5px)}
+.zen-story__actions a:hover{background:#c5352c;transform:translateY(-2px)}
+.zen-story__location{margin:26px 0 0;font:400 11px/1.7 Inter,sans-serif;color:#dfc9b8}
+.zen-story__playback{position:absolute;z-index:3;right:24px;bottom:22px;display:flex;align-items:center;gap:8px;min-height:44px;padding:10px 16px;background:#160f0db3;color:#fff1dd;border:1px solid #e4c7a775;border-radius:30px;font:600 12px Inter,sans-serif;cursor:pointer}
+.zen-story :is(a,button):focus-visible{outline:3px solid #f4c47e;outline-offset:5px}
+/* Video section keeps readable cinematic colours in both site themes. */
+html[data-theme='dark'] .zen-story{background-color:#100b0a}
+@media(max-width:700px){.zen-story{min-height:520px;padding:60px 24px 85px}.zen-story__shade{background:linear-gradient(90deg,#100808db,#10080865),linear-gradient(0deg,#10080888,transparent)}.zen-story__description{font-size:14px;max-width:420px}.zen-story .zen-story__background{object-position:55% center}.zen-story__location{max-width:300px}}
+@media(max-width:420px){.zen-story{padding-inline:20px}.zen-story__actions{flex-direction:column;align-items:flex-start}.zen-story__actions a{width:100%;max-width:300px}.zen-story .zen-story__eyebrow{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.zen-story__actions a{transition:none}.zen-story__actions a:hover{transform:none}}

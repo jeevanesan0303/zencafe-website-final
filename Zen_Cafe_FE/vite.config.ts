@@ -10,6 +10,11 @@ const CLEAN_ROUTES: Record<string, string> = {
   '/offers': '/offers.html',
   '/register': '/register.html',
   '/games': '/games.html',
+  '/contact': '/contact.html',
+  '/about': '/about.html',
+  '/menu': '/menu.html',
+  '/gallery': '/gallery.html',
+  '/room-booking': '/room-booking.html',
 }
 
 const HTML_TO_CLEAN = Object.fromEntries(
@@ -81,6 +86,11 @@ export default defineConfig(({ mode }) => {
           'offers.html',
           'register.html',
           'games.html',
+          'contact.html',
+          'about.html',
+          'menu.html',
+          'gallery.html',
+          'room-booking.html',
         ],
       },
     },

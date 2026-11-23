@@ -2,14 +2,61 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+
+    <title>Play Corner | Zen Café</title>
+
+    <meta
+      name="description"
+      content="Take a little café break. Choose a card, scratch and reveal a playful surprise at Zen Café, Kokkuvil."
+    />
+
     <meta name="theme-color" content="#f7f2e9" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" /><link rel="icon" href="/favicon.ico" sizes="48x48" /><link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-<title>Games | Zen Café</title>
+
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/favicon-32.png"
+    />
+
+    <link
+      rel="icon"
+      sizes="48x48"
+      href="/favicon.ico"
+    />
+
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/apple-touch-icon.png"
+    />
+
+    <script>
+      (() => {
+        try {
+          const saved = localStorage.getItem("zen-theme");
+          const theme = saved === "dark" ? "dark" : "light";
+
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+        } catch {
+          document.documentElement.dataset.theme = "light";
+        }
+      })();
+    </script>
   </head>
 
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/games-main.tsx"></script>
+
+    <script
+      type="module"
+      src="/src/games-main.tsx"
+    ></script>
   </body>
 </html>

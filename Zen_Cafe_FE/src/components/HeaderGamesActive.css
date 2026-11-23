@@ -1,0 +1,58 @@
+/* Only the selected Games link. Existing navbar layout and other links stay unchanged. */
+html .zen-header-fixed .zen-games-nav-link[aria-current="page"],
+html .zen-header-fixed .zen-games-nav-link[aria-current="page"]:hover,
+html .zen-header-fixed .zen-games-nav-link[aria-current="page"]:focus-visible {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(182,49,43,.94), rgba(133,29,27,.96)) !important;
+  border-color: rgba(255,255,255,.34) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.28), 0 10px 25px rgba(116,31,27,.18) !important;
+}
+html .zen-header-fixed .zen-games-nav-link[aria-current="page"] .zen-mobile-nav-icon,
+html .zen-header-fixed .zen-games-nav-link[aria-current="page"] .zen-mobile-nav-label,
+html .zen-header-fixed .zen-games-nav-link[aria-current="page"] svg { color:#fff !important; }
+html .zen-header-fixed .zen-games-nav-link[aria-current="page"] .zen-mobile-nav-active-dot { background:#fff !important; }
+
+/* ZEN KITCHEN ACTIVE LINK */
+
+.zen-kitchen-nav-btn,
+.zen-mobile-quick-kitchen {
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.zen-kitchen-nav-btn.is-active {
+  background: linear-gradient(
+    135deg,
+    #a82c22,
+    #d64a35
+  ) !important;
+  color: #fff !important;
+  border: 1px solid #e36b53 !important;
+  box-shadow: 0 4px 18px rgba(168, 44, 34, 0.25);
+}
+
+.zen-kitchen-nav-btn.is-active span,
+.zen-mobile-quick-kitchen.is-active span {
+  color: #fff !important;
+}
+
+.zen-mobile-quick-kitchen.is-active {
+  background: #a82c22 !important;
+  color: #fff !important;
+  border-color: #d64a35 !important;
+}
+
+.zen-kitchen-nav-btn:hover,
+.zen-mobile-quick-kitchen:hover {
+  border-color: #d64a35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zen-kitchen-nav-btn,
+  .zen-mobile-quick-kitchen {
+    transition: none;
+  }
+}

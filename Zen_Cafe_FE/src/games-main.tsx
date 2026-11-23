@@ -24,7 +24,8 @@ import {
   X,
 } from 'lucide-react'
 
-import ThemeToggle from './components/ThemeToggle'
+import Header from './components/Header'
+import PremiumFooter from './components/PremiumFooter'
 import { useSiteTheme } from './theme'
 
 import {
@@ -38,146 +39,51 @@ import {
   type GamePrize,
 } from './data/gameStore'
 
+import './index.css'
 import './games.css'
 
-/* =========================================================
-   ZEN CAFÉ — SCRATCH & WIN
 
-   CUSTOMER FLOW
-
-   1. Customer selects one of five cards.
-   2. The selected card flips.
-   3. Customer scratches one continuous surface.
-   4. Scratch movements are counted internally.
-   5. No scratch counter is displayed.
-   6. The result appears automatically when the
-      configured scratch requirement is reached.
-
-   IMPORTANT
-
-   The customer does not need to release their
-   finger or mouse after every scratch.
-
-   The coating uses scratch-mark rendering rather
-   than fully erasing itself before the result is
-   unlocked. This prevents the empty-card problem.
-========================================================= */
 
 const SCRATCH_WIDTH = 480
 const SCRATCH_HEIGHT = 280
 
-/*
-   Each meaningful 65px of scratch movement counts
-   as one internal scratch unit.
-
-   With the default requirement of 25:
-   25 × 65 = 1625 canvas pixels of movement.
-
-   Movement is measured in canvas coordinates,
-   so the interaction behaves consistently on
-   desktop and mobile.
-*/
-
-const DISTANCE_PER_SCRATCH = 65
-
-/*
-   Avoid counting tiny movements and jitter.
-*/
-
+// Reveal only after 70% of the coating has been erased.
+const REVEAL_COVERAGE = 0.7
 const MIN_POINTER_MOVEMENT = 1.5
-
-/*
-   Limit large pointer jumps so a single
-   browser event cannot generate excessive
-   scratch progress.
-*/
-
-const MAX_SEGMENT_DISTANCE = 90
-
-/*
-   Brush sizes for the scratch effect.
-*/
-
-const SCRATCH_BRUSH_SIZE = 24
+const SCRATCH_BRUSH_SIZE = 36
 
 const cards = [
   {
-    image: '/assets/Game/Card/game-1.png.png',
-    position: '50% 35%',
-    color: '#f45bdd',
-    rgb: '244 91 221',
+    image: '/assets/games/zen-sakura-card.png',
+    position: '50% 50%',
+    color: '#d97f76',
+    rgb: '217 127 118',
   },
   {
-    image: '/assets/Game/Card/game-2.png.png',
-    position: '50% 35%',
-    color: '#40c9ff',
-    rgb: '64 201 255',
+    image: '/assets/games/zen-sakura-card.png',
+    position: '50% 50%',
+    color: '#de6d61',
+    rgb: '222 109 97',
   },
   {
-    image: '/assets/Game/Card/game-3.png.png',
-    position: '72% 42%',
+    image: '/assets/games/zen-sakura-card.png',
+    position: '50% 50%',
     color: '#f6b64f',
     rgb: '246 182 79',
   },
   {
-    image: '/assets/Game/Card/game-4.png.png',
-    position: '50% 38%',
+    image: '/assets/games/zen-sakura-card.png',
+    position: '50% 50%',
     color: '#ff627c',
     rgb: '255 98 124',
   },
   {
-    image: '/assets/Game/Card/game-5.png.png',
-    position: '50% 38%',
-    color: '#80b9ff',
-    rgb: '128 185 255',
+    image: '/assets/games/zen-sakura-card.png',
+    position: '50% 50%',
+    color: '#e99e96',
+    rgb: '233 158 150',
   },
 ]
-
-const navLinks = [
-  {
-    label: 'Home',
-    href: '/#home',
-    icon: Home,
-  },
-  {
-    label: 'Our Menu',
-    href: '/#menu',
-    icon: UtensilsCrossed,
-  },
-  {
-    label: 'Party Room',
-    href: '/#room-booking',
-    icon: DoorOpen,
-  },
-  {
-    label: 'Gallery',
-    href: '/gallery.html',
-    icon: Images,
-  },
-  {
-    label: 'Contact',
-    href: '/#contact',
-    icon: MapPin,
-  },
-] as const
-
-const extraLinks = [
-  {
-    label: 'Offers',
-    href: '/offers.html',
-    icon: Gift,
-  },
-  {
-    label: 'Register',
-    href: '/register.html',
-    icon: UserPlus,
-  },
-  {
-    label: 'Zen Kitchen',
-    href: '/zen-kitchen.html',
-    icon: ChefHat,
-  },
-] as const
 
 const floatingItems = [
   {
@@ -225,11 +131,11 @@ const floatingItems = [
 ]
 
 const confettiColors = [
-  '#d88aff',
-  '#6cdbff',
+  '#eba59e',
+  '#e58e86',
   '#ffd279',
-  '#ff79bd',
-  '#a794ff',
+  '#e89890',
+  '#ecada7',
   '#ffffff',
 ]
 
@@ -322,141 +228,6 @@ function createResult(
    BACKGROUND
 ========================================================= */
 
-function GamingBackground() {
-  return (
-    <div
-      className="zg-background"
-      aria-hidden="true"
-    >
-      <div className="zg-grid" />
-
-      <div className="zg-orb zg-orb-purple" />
-      <div className="zg-orb zg-orb-blue" />
-      <div className="zg-orb zg-orb-pink" />
-
-      <div className="zg-scene">
-        <div className="zg-scene-wall" />
-
-        <div className="zg-scene-posters">
-          {cards
-            .slice(0, 3)
-            .map((card, index) => (
-              <div
-                className="zg-scene-poster"
-                key={index}
-              >
-                <img
-                  src={card.image}
-                  alt=""
-                  draggable={false}
-                />
-              </div>
-            ))}
-        </div>
-
-        <div className="zg-scene-monitor">
-          <div className="zg-monitor-screen">
-            <img
-              src={cards[4].image}
-              alt=""
-              draggable={false}
-            />
-          </div>
-
-          <span className="zg-monitor-neck" />
-          <span className="zg-monitor-base" />
-        </div>
-
-        <div className="zg-scene-warrior">
-          <img
-            src={cards[1].image}
-            alt=""
-            draggable={false}
-          />
-        </div>
-
-        <div className="zg-scene-sign">
-          <strong>ZEN</strong>
-          <span>PLAY LOUNGE</span>
-          <small>JAFFNA</small>
-        </div>
-
-        <div className="zg-scene-floor" />
-        <div className="zg-scene-fade" />
-      </div>
-
-      <div className="zg-neon-trails">
-        {Array.from(
-          { length: 6 },
-          (_, index) => (
-            <span
-              key={index}
-              className={`zg-neon-trail trail-${index % 3}`}
-              style={{
-                top: `${17 + index * 15}%`,
-                animationDelay:
-                  `${-index * 3.1}s`,
-                animationDuration:
-                  `${15 + index * 1.4}s`,
-                animationDirection:
-                  index % 2
-                    ? 'reverse'
-                    : 'normal',
-              }}
-            />
-          )
-        )}
-      </div>
-
-      <div className="zg-floating-items">
-        {floatingItems.map(
-          (item, index) => (
-            <span
-              key={index}
-              style={{
-                left: `${item.x}%`,
-                top: `${item.y}%`,
-                fontSize:
-                  `${item.size}px`,
-                animationDelay:
-                  `${item.delay}s`,
-                animationDuration:
-                  `${11 + index}s`,
-              }}
-            >
-              {item.emoji}
-            </span>
-          )
-        )}
-      </div>
-
-      <div className="zg-sparks">
-        {Array.from(
-          { length: 16 },
-          (_, index) => (
-            <i
-              key={index}
-              style={{
-                left:
-                  `${(index * 31 + 7) % 100}%`,
-                top:
-                  `${(index * 23 + 9) % 100}%`,
-                animationDelay:
-                  `${-(index % 7)}s`,
-                animationDuration:
-                  `${4 + (index % 4)}s`,
-              }}
-            />
-          )
-        )}
-      </div>
-    </div>
-  )
-}
-
-/* =========================================================
-   WIN CELEBRATION
-========================================================= */
 
 function WinCelebration() {
   return (
@@ -531,7 +302,6 @@ function ScratchCard({
   result,
   enabled,
   revealed,
-  requiredScratches,
   onReveal,
 }: ScratchCardProps) {
   const canvasRef =
@@ -543,8 +313,8 @@ function ScratchCard({
   const previousPointRef =
     useRef<Point | null>(null)
 
-  const totalDistanceRef =
-    useRef(0)
+  const keyboardRowRef = useRef(0)
+  const initialAlphaRef = useRef<Uint8ClampedArray | null>(null)
 
   const completedRef =
     useRef(false)
@@ -571,24 +341,6 @@ function ScratchCard({
   useEffect(() => {
     onRevealRef.current = onReveal
   }, [onReveal])
-
-  const target = Math.max(
-    MIN_SCRATCH_COUNT,
-    Math.min(
-      MAX_SCRATCH_COUNT,
-      Number.isFinite(requiredScratches)
-        ? Math.round(requiredScratches)
-        : DEFAULT_SCRATCH_COUNT
-    )
-  )
-
-  /*
-     This is the total movement needed
-     to reveal the result.
-  */
-
-  const requiredDistance =
-    target * DISTANCE_PER_SCRATCH
 
   /* -------------------------------------------------------
      DRAW SCRATCH COATING
@@ -629,22 +381,22 @@ function ScratchCard({
 
     gradient.addColorStop(
       0,
-      '#7745bd'
+      '#a8615a'
     )
 
     gradient.addColorStop(
       0.3,
-      '#b985f0'
+      '#dd9e98'
     )
 
     gradient.addColorStop(
       0.55,
-      '#e2c9ff'
+      '#f6d6d2'
     )
 
     gradient.addColorStop(
       1,
-      '#8b4bc6'
+      '#b06861'
     )
 
     context.fillStyle = gradient
@@ -681,7 +433,7 @@ function ScratchCard({
         )
 
         context.fillStyle =
-          'rgba(50, 20, 90, 0.14)'
+          'rgba(78, 36, 32, 0.14)'
 
         context.fill()
       }
@@ -704,13 +456,13 @@ function ScratchCard({
     )
 
     context.textAlign = 'center'
-    context.fillStyle = '#35204f'
+    context.fillStyle = '#472b28'
 
     context.font =
       '600 14px system-ui'
 
     context.fillText(
-      'ZEN LUCKY TABLE',
+      'ZEN CAFÉ · PLAY CORNER',
       canvas.width / 2,
       63
     )
@@ -757,7 +509,8 @@ function ScratchCard({
   ------------------------------------------------------- */
 
   useEffect(() => {
-    totalDistanceRef.current = 0
+    keyboardRowRef.current = 0
+    initialAlphaRef.current = null
 
     completedRef.current = false
 
@@ -766,6 +519,13 @@ function ScratchCard({
     previousPointRef.current = null
 
     drawCoating()
+    const canvas = canvasRef.current
+    const context = canvas?.getContext('2d')
+    if (canvas && context) {
+      initialAlphaRef.current = context.getImageData(
+        0, 0, canvas.width, canvas.height
+      ).data
+    }
 
     return () => {
       if (
@@ -832,12 +592,7 @@ function ScratchCard({
     }
   }
 
-  /* -------------------------------------------------------
-     FINISH GAME
-
-     Called only after the configured
-     scratch distance is completed.
-  ------------------------------------------------------- */
+  
 
   const finishGame = () => {
     if (completedRef.current) {
@@ -882,195 +637,56 @@ function ScratchCard({
       }, 350)
   }
 
-  /* -------------------------------------------------------
-     DRAW SCRATCH MARKS
+  
 
-     IMPORTANT:
-
-     Instead of erasing the coating
-     completely, we draw realistic
-     scratch marks over it.
-
-     This ensures the customer never
-     sees an empty card while the
-     reward is still locked.
-  ------------------------------------------------------- */
-
-  const drawScratchStroke = (
-    from: Point,
-    to: Point
-  ) => {
+  const checkCoverage = () => {
     const canvas = canvasRef.current
+    const initial = initialAlphaRef.current
+    const context = canvas?.getContext('2d')
+    if (!canvas || !context || !initial || completedRef.current) return
+    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data
+    let original = 0
+    let removed = 0
+    for (let i = 3; i < initial.length; i += 4) {
+      original += initial[i]
+      removed += Math.max(0, initial[i] - pixels[i])
+    }
+    if (original > 0 && removed / original >= REVEAL_COVERAGE) {
+      finishGame()
+    }
+  }
 
-    const context =
-      canvas?.getContext('2d')
-
+  const drawScratchStroke = (from: Point, to: Point) => {
+    const context = canvasRef.current?.getContext('2d')
     if (!context) return
-
     context.save()
-
-    context.globalCompositeOperation =
-      'source-over'
-
-    /*
-       Main scratch mark.
-    */
-
-    context.beginPath()
-
-    context.moveTo(
-      from.x,
-      from.y
-    )
-
-    context.lineTo(
-      to.x,
-      to.y
-    )
-
-    context.lineWidth =
-      SCRATCH_BRUSH_SIZE
-
+    context.globalCompositeOperation = 'destination-out'
+    context.strokeStyle = '#000'
+    context.lineWidth = SCRATCH_BRUSH_SIZE
     context.lineCap = 'round'
     context.lineJoin = 'round'
-
-    context.strokeStyle =
-      'rgba(52, 22, 87, 0.52)'
-
-    context.stroke()
-
-    /*
-       Metallic highlight.
-    */
-
     context.beginPath()
-
-    context.moveTo(
-      from.x,
-      from.y
-    )
-
-    context.lineTo(
-      to.x,
-      to.y
-    )
-
-    context.lineWidth = 5
-
-    context.strokeStyle =
-      'rgba(245, 222, 255, 0.42)'
-
+    context.moveTo(from.x, from.y)
+    context.lineTo(to.x, to.y)
     context.stroke()
-
     context.restore()
   }
 
-  /* -------------------------------------------------------
-     COUNT SCRATCH MOVEMENT
-
-     This is the main correction.
-
-     Previous code:
-       +1 only on pointer release.
-
-     Corrected code:
-       Movement accumulates continuously.
-
-     Example:
-       65px  = 1 scratch unit
-       130px = 2 scratch units
-       325px = 5 scratch units
-
-     A continuous drag can complete
-     the entire requirement.
-  ------------------------------------------------------- */
-
   const processScratchMovement = (
-    event:
-      ReactPointerEvent<HTMLCanvasElement>
+    event: ReactPointerEvent<HTMLCanvasElement>
   ) => {
-    if (
-      !enabled ||
-      revealed ||
-      finishing ||
-      completedRef.current
-    ) {
-      return
-    }
-
-    const point =
-      getPointerPoint(event)
-
+    if (!enabled || revealed || finishing || completedRef.current) return
+    const point = getPointerPoint(event)
     if (!point) return
-
-    const previous =
-      previousPointRef.current
-
+    const previous = previousPointRef.current
     if (!previous) {
-      previousPointRef.current =
-        point
-
+      previousPointRef.current = point
       return
     }
-
-    const dx =
-      point.x - previous.x
-
-    const dy =
-      point.y - previous.y
-
-    const rawDistance =
-      Math.hypot(dx, dy)
-
-    if (
-      rawDistance <
-      MIN_POINTER_MOVEMENT
-    ) {
-      return
-    }
-
-    /*
-       Ignore large pointer jumps
-       for progress calculation.
-    */
-
-    const distance =
-      Math.min(
-        rawDistance,
-        MAX_SEGMENT_DISTANCE
-      )
-
-    /*
-       Draw the visual scratch effect.
-    */
-
-    drawScratchStroke(
-      previous,
-      point
-    )
-
-    previousPointRef.current =
-      point
-
-    /*
-       Add movement to the hidden
-       scratch distance.
-    */
-
-    totalDistanceRef.current +=
-      distance
-
-    /*
-       Reveal immediately when
-       the target is reached.
-    */
-
-    if (
-      totalDistanceRef.current >=
-      requiredDistance
-    ) {
-      finishGame()
-    }
+    if (Math.hypot(point.x - previous.x, point.y - previous.y) < MIN_POINTER_MOVEMENT) return
+    drawScratchStroke(previous, point)
+    previousPointRef.current = point
+    checkCoverage()
   }
 
   /* -------------------------------------------------------
@@ -1131,12 +747,7 @@ function ScratchCard({
     }
   }
 
-  /* -------------------------------------------------------
-     MOVE POINTER
-
-     Scratch progress is calculated
-     HERE, not on pointer release.
-  ------------------------------------------------------- */
+  
 
   const moveScratching = (
     event:
@@ -1213,61 +824,17 @@ function ScratchCard({
   ------------------------------------------------------- */
 
   const keyboardScratch = () => {
-    if (
-      !enabled ||
-      revealed ||
-      finishing ||
-      completedRef.current ||
-      canvasUnavailable
-    ) {
-      return
-    }
-
+    if (!enabled || revealed || finishing || completedRef.current || canvasUnavailable) return
     const canvas = canvasRef.current
-
     if (!canvas) return
-
-    const currentUnit =
-      Math.floor(
-        totalDistanceRef.current /
-        DISTANCE_PER_SCRATCH
-      )
-
-    const row =
-      Math.floor(
-        currentUnit / 6
-      )
-
-    const column =
-      currentUnit % 6
-
-    const from: Point = {
-      x: 25 + column * 65,
-      y: 35 + (row % 4) * 60,
-    }
-
-    const to: Point = {
-      x: Math.min(
-        SCRATCH_WIDTH - 15,
-        from.x + 65
-      ),
-      y: from.y,
-    }
-
-    drawScratchStroke(
-      from,
-      to
-    )
-
-    totalDistanceRef.current +=
-      DISTANCE_PER_SCRATCH
-
-    if (
-      totalDistanceRef.current >=
-      requiredDistance
-    ) {
-      finishGame()
-    }
+    // Each activation erases a new horizontal band using the same brush
+    // and the same 70% area check as mouse/touch input.
+    const step = SCRATCH_BRUSH_SIZE * 0.8
+    const rowCount = Math.ceil(canvas.height / step)
+    const y = Math.min(canvas.height - 1, keyboardRowRef.current * step + step / 2)
+    drawScratchStroke({ x: 0, y }, { x: canvas.width, y })
+    keyboardRowRef.current = (keyboardRowRef.current + 1) % rowCount
+    checkCoverage()
   }
 
   const won =
@@ -1417,7 +984,7 @@ function ScratchCard({
               ? 'Scratch surface unavailable. Please reload.'
               : finishing
                 ? 'Revealing your surprise…'
-                : 'Scratch the card to discover your surprise.'}
+                : 'Scratch 70% of the card to reveal your surprise.'}
           </p>
 
           {/* KEYBOARD-ONLY CONTROL */}
@@ -1475,11 +1042,6 @@ function GamesExperience() {
         readGameConfig()
       )
   )
-
-  const [
-    navOpen,
-    setNavOpen,
-  ] = useState(false)
 
   const [
     phase,
@@ -1652,54 +1214,6 @@ function GamesExperience() {
   }, [phase])
 
   /* -------------------------------------------------------
-     MOBILE NAVIGATION
-  ------------------------------------------------------- */
-
-  useEffect(() => {
-    if (!navOpen) return
-
-    const onKeyDown = (
-      event: KeyboardEvent
-    ) => {
-      if (
-        event.key === 'Escape'
-      ) {
-        setNavOpen(false)
-      }
-    }
-
-    const onResize = () => {
-      if (
-        window.innerWidth > 960
-      ) {
-        setNavOpen(false)
-      }
-    }
-
-    window.addEventListener(
-      'keydown',
-      onKeyDown
-    )
-
-    window.addEventListener(
-      'resize',
-      onResize
-    )
-
-    return () => {
-      window.removeEventListener(
-        'keydown',
-        onKeyDown
-      )
-
-      window.removeEventListener(
-        'resize',
-        onResize
-      )
-    }
-  }, [navOpen])
-
-  /* -------------------------------------------------------
      SELECT CARD
   ------------------------------------------------------- */
 
@@ -1803,203 +1317,12 @@ function GamesExperience() {
   ------------------------------------------------------- */
 
   return (
+    <div className="zen-games-layout"><Header />
     <main
       className="zg-page"
       data-theme={theme}
     >
-      <GamingBackground />
-
-      {/* HEADER */}
-
-      <header className="zg-site-header">
-        <nav
-          className="zg-topbar"
-          aria-label="Zen Café navigation"
-        >
-          <a
-            href="/#home"
-            className="zg-brand"
-          >
-            <img
-              src="/assets/zen-logo.png"
-              alt=""
-              className="zg-brand-logo"
-            />
-
-            <span>
-              <strong>
-                ZEN CAFE
-              </strong>
-
-              <small>
-                JAFFNA
-              </small>
-            </span>
-          </a>
-
-          {/* DESKTOP NAV */}
-
-          <div className="zg-desktop-nav">
-            {navLinks.map(
-              ({
-                label,
-                href,
-              }) => (
-                <a
-                  key={label}
-                  href={href}
-                  className="zg-nav-link"
-                >
-                  {label}
-                </a>
-              )
-            )}
-
-            <a
-              href="#game"
-              className="zg-nav-link is-active"
-              aria-current="page"
-            >
-              Games
-            </a>
-          </div>
-
-          {/* NAV ACTIONS */}
-
-          <div className="zg-nav-actions">
-            <ThemeToggle
-              className="zg-theme-toggle"
-            />
-
-            <a
-              href="/offers.html"
-              className="zg-offers-button"
-            >
-              <Gift size={16} />
-
-              <span>
-                Offers
-              </span>
-            </a>
-
-            <button
-              type="button"
-              className="zg-mobile-toggle"
-              onClick={() =>
-                setNavOpen(
-                  current => !current
-                )
-              }
-              aria-expanded={
-                navOpen
-              }
-              aria-controls="zg-mobile-navigation"
-              aria-label={
-                navOpen
-                  ? 'Close menu'
-                  : 'Open menu'
-              }
-            >
-              {navOpen ? (
-                <X size={21} />
-              ) : (
-                <MenuIcon size={21} />
-              )}
-            </button>
-          </div>
-        </nav>
-
-        {/* MOBILE NAVIGATION */}
-
-        {navOpen && (
-          <>
-            <button
-              type="button"
-              className="zg-nav-backdrop"
-              aria-label="Close navigation"
-              onClick={() =>
-                setNavOpen(false)
-              }
-            />
-
-            <div
-              id="zg-mobile-navigation"
-              className="zg-mobile-menu"
-            >
-              <div className="zg-mobile-menu-head">
-                <span>
-                  <Gamepad2 size={17} />
-
-                  ZEN PLAY
-                </span>
-
-                <Sparkles size={18} />
-              </div>
-
-              <div className="zg-mobile-menu-grid">
-                {navLinks.map(
-                  ({
-                    label,
-                    href,
-                    icon: Icon,
-                  }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      onClick={() =>
-                        setNavOpen(false)
-                      }
-                    >
-                      <Icon size={17} />
-
-                      <span>
-                        {label}
-                      </span>
-                    </a>
-                  )
-                )}
-
-                <a
-                  href="#game"
-                  className="is-current"
-                  aria-current="page"
-                  onClick={() =>
-                    setNavOpen(false)
-                  }
-                >
-                  <Gamepad2 size={17} />
-
-                  <span>
-                    Games
-                  </span>
-                </a>
-              </div>
-
-              <div className="zg-mobile-extra">
-                {extraLinks.map(
-                  ({
-                    label,
-                    href,
-                    icon: Icon,
-                  }) => (
-                    <a
-                      key={label}
-                      href={href}
-                      onClick={() =>
-                        setNavOpen(false)
-                      }
-                    >
-                      <Icon size={15} />
-
-                      {label}
-                    </a>
-                  )
-                )}
-              </div>
-            </div>
-          </>
-        )}
-      </header>
+      <div className="zg-paper-decoration" aria-hidden="true" />
 
       {/* MAIN CONTENT */}
 
@@ -2007,11 +1330,12 @@ function GamesExperience() {
         {/* HERO */}
 
         <section className="zg-hero">
+          <div className="zg-hero-copy">
           <div className="zg-hero-badge">
             <Gamepad2 size={15} />
 
             <span>
-              ZEN LUCKY TABLE
+              ZEN CAFÉ · PLAY CORNER
             </span>
 
             <i aria-hidden="true" />
@@ -2023,12 +1347,12 @@ function GamesExperience() {
             <br />
 
             <em>
-              A little possibility.
+              A little Zen.
             </em>
           </h1>
 
           <p>
-            Follow your feeling. Pick a card.
+            Take a break. Choose a card.
             Let your little surprise unfold.
           </p>
 
@@ -2056,7 +1380,7 @@ function GamesExperience() {
               style={{
                 marginTop: 20,
                 textAlign: 'center',
-                color: '#e2c9ff',
+                color: 'var(--accent)',
                 fontWeight: 600,
               }}
             >
@@ -2065,7 +1389,11 @@ function GamesExperience() {
               Please check back later.
             </p>
           )}
+          <a href="#game" className="zg-hero-cta">Let’s play <Gamepad2 size={18} /></a>
+          <p className="zg-hero-disclaimer">Just for fun · Demo rewards only</p>
+          </div>
         </section>
+        <div className="zg-step-cards" aria-label="How to play"><div><b>01</b><span>Choose your card<small>Follow your feeling.</small></span></div><div><b>02</b><span>Scratch to reveal<small>Use your finger or mouse.</small></span></div><div><b>03</b><span>Enjoy the surprise<small>A little moment of Zen.</small></span></div></div>
 
         {/* GAME SHELL */}
 
@@ -2419,34 +1747,8 @@ function GamesExperience() {
           </div>
         </section>
 
-        {/* FOOTER */}
-
-        <footer className="zg-footer">
-          <div className="zg-footer-brand">
-            <Sparkles size={20} />
-
-            <span>
-              <strong>
-                ZEN CAFE
-              </strong>
-
-              <small>
-                JAFFNA
-              </small>
-            </span>
-          </div>
-
-          <p>
-            A little play. A little luck.
-            A little Zen.
-          </p>
-
-          <a href="/#home">
-            Back to café →
-          </a>
-        </footer>
       </div>
-    </main>
+    </main><PremiumFooter /></div>
   )
 }
 

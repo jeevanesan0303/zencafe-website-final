@@ -1,0 +1,685 @@
+@font-face {
+  font-family: 'Zen Specials';
+  src: url('/assets/fonts/MAREKA-ZenCafe-Letters.woff2') format('woff2');
+  font-display: swap;
+}
+
+#zen-specials {
+  --zs-bg: #faf3e9;
+  --zs-card: #fffdf9;
+  --zs-ink: #422620;
+  --zs-muted: #80665a;
+  --zs-line: #e8d5c5;
+  --zs-soft: #f3e3d3;
+  --zs-accent: #a72329;
+
+  min-height: 100vh;
+  padding: 20px clamp(16px, 4vw, 72px) 0;
+  overflow: hidden;
+  background: var(--zs-bg);
+  color: var(--zs-ink);
+  font: 400 15px/1.65 Inter, Arial, sans-serif;
+}
+
+[data-theme='dark'] #zen-specials {
+  --zs-bg: #1c1615;
+  --zs-card: #2a201e;
+  --zs-ink: #fff0df;
+  --zs-muted: #cdb6a5;
+  --zs-line: #503c35;
+  --zs-soft: #382924;
+  --zs-accent: #ffaaa2;
+}
+
+#zen-specials *,
+#zen-specials *::before,
+#zen-specials *::after {
+  box-sizing: border-box;
+}
+
+#zen-specials a {
+  color: inherit;
+  text-decoration: none;
+}
+
+#zen-specials button,
+#zen-specials a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+#zen-specials button {
+  font-family: inherit;
+}
+
+#zen-specials h1,
+#zen-specials h2,
+#zen-specials h3 {
+  margin: 0;
+  color: var(--zs-ink) !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+}
+
+#zen-specials .zs-header,
+#zen-specials main,
+#zen-specials .zs-footer {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+}
+
+/* Header */
+
+#zen-specials .zs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 22px;
+  border: 1px solid var(--zs-line);
+  border-radius: 20px;
+  background: var(--zs-card);
+}
+
+#zen-specials .zs-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+#zen-specials .zs-brand img {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #fff;
+}
+
+#zen-specials .zs-brand b {
+  display: block;
+  font-size: 20px;
+  letter-spacing: 0.04em;
+}
+
+#zen-specials .zs-brand small {
+  display: block;
+  color: var(--zs-muted);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+#zen-specials nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+#zen-specials nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+}
+
+#zen-specials nav a:hover {
+  color: var(--zs-accent);
+}
+
+/* Hero */
+
+#zen-specials .zs-hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  min-height: 330px;
+  margin: 24px 0 34px;
+  padding: 36px 40px;
+  overflow: hidden;
+  border: 1px solid var(--zs-line);
+  border-radius: 24px;
+  background:
+    #f5e8d3
+    url('/assets/offers/zen-specials-banner.png')
+    right center / cover no-repeat;
+}
+
+#zen-specials .zs-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    #fff5e6f7 0%,
+    #fff5e6d9 40%,
+    #fff5e600 75%
+  );
+}
+
+[data-theme='dark'] #zen-specials .zs-hero::before {
+  background: linear-gradient(
+    90deg,
+    #271a17fc 0%,
+    #271a17ed 40%,
+    #271a1730 100%
+  );
+}
+
+#zen-specials .zs-hero-copy {
+  width: 58%;
+  max-width: 620px;
+  min-width: 0;
+}
+
+#zen-specials .zs-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--zs-accent);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.12em;
+  overflow-wrap: anywhere;
+}
+
+#zen-specials .zs-eyebrow svg {
+  flex-shrink: 0;
+}
+
+#zen-specials h1 {
+  margin: 14px 0 !important;
+  font:
+    400 clamp(30px, 3.2vw, 48px)/1.18
+    'Zen Specials', Georgia, serif !important;
+}
+
+#zen-specials h1 em {
+  color: var(--zs-accent);
+  font: italic 500 1.05em/1.2 Georgia, serif;
+}
+
+#zen-specials .zs-hero-copy p {
+  max-width: 410px;
+  margin: 0 0 22px;
+  color: var(--zs-muted);
+  font-size: 14px;
+}
+
+#zen-specials .zs-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 46px;
+  padding: 12px 20px;
+  border: 1px solid #a72329;
+  border-radius: 12px;
+  background: #a72329 !important;
+  color: #fff !important;
+  font: 700 12px/1.5 Inter, Arial, sans-serif;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+#zen-specials .zs-primary svg {
+  flex-shrink: 0;
+}
+
+#zen-specials .zs-primary:hover {
+  transform: translateY(-2px);
+  background: #7f1721 !important;
+  box-shadow: 0 8px 22px #92232c25;
+}
+
+#zen-specials .zs-hero-note {
+  position: absolute;
+  right: 24px;
+  bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid #fff9ee;
+  border-radius: 30px;
+  background: #fff7e8ed;
+  color: #62352b;
+  font: 600 11px/1.4 Inter, Arial, sans-serif;
+}
+
+/* Offers heading */
+
+#zen-specials .zs-offers {
+  scroll-margin-top: 24px;
+}
+
+#zen-specials .zs-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 22px;
+}
+
+#zen-specials h2 {
+  margin-top: 7px !important;
+  font:
+    500 clamp(25px, 2.7vw, 35px)/1.2
+    Georgia, serif !important;
+}
+
+#zen-specials .zs-count {
+  padding: 7px 12px;
+  border: 1px solid var(--zs-line);
+  border-radius: 30px;
+  color: var(--zs-muted);
+  font-size: 12px;
+}
+
+/* Offer cards */
+
+#zen-specials .zs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+#zen-specials .zs-grid.zs-single {
+  grid-template-columns: 1fr;
+}
+
+#zen-specials .zs-card {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--zs-line);
+  border-radius: 22px;
+  background: var(--zs-card);
+  box-shadow: 0 8px 30px #643b1f08;
+  transition:
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+#zen-specials .zs-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 40px #643b1f14;
+}
+
+#zen-specials .zs-media {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 290px;
+  min-width: 0;
+  padding: 56px 28px 24px;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at center,
+    var(--zs-card),
+    var(--zs-soft)
+  );
+}
+
+#zen-specials .zs-artwork {
+  position: static !important;
+  display: block !important;
+  width: 100% !important;
+  height: 210px !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  object-position: center !important;
+  transform: none !important;
+  border-radius: 10px;
+  filter: drop-shadow(0 12px 10px #34201718);
+  transition: scale 0.35s ease;
+}
+
+#zen-specials .zs-card:hover .zs-artwork {
+  scale: 1.035;
+}
+
+#zen-specials .zs-badge {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: calc(100% - 32px);
+  padding: 8px 12px;
+  border: 1px solid #ffffff55;
+  border-radius: 30px;
+  background: #a72329;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+#zen-specials .zs-badge svg {
+  flex-shrink: 0;
+}
+
+#zen-specials .zs-card-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 26px;
+}
+
+#zen-specials h3 {
+  font:
+    400 clamp(25px, 2.5vw, 34px)/1.2
+    'Zen Specials', Georgia, serif !important;
+  overflow-wrap: anywhere;
+}
+
+#zen-specials .zs-card-copy p {
+  margin: 0;
+  color: var(--zs-muted);
+  font-size: 14px;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* Single offer: image left, content right */
+
+#zen-specials .zs-single .zs-card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+}
+
+#zen-specials .zs-single .zs-media {
+  height: auto;
+  min-height: 330px;
+  padding: 58px 32px 28px;
+}
+
+#zen-specials .zs-single .zs-artwork {
+  height: 260px !important;
+  max-height: 100% !important;
+}
+
+#zen-specials .zs-single .zs-card-copy {
+  justify-content: center;
+  padding: 36px;
+}
+
+#zen-specials .zs-code {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px dashed var(--zs-line);
+  border-radius: 10px;
+  background: var(--zs-soft);
+  font-size: 12px;
+}
+
+#zen-specials .zs-code strong {
+  letter-spacing: 0.1em;
+  overflow-wrap: anywhere;
+}
+
+#zen-specials .zs-terms,
+#zen-specials .zs-expiry {
+  color: var(--zs-muted);
+  font-size: 11px;
+}
+
+#zen-specials .zs-no-image {
+  display: grid;
+  place-items: center;
+  gap: 12px;
+  color: var(--zs-accent);
+}
+
+/* Empty and error states */
+
+#zen-specials .zs-empty {
+  padding: 48px 22px;
+  border: 1px dashed var(--zs-line);
+  border-radius: 22px;
+  background: var(--zs-card);
+  color: var(--zs-muted);
+  text-align: center;
+}
+
+#zen-specials .zs-empty > svg {
+  display: block;
+  margin: 0 auto 20px;
+  color: var(--zs-accent);
+}
+
+#zen-specials .zs-error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 16px;
+  border: 1px solid var(--zs-line);
+  border-radius: 12px;
+  background: var(--zs-soft);
+}
+
+#zen-specials .zs-error button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--zs-line);
+  border-radius: 8px;
+  background: var(--zs-card);
+  color: var(--zs-accent);
+  cursor: pointer;
+}
+
+#zen-specials button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* Celebration section */
+
+#zen-specials .zs-invite {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 36px 0;
+  padding: 28px 32px;
+  border: 1px solid var(--zs-line);
+  border-radius: 20px;
+  background: var(--zs-soft);
+}
+
+#zen-specials .zs-invite h2 {
+  font-size: 28px !important;
+}
+
+/* Footer */
+
+#zen-specials .zs-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 24px 0;
+  border-top: 1px solid var(--zs-line);
+  color: var(--zs-muted);
+  font-size: 12px;
+}
+
+#zen-specials .zs-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-weight: 700;
+}
+
+#zen-specials :is(button, a):focus-visible {
+  outline: 3px solid var(--zs-accent);
+  outline-offset: 4px;
+}
+
+/* Mobile */
+
+@media (max-width: 760px) {
+  #zen-specials {
+    padding-inline: 16px;
+  }
+
+  #zen-specials .zs-header {
+    gap: 12px;
+    padding: 12px;
+  }
+
+  #zen-specials nav {
+    gap: 12px;
+  }
+
+  #zen-specials .zs-brand b {
+    font-size: 16px;
+  }
+
+  #zen-specials .zs-brand small,
+  #zen-specials nav .zs-menu-link {
+    display: none;
+  }
+
+  #zen-specials .zs-hero {
+    min-height: 310px;
+    padding: 28px;
+    background-position: 65% center;
+  }
+
+  #zen-specials .zs-hero-copy {
+    width: 100%;
+    max-width: 440px;
+  }
+
+  #zen-specials .zs-hero::before {
+    background: #fff5e6e8;
+  }
+
+  [data-theme='dark'] #zen-specials .zs-hero::before {
+    background: #271a17e8;
+  }
+
+  #zen-specials .zs-hero-note {
+    display: none;
+  }
+
+  #zen-specials .zs-section-heading {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  #zen-specials .zs-grid,
+  #zen-specials .zs-single .zs-card {
+    grid-template-columns: 1fr;
+  }
+
+  #zen-specials .zs-single .zs-media {
+    height: 280px;
+    min-height: 0;
+    padding: 56px 24px 24px;
+  }
+
+  #zen-specials .zs-single .zs-artwork {
+    height: 200px !important;
+  }
+
+  #zen-specials .zs-single .zs-card-copy {
+    padding: 24px;
+  }
+
+  #zen-specials .zs-invite {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+  }
+}
+
+@media (max-width: 380px) {
+  #zen-specials {
+    padding-inline: 10px;
+  }
+
+  #zen-specials .zs-brand {
+    gap: 7px;
+  }
+
+  #zen-specials .zs-brand img {
+    width: 36px;
+    height: 36px;
+  }
+
+  #zen-specials .zs-brand b {
+    font-size: 14px;
+  }
+
+  #zen-specials nav {
+    gap: 8px;
+  }
+
+  #zen-specials .zs-hero {
+    padding: 22px;
+  }
+}
+
+/* Animation */
+
+@media (prefers-reduced-motion: no-preference) {
+  #zen-specials .zs-hero-copy,
+  #zen-specials .zs-card {
+    animation: zs-arrive 0.55s ease-out backwards;
+  }
+
+  @keyframes zs-arrive {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #zen-specials *,
+  #zen-specials *::before,
+  #zen-specials *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+    scale: 1 !important;
+  }
+
+  #zen-specials .zs-card:hover,
+  #zen-specials .zs-primary:hover {
+    transform: none !important;
+  }
+}

@@ -20,27 +20,30 @@ import {
 } from 'react'
 
 import ThemeToggle from './ThemeToggle'
+import './HeaderGamesActive.css'
 
 /* ==========================================
-   NAVIGATION LINKS
+   NAVIGATION CONFIGURATION
 ========================================== */
 
 const links = [
   ['Home', 'home'],
+  ['About', 'about'],
   ['Our Menu', 'menu'],
   ['Party Room', 'room-booking'],
   ['Gallery', 'gallery'],
   ['Contact', 'contact'],
 ] as const
 
-/* ==========================================
-   MOBILE NAVIGATION LINKS
-========================================== */
-
 const mobileLinks = [
   {
     label: 'Home',
     id: 'home',
+    icon: Home,
+  },
+  {
+    label: 'About',
+    id: 'about',
     icon: Home,
   },
   {
@@ -76,62 +79,89 @@ const mobileLinks = [
 ] as const
 
 /* ==========================================
-   HEADER COMPONENT
+   ROUTE HELPERS
+========================================== */
 
-   Updates:
-   - No scrolling promotional banner
-   - Navbar positioned at the top
-   - Existing navigation preserved
-   - Existing theme toggle preserved
-   - Existing mobile menu preserved
-   - Works with App.tsx offers popup
+const pageRoutes: Record<string, string> = {
+  home: '/',
+  about: '/about',
+  menu: '/menu',
+  'room-booking': '/room-booking',
+  gallery: '/gallery',
+  contact: '/contact',
+  games: '/games.html',
+  'zen-kitchen': '/zen-kitchen.html',
+  register: '/register.html',
+}
+
+const isHomePage = () => {
+  const path = window.location.pathname
+  return path === '/' || path === '/index.html'
+}
+
+const getActivePage = () => {
+  const path = window.location.pathname
+    .replace(/\/+$/, '')
+    .replace(/\.html$/, '')
+
+  if (path === '/zen-kitchen') return 'zen-kitchen'
+  if (path === '/games') return 'games'
+  if (path === '/register') return 'register'
+
+  for (const [, id] of links) {
+    if (id !== 'home' && path === `/${id}`) {
+      return id
+    }
+  }
+
+  return 'home'
+}
+
+/* ==========================================
+   HEADER COMPONENT
 ========================================== */
 
 export default function Header() {
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [active, setActive] = useState('home')
-
-  /* ==========================================
-     ACTIVE MOBILE LABEL
-  ========================================== */
+  const [active, setActive] = useState(getActivePage)
 
   const activeLabel = useMemo(() => {
+    if (active === 'zen-kitchen') return 'Zen Kitchen'
+    if (active === 'games') return 'Games'
+    if (active === 'register') return 'Customer Register'
+
     return (
-      mobileLinks.find(
-        item => 'id' in item && item.id === active
+      mobileLinks.find(item =>
+        'id' in item && item.id === active
       )?.label || 'Home'
     )
   }, [active])
 
   /* ==========================================
-     SCROLL DETECTION
-     ACTIVE SECTION TRACKING
+     SCROLL + ACTIVE SECTION TRACKING
   ========================================== */
 
   useEffect(() => {
     const onScroll = () => {
-      setScrolled(
-        Math.max(0, window.scrollY) > 22
-      )
+      setScrolled(window.scrollY > 22)
     }
 
     onScroll()
 
-    window.addEventListener(
-      'scroll',
-      onScroll,
-      { passive: true }
-    )
+    window.addEventListener('scroll', onScroll, {
+      passive: true,
+    })
 
     const observer = new IntersectionObserver(
       entries => {
+        if (!isHomePage()) return
+
         const visibleEntry = entries
           .filter(entry => entry.isIntersecting)
           .sort(
             (a, b) =>
-              b.intersectionRatio -
-              a.intersectionRatio
+              b.intersectionRatio - a.intersectionRatio
           )[0]
 
         if (visibleEntry?.target.id) {
@@ -144,27 +174,24 @@ export default function Header() {
       }
     )
 
-    links.forEach(([, id]) => {
-      const element =
-        document.getElementById(id)
+    if (isHomePage()) {
+      links.forEach(([, id]) => {
+        const element = document.getElementById(id)
 
-      if (element) {
-        observer.observe(element)
-      }
-    })
+        if (element) {
+          observer.observe(element)
+        }
+      })
+    }
 
     return () => {
-      window.removeEventListener(
-        'scroll',
-        onScroll
-      )
-
+      window.removeEventListener('scroll', onScroll)
       observer.disconnect()
     }
   }, [])
 
   /* ==========================================
-     MOBILE MENU KEYBOARD + RESIZE
+     MOBILE MENU BEHAVIOUR
   ========================================== */
 
   useEffect(() => {
@@ -182,44 +209,41 @@ export default function Header() {
       }
     }
 
-    window.addEventListener(
-      'keydown',
-      onKey
-    )
-
-    window.addEventListener(
-      'resize',
-      onResize
-    )
+    window.addEventListener('keydown', onKey)
+    window.addEventListener('resize', onResize)
 
     return () => {
-      window.removeEventListener(
-        'keydown',
-        onKey
-      )
-
-      window.removeEventListener(
-        'resize',
-        onResize
-      )
+      window.removeEventListener('keydown', onKey)
+      window.removeEventListener('resize', onResize)
     }
   }, [open])
 
   /* ==========================================
-     SECTION NAVIGATION
-
-     Preserve smooth scrolling.
-     Add a small scroll offset so section
-     headings are not covered by navbar.
+     NAVIGATION HANDLER
   ========================================== */
 
   const go = useCallback((id: string) => {
-    setActive(id)
     setOpen(false)
 
+    if (id === 'home' && !isHomePage()) {
+      window.location.assign('/')
+      return
+    }
+
+    if (id !== 'home' && pageRoutes[id]) {
+      window.location.assign(pageRoutes[id])
+      return
+    }
+
+    if (!isHomePage()) {
+      window.location.assign(`/#${id}`)
+      return
+    }
+
+    setActive(id)
+
     window.requestAnimationFrame(() => {
-      const target =
-        document.getElementById(id)
+      const target = document.getElementById(id)
 
       if (!target) {
         if (id === 'home') {
@@ -228,7 +252,6 @@ export default function Header() {
             behavior: 'smooth',
           })
         }
-
         return
       }
 
@@ -238,16 +261,14 @@ export default function Header() {
         )
 
       const headerHeight =
-        header?.getBoundingClientRect().height ??
-        90
+        header?.getBoundingClientRect().height ?? 90
 
       const targetTop =
         target.getBoundingClientRect().top +
         window.scrollY
 
-      const offset = id === 'home'
-        ? 0
-        : headerHeight + 12
+      const offset =
+        id === 'home' ? 0 : headerHeight + 12
 
       window.scrollTo({
         top: Math.max(0, targetTop - offset),
@@ -263,30 +284,13 @@ export default function Header() {
   return (
     <header
       className={`zen-header-fixed fixed inset-x-0 top-0 z-[90] px-4 sm:px-7 lg:px-12 ${
-        scrolled
-          ? 'is-scrolled pt-2'
-          : 'pt-2.5'
+        scrolled ? 'is-scrolled pt-2' : 'pt-2.5'
       }`}
       aria-label="Zen Café main header"
     >
+      <div className="zen-header-glass zen-header-clean zen-header-always zen-mobile-header-bar relative z-[3] mx-auto flex max-w-[1500px] items-center justify-between rounded-full border px-3 py-2">
 
-      {/* ======================================
-          MAIN NAVIGATION BAR
-
-          PromotionalBanner is completely
-          removed from this component.
-
-          Special Offers now appear through
-          the popup inside App.tsx.
-      ====================================== */}
-
-      <div
-        className="zen-header-glass zen-header-clean zen-header-always zen-mobile-header-bar relative z-[3] mx-auto flex max-w-[1500px] items-center justify-between rounded-full border px-3 py-2"
-      >
-
-        {/* ======================================
-            ZEN CAFÉ BRAND
-        ====================================== */}
+        {/* BRAND */}
 
         <button
           type="button"
@@ -295,7 +299,6 @@ export default function Header() {
           className="zen-mobile-brand-button flex items-center gap-3 rounded-full pr-3 text-left"
           aria-label="Zen Café — Go to home"
         >
-
           <img
             src="/assets/zen-logo.png"
             alt="Zen Café"
@@ -303,7 +306,6 @@ export default function Header() {
           />
 
           <span className="leading-none">
-
             <b className="zen-navbar-brand-japan block text-[21px] sm:text-[24px]">
               ZEN CAFE
             </b>
@@ -311,20 +313,15 @@ export default function Header() {
             <small className="mt-1 hidden text-[7px] font-semibold uppercase tracking-[.16em] text-[#76665c] sm:block">
               Jaffna · Café · Party Room
             </small>
-
           </span>
-
         </button>
 
-        {/* ======================================
-            DESKTOP NAVIGATION
-        ====================================== */}
+        {/* DESKTOP NAVIGATION */}
 
         <nav
           className="zen-nav-glass hidden items-center gap-1 rounded-full p-1 xl:flex"
           aria-label="Desktop navigation"
         >
-
           {links.map(([label, id]) => (
             <button
               type="button"
@@ -336,9 +333,7 @@ export default function Header() {
                   : 'text-[#56473f]'
               }`}
               aria-current={
-                active === id
-                  ? 'page'
-                  : undefined
+                active === id ? 'page' : undefined
               }
             >
               {label}
@@ -349,32 +344,31 @@ export default function Header() {
 
           <a
             href="/games.html"
-            className="zen-nav-pill inline-flex items-center gap-2 rounded-full px-4 py-3 text-[9px] font-semibold uppercase tracking-[.1em] text-[#56473f]"
+            aria-current={
+              active === 'games' ? 'page' : undefined
+            }
+            className={`zen-nav-pill zen-games-nav-link inline-flex items-center gap-2 rounded-full px-4 py-3 text-[9px] font-semibold uppercase tracking-[.1em] ${
+              active === 'games'
+                ? 'is-active text-white'
+                : 'text-[#56473f]'
+            }`}
           >
-            <Gamepad2
-              size={15}
-              aria-hidden="true"
-            />
-
+            <Gamepad2 size={15} aria-hidden="true" />
             <span>Games</span>
           </a>
-
         </nav>
 
-        {/* ======================================
-            HEADER ACTIONS
-        ====================================== */}
+        {/* HEADER ACTIONS */}
 
         <div className="zen-header-actions flex items-center gap-2">
 
-          {/* MOBILE ACTIVE SECTION */}
+          {/* MOBILE ACTIVE PAGE */}
 
           <div
             className="zen-mobile-current-chip xl:hidden"
             aria-live="polite"
           >
             <span className="zen-mobile-current-dot" />
-
             <span>{activeLabel}</span>
           </div>
 
@@ -382,33 +376,43 @@ export default function Header() {
 
           <ThemeToggle />
 
-          {/* CUSTOMER REGISTRATION */}
+          {/* CUSTOMER REGISTER */}
 
           <a
             href="/register.html"
-            className="zen-register-nav-link zen-customer-register-btn hidden xl:inline-flex"
+            aria-current={
+              active === 'register' ? 'page' : undefined
+            }
+            className={`zen-register-nav-link zen-customer-register-btn hidden xl:inline-flex ${
+              active === 'register' ? 'is-active' : ''
+            }`}
             aria-label="Customer registration"
           >
             <UserPlus size={15} />
-
             <span>Register</span>
           </a>
 
-          {/* ZEN KITCHEN */}
+          {/* ZEN KITCHEN — ACTIVE LINK */}
 
           <a
             href="/zen-kitchen.html"
-            className="zen-glass-light zen-kitchen-nav-btn hidden h-11 items-center gap-2 rounded-full px-3 pr-4 text-[9px] font-semibold uppercase tracking-[.1em] text-[#5d4c43] md:inline-flex"
+            aria-current={
+              active === 'zen-kitchen'
+                ? 'page'
+                : undefined
+            }
+            className={`zen-glass-light zen-kitchen-nav-btn hidden h-11 items-center gap-2 rounded-full px-3 pr-4 text-[9px] font-semibold uppercase tracking-[.1em] md:inline-flex ${
+              active === 'zen-kitchen'
+                ? 'is-active zen-kitchen-active'
+                : 'text-[#5d4c43]'
+            }`}
           >
-
             <img
               src="/assets/zen-kitchen-nav-panda.png"
               alt="Zen Kitchen panda"
               className="zen-kitchen-nav-panda"
             />
-
             <span>Zen Kitchen</span>
-
           </a>
 
           {/* BOOK ROOM */}
@@ -416,10 +420,13 @@ export default function Header() {
           <button
             type="button"
             onClick={() => go('room-booking')}
-            className="zen-glass-red hidden items-center gap-2 rounded-full px-5 py-3 text-[9px] font-semibold uppercase tracking-[.1em] text-white sm:inline-flex"
+            className={`zen-glass-red hidden items-center gap-2 rounded-full px-5 py-3 text-[9px] font-semibold uppercase tracking-[.1em] text-white sm:inline-flex ${
+              active === 'room-booking'
+                ? 'is-active'
+                : ''
+            }`}
           >
             <DoorOpen size={15} />
-
             Book Room
           </button>
 
@@ -440,19 +447,12 @@ export default function Header() {
             aria-expanded={open}
             aria-controls="zen-mobile-navigation"
           >
-            {open
-              ? <X size={20} />
-              : <Menu size={20} />
-            }
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
-
         </div>
-
       </div>
 
-      {/* ======================================
-          MOBILE NAVIGATION BACKDROP
-      ====================================== */}
+      {/* MOBILE BACKDROP */}
 
       {open && (
         <button
@@ -464,9 +464,7 @@ export default function Header() {
         />
       )}
 
-      {/* ======================================
-          MOBILE NAVIGATION PANEL
-      ====================================== */}
+      {/* MOBILE NAVIGATION PANEL */}
 
       {open && (
         <div
@@ -474,36 +472,27 @@ export default function Header() {
           className="zen-mobile-nav-sheet zen-mobile-glass zen-mobile-glass-fixed xl:hidden"
           aria-label="Zen Café navigation"
         >
-
-          {/* MOBILE MENU HEADER */}
-
           <div className="zen-mobile-nav-compact-head">
-
             <span>
               <Sparkles size={12} />
               Menu
             </span>
-
             <b>{activeLabel}</b>
-
           </div>
-
-          {/* MOBILE NAVIGATION LINKS */}
 
           <nav
             className="zen-mobile-nav-list zen-mobile-nav-list-compact"
             aria-label="Mobile navigation"
           >
-
             {mobileLinks.map(item => {
               const Icon = item.icon
+              const isSection = 'id' in item
 
-              const isSection =
-                'id' in item
-
-              const isActive =
-                isSection &&
-                active === item.id
+              const isActive = isSection
+                ? active === item.id
+                : item.label === 'Games'
+                  ? active === 'games'
+                  : active === 'register'
 
               const content = (
                 <>
@@ -532,14 +521,10 @@ export default function Header() {
                     key={item.label}
                     onClick={() => go(item.id)}
                     className={`zen-mobile-link zen-mobile-nav-item zen-mobile-nav-item-compact ${
-                      isActive
-                        ? 'is-active'
-                        : ''
+                      isActive ? 'is-active' : ''
                     }`}
                     aria-current={
-                      isActive
-                        ? 'page'
-                        : undefined
+                      isActive ? 'page' : undefined
                     }
                   >
                     {content}
@@ -552,18 +537,25 @@ export default function Header() {
                   key={item.label}
                   data-no-magnet
                   href={item.href}
-                  className="zen-mobile-link zen-mobile-nav-item zen-mobile-nav-item-compact"
+                  aria-current={
+                    isActive ? 'page' : undefined
+                  }
+                  onClick={() => setOpen(false)}
+                  className={`zen-mobile-link zen-mobile-nav-item zen-mobile-nav-item-compact ${
+                    item.label === 'Games'
+                      ? 'zen-games-nav-link'
+                      : ''
+                  } ${
+                    isActive ? 'is-active' : ''
+                  }`}
                 >
                   {content}
                 </a>
               )
             })}
-
           </nav>
 
-          {/* ======================================
-              MOBILE QUICK ACTIONS
-          ====================================== */}
+          {/* MOBILE QUICK ACTIONS */}
 
           <div className="zen-mobile-nav-quick-actions">
 
@@ -572,17 +564,24 @@ export default function Header() {
             <a
               href="/zen-kitchen.html"
               data-no-magnet
-              className="zen-mobile-quick-action zen-mobile-quick-kitchen"
+              aria-current={
+                active === 'zen-kitchen'
+                  ? 'page'
+                  : undefined
+              }
+              className={`zen-mobile-quick-action zen-mobile-quick-kitchen ${
+                active === 'zen-kitchen'
+                  ? 'is-active zen-kitchen-active'
+                  : ''
+              }`}
+              onClick={() => setOpen(false)}
             >
-
               <img
                 src="/assets/zen-kitchen-nav-panda.png"
                 alt=""
                 aria-hidden="true"
               />
-
               <span>Zen Kitchen</span>
-
             </a>
 
             {/* BOOK ROOM */}
@@ -591,18 +590,18 @@ export default function Header() {
               type="button"
               data-no-magnet
               onClick={() => go('room-booking')}
-              className="zen-mobile-quick-action zen-mobile-quick-book"
+              className={`zen-mobile-quick-action zen-mobile-quick-book ${
+                active === 'room-booking'
+                  ? 'is-active'
+                  : ''
+              }`}
             >
               <DoorOpen size={16} />
-
               <span>Book Room</span>
             </button>
-
           </div>
-
         </div>
       )}
-
     </header>
   )
 }

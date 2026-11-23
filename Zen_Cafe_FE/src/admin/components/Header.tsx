@@ -1,9 +1,4 @@
-
-import {
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   Bell,
@@ -29,41 +24,23 @@ import {
   subscribeRoomBookings,
 } from '../../data/bookingStore'
 
+import { mockLogout } from '../../admin-auth'
 import AdminAlert from '../utils/sweetAlert'
 
-/* ==========================================
-   TYPES
-========================================== */
-
-type SettingsDestination =
-  | 'profile'
-  | 'security'
+type SettingsDestination = 'profile' | 'security'
 
 type Props = {
   onMenu: () => void
-
   query: string
-
   onQuery: (query: string) => void
-
   page: AdminPage
+  onNavigate?: (page: AdminPage) => void
+  onOpenSettings?: (tab: SettingsDestination) => void
 
-  onNavigate?: (
-    page: AdminPage
-  ) => void
-
-  onOpenSettings?: (
-    tab: SettingsDestination
-  ) => void
-
-  // Logout confirmation and authentication
-  // are handled by AdminLayout.
+  // Retained for compatibility with existing AdminLayout.
+  // This header uses the authentication logout function directly.
   onLogout?: () => void | Promise<void>
 }
-
-/* ==========================================
-   HEADER COMPONENT
-========================================== */
 
 export default function Header({
   onMenu,
@@ -72,88 +49,54 @@ export default function Header({
   page,
   onNavigate,
   onOpenSettings,
-  onLogout,
 }: Props) {
-  /* ==========================================
-     STATE
-  ========================================== */
-
-  const [settings, setSettings] =
-    useState(
-      () => readCafeSettings()
-    )
-
-  const [
-    pendingBookings,
-    setPendingBookings,
-  ] = useState(() =>
-    readRoomBookings().filter(
-      booking =>
-        booking.status === 'pending'
-    ).length
+  const [settings, setSettings] = useState(() =>
+    readCafeSettings()
   )
 
-  const [
-    profileOpen,
-    setProfileOpen,
-  ] = useState(false)
+  const [pendingBookings, setPendingBookings] = useState(
+    () =>
+      readRoomBookings().filter(
+        booking => booking.status === 'pending'
+      ).length
+  )
 
-  const [
-    notificationsOpen,
-    setNotificationsOpen,
-  ] = useState(false)
-
-  const [loggingOut, setLoggingOut] =
+  const [profileOpen, setProfileOpen] = useState(false)
+  const [notificationsOpen, setNotificationsOpen] =
     useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
 
-  /* ==========================================
-     REFS
-  ========================================== */
+  const profileRef = useRef<HTMLDivElement>(null)
+  const notificationRef = useRef<HTMLDivElement>(null)
+  const notificationButtonRef =
+    useRef<HTMLButtonElement>(null)
+  const profileButtonRef =
+    useRef<HTMLButtonElement>(null)
 
-  const profileRef =
-    useRef<HTMLDivElement>(null)
-
-  const notificationRef =
-    useRef<HTMLDivElement>(null)
-
-  /* ==========================================
-     SETTINGS SUBSCRIPTION
-  ========================================== */
+  // Prevent repeated clicks before React updates the button.
+  const logoutInProgress = useRef(false)
 
   useEffect(() => {
     return subscribeCafeSettings(() => {
-      setSettings(
-        readCafeSettings()
+      setSettings(readCafeSettings())
+    })
+  }, [])
+
+  useEffect(() => {
+    return subscribeRoomBookings(() => {
+      setPendingBookings(
+        readRoomBookings().filter(
+          booking => booking.status === 'pending'
+        ).length
       )
     })
   }, [])
 
-  /* ==========================================
-     BOOKING NOTIFICATION SUBSCRIPTION
-  ========================================== */
-
   useEffect(() => {
-    return subscribeRoomBookings(() => {
-      const count =
-        readRoomBookings().filter(
-          booking =>
-            booking.status === 'pending'
-        ).length
+    function handleOutsidePointer(event: PointerEvent) {
+      const target = event.target
 
-      setPendingBookings(count)
-    })
-  }, [])
-
-  /* ==========================================
-     CLOSE DROPDOWNS ON OUTSIDE CLICK
-  ========================================== */
-
-  useEffect(() => {
-    function handleOutsideClick(
-      event: MouseEvent
-    ) {
-      const target =
-        event.target as Node
+      if (!(target instanceof Node)) return
 
       if (
         profileRef.current &&
@@ -170,31 +113,38 @@ export default function Header({
       }
     }
 
-    function handleEscape(
-      event: KeyboardEvent
-    ) {
-      if (event.key === 'Escape') {
-        setProfileOpen(false)
-        setNotificationsOpen(false)
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key !== 'Escape') return
+
+      const activeElement = document.activeElement
+
+      if (
+        activeElement &&
+        notificationRef.current?.contains(activeElement)
+      ) {
+        notificationButtonRef.current?.focus()
+      } else if (
+        activeElement &&
+        profileRef.current?.contains(activeElement)
+      ) {
+        profileButtonRef.current?.focus()
       }
+
+      setProfileOpen(false)
+      setNotificationsOpen(false)
     }
 
     document.addEventListener(
-      'mousedown',
-      handleOutsideClick
+      'pointerdown',
+      handleOutsidePointer
     )
-
-    document.addEventListener(
-      'keydown',
-      handleEscape
-    )
+    document.addEventListener('keydown', handleEscape)
 
     return () => {
       document.removeEventListener(
-        'mousedown',
-        handleOutsideClick
+        'pointerdown',
+        handleOutsidePointer
       )
-
       document.removeEventListener(
         'keydown',
         handleEscape
@@ -202,34 +152,27 @@ export default function Header({
     }
   }, [])
 
-  /* ==========================================
-     CLOSE DROPDOWNS
-  ========================================== */
+  useEffect(() => {
+    setProfileOpen(false)
+    setNotificationsOpen(false)
+  }, [page])
 
   function closeDropdowns() {
     setProfileOpen(false)
     setNotificationsOpen(false)
   }
 
-  /* ==========================================
-     PAGE NAVIGATION
-  ========================================== */
-
-  function navigateTo(
-    pageName: AdminPage
-  ) {
-    closeDropdowns()
-
-    onNavigate?.(pageName)
+  function closeNotifications() {
+    setNotificationsOpen(false)
+    notificationButtonRef.current?.focus()
   }
 
-  /* ==========================================
-     SETTINGS NAVIGATION
-  ========================================== */
+  function navigateTo(nextPage: AdminPage) {
+    closeDropdowns()
+    onNavigate?.(nextPage)
+  }
 
-  function openSettingsTab(
-    tab: SettingsDestination
-  ) {
+  function openSettingsTab(tab: SettingsDestination) {
     closeDropdowns()
 
     if (onOpenSettings) {
@@ -239,78 +182,65 @@ export default function Header({
     }
   }
 
-  /* ==========================================
-     LOGOUT
-  ========================================== */
-
   async function handleLogout() {
-    if (loggingOut) return
+    if (logoutInProgress.current) return
 
+    logoutInProgress.current = true
+    setLoggingOut(true)
     closeDropdowns()
 
-    if (!onLogout) {
-      await AdminAlert.warning(
-        'Logout Not Connected',
-        'The administrator logout function has not been connected yet.'
-      )
-
-      return
-    }
-
-    setLoggingOut(true)
-
     try {
-      // AdminLayout handles SweetAlert
-      // confirmation and the real logout.
-      await onLogout()
-    } catch (error) {
-      console.error(
-        'Header logout error:',
-        error
+      const confirmed = await AdminAlert.confirm(
+        'Logout Confirmation',
+        'Are you sure you want to log out of Zen Café Admin?',
+        'Yes, Logout'
       )
+
+      if (!confirmed) return
+
+      // Existing authentication function:
+      // POST /api/admin/logout
+      // Remove the admin session and token
+      // Redirect to /admin/login
+      await mockLogout()
+    } catch (error) {
+      console.error('Header logout failed:', error)
 
       await AdminAlert.error(
         'Logout Failed',
-        'Unable to complete the logout request.'
+        'Unable to log out. Please try again.'
       )
     } finally {
+      logoutInProgress.current = false
       setLoggingOut(false)
     }
   }
 
-  /* ==========================================
-     ADMIN PROFILE INFORMATION
-  ========================================== */
-
   const adminName =
-    settings.adminName?.trim() ||
-    'Admin'
+    settings.adminName?.trim() || 'Admin'
 
   const adminEmail =
-    settings.adminEmail?.trim() ||
-    'admin@zencafe.com'
+    settings.adminEmail?.trim() || 'admin@zencafe.com'
 
-  const initials = adminName
-    .split(/\s+/)
-    .map(part =>
-      part.charAt(0)
-    )
-    .slice(0, 2)
-    .join('')
-    .toUpperCase()
+  const adminAvatar = settings.adminAvatar || ''
 
-  const adminAvatar =
-    settings.adminAvatar || ''
-
-  /* ==========================================
-     HEADER UI
-  ========================================== */
+  const initials =
+    adminName
+      .split(/\s+/)
+      .map(part => part.charAt(0))
+      .slice(0, 2)
+      .join('')
+      .toUpperCase() || 'A'
 
   return (
-    <header className="za-header">
-
-      {/* MOBILE NAVIGATION */}
-
+    <header
+      className="za-header"
+      style={{
+        position: 'relative',
+        zIndex: 20,
+        overflow: 'visible',
+      }}
+    >
       <button
         type="button"
         className="za-icon-button"
@@ -320,10 +250,7 @@ export default function Header({
         <Menu size={24} />
       </button>
 
-      {/* SEARCH BAR */}
-
       <label className="za-search">
-
         <Search size={20} />
 
         <input
@@ -334,37 +261,28 @@ export default function Header({
               : 'Search this section...'
           }
           value={query}
-          onChange={event =>
-            onQuery(event.target.value)
-          }
+          onChange={event => onQuery(event.target.value)}
         />
-
       </label>
 
-      {/* HEADER RIGHT */}
-
       <div className="za-header-right">
-
-        {/* NOTIFICATION DROPDOWN */}
-
         <div
           className="za-header-dropdown-wrap"
           ref={notificationRef}
         >
-
           <button
+            ref={notificationButtonRef}
             type="button"
             className="za-notification za-notification-button"
             aria-label="Open notifications"
-            aria-expanded={
+            aria-expanded={notificationsOpen}
+            aria-controls={
               notificationsOpen
+                ? 'zen-admin-notifications'
+                : undefined
             }
-            aria-haspopup="true"
             onClick={() => {
-              setNotificationsOpen(
-                previous => !previous
-              )
-
+              setNotificationsOpen(previous => !previous)
               setProfileOpen(false)
             }}
           >
@@ -380,53 +298,53 @@ export default function Header({
           </button>
 
           {notificationsOpen && (
-            <div className="za-header-dropdown za-notification-dropdown">
-
-              {/* NOTIFICATION HEADER */}
-
+            <div
+              id="zen-admin-notifications"
+              className="za-header-dropdown za-notification-dropdown"
+              aria-label="Notifications"
+              role="region"
+            >
               <div className="za-dropdown-heading">
-
                 <div>
-                  <strong>
-                    Notifications
-                  </strong>
-
-                  <small>
-                    Zen Café Admin
-                  </small>
+                  <strong>Notifications</strong>
+                  <small>Zen Café Admin</small>
                 </div>
 
                 <button
                   type="button"
                   className="za-dropdown-close"
                   aria-label="Close notifications"
-                  onClick={() =>
-                    setNotificationsOpen(false)
-                  }
+                  style={{
+                    position: 'relative',
+                    flex: '0 0 44px',
+                    width: 44,
+                    height: 44,
+                    padding: 0,
+                    touchAction: 'manipulation',
+                  }}
+                  onClick={event => {
+                    event.stopPropagation()
+                    closeNotifications()
+                  }}
                 >
-                  <X size={17} />
+                  <X
+                    size={18}
+                    style={{ pointerEvents: 'none' }}
+                  />
                 </button>
-
               </div>
 
-              {/* NOTIFICATION CONTENT */}
-
               <div className="za-notification-content">
-
                 <div className="za-notification-item">
-
                   <span className="za-notification-item-icon">
                     <CalendarDays size={20} />
                   </span>
 
                   <div>
-
                     <strong>
                       {pendingBookings > 0
                         ? `${pendingBookings} Pending Booking${
-                            pendingBookings === 1
-                              ? ''
-                              : 's'
+                            pendingBookings === 1 ? '' : 's'
                           }`
                         : 'No Pending Bookings'}
                     </strong>
@@ -436,143 +354,91 @@ export default function Header({
                         ? 'You have room reservations waiting for confirmation.'
                         : 'Your room bookings are up to date.'}
                     </p>
-
                   </div>
-
                 </div>
-
               </div>
-
-              {/* NOTIFICATION FOOTER */}
 
               <button
                 type="button"
                 className="za-dropdown-footer-button"
-                onClick={() =>
-                  navigateTo('bookings')
-                }
+                onClick={() => navigateTo('bookings')}
               >
                 View Room Bookings
               </button>
-
             </div>
           )}
-
         </div>
-
-        {/* ADMIN PROFILE DROPDOWN */}
 
         <div
           className="za-header-dropdown-wrap"
           ref={profileRef}
         >
-
           <button
+            ref={profileButtonRef}
             type="button"
             className="za-profile-trigger"
             aria-label="Open admin profile menu"
-            aria-haspopup="menu"
             aria-expanded={profileOpen}
+            aria-controls={
+              profileOpen
+                ? 'zen-admin-profile'
+                : undefined
+            }
             onClick={() => {
-              setProfileOpen(
-                previous => !previous
-              )
-
+              setProfileOpen(previous => !previous)
               setNotificationsOpen(false)
             }}
           >
-
-            {/* PROFILE AVATAR */}
-
             <span className="za-avatar">
-
               {adminAvatar ? (
-                <img
-                  src={adminAvatar}
-                  alt={adminName}
-                />
+                <img src={adminAvatar} alt={adminName} />
               ) : (
-                initials || 'A'
+                initials
               )}
-
             </span>
 
-            {/* PROFILE DETAILS */}
-
             <span className="za-user">
-
-              <strong>
-                {adminName}
-              </strong>
-
-              <small>
-                {adminEmail}
-              </small>
-
+              <strong>{adminName}</strong>
+              <small>{adminEmail}</small>
             </span>
 
             <ChevronDown
               size={17}
               className={`za-user-chevron ${
-                profileOpen
-                  ? 'is-open'
-                  : ''
+                profileOpen ? 'is-open' : ''
               }`}
             />
-
           </button>
-
-          {/* PROFILE DROPDOWN */}
 
           {profileOpen && (
             <div
+              id="zen-admin-profile"
               className="za-header-dropdown za-profile-dropdown"
-              role="menu"
+              role="region"
               aria-label="Administrator options"
             >
-
-              {/* PROFILE SUMMARY */}
-
               <div className="za-profile-dropdown-top">
-
                 <div className="za-profile-dropdown-avatar">
-
                   {adminAvatar ? (
                     <img
                       src={adminAvatar}
                       alt={adminName}
                     />
                   ) : (
-                    initials || 'A'
+                    initials
                   )}
-
                 </div>
 
                 <div>
-
-                  <strong>
-                    {adminName}
-                  </strong>
-
-                  <small>
-                    {adminEmail}
-                  </small>
-
-                  <span>
-                    Administrator
-                  </span>
-
+                  <strong>{adminName}</strong>
+                  <small>{adminEmail}</small>
+                  <span>Administrator</span>
                 </div>
-
               </div>
 
-              {/* PROFILE ACTIONS */}
-
               <div className="za-profile-dropdown-links">
-
                 <button
                   type="button"
-                  role="menuitem"
                   onClick={() =>
                     openSettingsTab('profile')
                   }
@@ -583,7 +449,6 @@ export default function Header({
 
                 <button
                   type="button"
-                  role="menuitem"
                   onClick={() =>
                     openSettingsTab('security')
                   }
@@ -591,21 +456,15 @@ export default function Header({
                   <Settings size={18} />
                   Account Settings
                 </button>
-
               </div>
 
-              {/* LOGOUT */}
-
               <div className="za-profile-dropdown-bottom">
-
                 <button
                   type="button"
-                  role="menuitem"
                   className="za-profile-logout"
                   disabled={loggingOut}
-                  onClick={() => {
-                    void handleLogout()
-                  }}
+                  aria-busy={loggingOut}
+                  onClick={() => void handleLogout()}
                 >
                   <LogOut size={18} />
 
@@ -613,16 +472,11 @@ export default function Header({
                     ? 'Logging out...'
                     : 'Logout'}
                 </button>
-
               </div>
-
             </div>
           )}
-
         </div>
-
       </div>
-
     </header>
   )
 }
