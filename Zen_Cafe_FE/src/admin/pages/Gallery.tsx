@@ -53,7 +53,6 @@ type Props = {
 
 type FilterTab =
   | 'all'
-  | 'pending'
   | 'approved'
   | 'rejected'
 
@@ -848,64 +847,64 @@ export default function Gallery({
         </div>
       </div>
 
-      {/* STATISTICS */}
+      {/* PREMIUM GALLERY STATISTICS */}
 
-      <div className="za-product-summary">
-        <div className="za-product-summary-card">
-          <span>Total Photos</span>
-          <strong>{stats.total}</strong>
-          <small>
-            All gallery photos
-          </small>
-        </div>
-
-        <div className="za-product-summary-card">
-          <span>Pending Review</span>
-
-          <strong
-            style={{
-              color: '#d97706',
-            }}
+      <div className="mb-7 grid grid-cols-1 gap-4 md:grid-cols-3">
+        {([
+          {
+            label: 'Total Photos',
+            value: stats.total,
+            description: 'All gallery moments',
+            Icon: ImageIcon,
+            accent: '#A65C44',
+            background: '#FFF3EE',
+          },
+          {
+            label: 'Published',
+            value: stats.approved,
+            description: 'Visible to visitors',
+            Icon: Eye,
+            accent: '#16866A',
+            background: '#EEF8F3',
+          },
+          {
+            label: 'Hidden',
+            value: stats.rejected,
+            description: 'Not publicly visible',
+            Icon: EyeOff,
+            accent: '#B17B35',
+            background: '#FFF7E9',
+          },
+        ] as const).map(stat => (
+          <div
+            key={stat.label}
+            className="relative overflow-hidden rounded-[24px] border border-[#513226]/10 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
           >
-            {stats.pending}
-          </strong>
-
-          <small>
-            Awaiting admin decision
-          </small>
-        </div>
-
-        <div className="za-product-summary-card">
-          <span>Published (Public)</span>
-
-          <strong
-            style={{
-              color: '#16a34a',
-            }}
-          >
-            {stats.approved}
-          </strong>
-
-          <small>
-            Published photos
-          </small>
-        </div>
-
-        <div className="za-product-summary-card">
-          <span>Hidden</span>
-
-          <strong
-            style={{
-              color: '#dc2626',
-            }}
-          >
-            {stats.rejected}
-          </strong>
-
-          <small>
-            Hidden from public view
-          </small>
-        </div>
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-xs font-bold tracking-wide text-[#6D554B]">
+                  {stat.label}
+                </p>
+                <strong className="mt-3 block font-serif text-4xl font-semibold leading-none text-[#34241E]">
+                  {stat.value}
+                </strong>
+                <p className="mt-3 text-xs text-stone-500">
+                  {stat.description}
+                </p>
+              </div>
+              <div
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"
+                style={{ backgroundColor: stat.background, color: stat.accent }}
+              >
+                <stat.Icon size={22} strokeWidth={1.8} />
+              </div>
+            </div>
+            <div
+              className="absolute bottom-0 left-0 h-1 w-full"
+              style={{ backgroundColor: stat.accent }}
+            />
+          </div>
+        ))}
       </div>
 
       {/* ERROR BANNER */}
@@ -930,109 +929,52 @@ export default function Gallery({
         </div>
       )}
 
-      {/* FILTER TABS */}
+      {/* PREMIUM SEGMENTED GALLERY FILTERS */}
 
-      <div className="za-filter-bar mb-6 flex flex-wrap items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            className={`za-filter-btn ${
-              activeTab === 'pending'
-                ? 'active'
-                : ''
-            }`}
-            onClick={() =>
-              setActiveTab('pending')
-            }
-          >
-            <Clock3
-              size={14}
-              className="mr-1"
-            />
-
-            Pending ({stats.pending})
-          </button>
-
-          <button
-            type="button"
-            className={`za-filter-btn ${
-              activeTab === 'approved'
-                ? 'active'
-                : ''
-            }`}
-            onClick={() =>
-              setActiveTab('approved')
-            }
-          >
-            <ShieldCheck
-              size={14}
-              className="mr-1"
-            />
-
-            Published ({stats.approved})
-          </button>
-
-          <button
-            type="button"
-            className={`za-filter-btn ${
-              activeTab === 'rejected'
-                ? 'active'
-                : ''
-            }`}
-            onClick={() =>
-              setActiveTab('rejected')
-            }
-          >
-            <EyeOff
-              size={14}
-              className="mr-1"
-            />
-
-            Hidden ({stats.rejected})
-          </button>
-
-          <button
-            type="button"
-            className={`za-filter-btn ${
-              activeTab === 'all'
-                ? 'active'
-                : ''
-            }`}
-            onClick={() =>
-              setActiveTab('all')
-            }
-          >
-            All Photos ({stats.total})
-          </button>
+      <div className="mb-6 flex flex-col gap-3 rounded-[22px] border border-[#513226]/10 bg-white p-3 shadow-sm lg:flex-row lg:items-center lg:justify-between">
+        <div
+          className="grid w-full grid-cols-3 gap-1 rounded-2xl bg-[#F7F1EC] p-1 lg:w-auto"
+          role="group"
+          aria-label="Filter gallery photos"
+        >
+          {([
+            { id: 'all', label: 'All Photos', count: stats.total },
+            { id: 'approved', label: 'Published', count: stats.approved },
+            { id: 'rejected', label: 'Hidden', count: stats.rejected },
+          ] as const).map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              aria-pressed={activeTab === tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`whitespace-nowrap rounded-xl px-3 py-2.5 text-xs font-bold transition-all sm:px-5 ${
+                activeTab === tab.id
+                  ? 'bg-[#8B3F2F] text-white shadow-sm'
+                  : 'text-[#6D554B] hover:bg-white/80'
+              }`}
+            >
+              {tab.label} ({tab.count})
+            </button>
+          ))}
         </div>
 
-        {/* SEARCH */}
-
-        <div className="relative min-w-[260px]">
+        <div className="relative w-full lg:w-[290px]">
           <Search
             size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-stone-400"
+            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400"
           />
-
           <input
-            type="text"
-            className="field-input !w-full !py-2 !pl-9 !text-xs"
+            type="search"
+            className="w-full rounded-full border border-[#513226]/10 bg-[#FCFAF8] py-2.5 pl-10 pr-9 text-xs text-[#513226] outline-none transition focus:border-[#A65C44]"
             placeholder="Search photos, guests, captions..."
             value={searchTerm}
-            onChange={event =>
-              setSearchTerm(
-                event.target.value
-              )
-            }
+            onChange={event => setSearchTerm(event.target.value)}
           />
-
           {searchTerm && (
             <button
               type="button"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400"
-              onClick={() =>
-                setSearchTerm('')
-              }
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-[#8B3F2F]"
+              onClick={() => setSearchTerm('')}
               aria-label="Clear search"
             >
               <X size={14} />
@@ -1066,9 +1008,7 @@ export default function Gallery({
           </p>
 
           <p className="mt-1 text-xs text-stone-400">
-            {activeTab === 'pending'
-              ? 'There are no pending photos awaiting moderation.'
-              : 'No photos match your current filter.'}
+            No photos match your current filter.
           </p>
         </div>
       ) : (
