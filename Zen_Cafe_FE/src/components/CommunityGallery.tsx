@@ -1351,8 +1351,8 @@ export default function CommunityGallery({
             {galleryError && <div role="alert" className="zen-gallery-empty"><h3>Unable to load photos</h3><p>{galleryError}</p><button type="button" onClick={() => void loadApprovedPhotos()}>Try again</button></div>}
             {!galleryLoading && !galleryError && posts.length === 0 && <div className="zen-gallery-empty"><Camera size={32}/><h3>Your moments belong here</h3><p>Be the first to share a memory from Zen Café.</p><a href="#share-moment">Share a moment ↓</a></div>}
             <div className="zen-moments-grid">{paginatedPosts.map(post => <article className="zen-moment-card" key={post.id}>
-              <button type="button" className="zen-moment-image" onClick={() => openLightbox(post)} aria-label={`Open photo by ${post.user}`}><img src={post.image} alt={post.caption || `Zen Café moment shared by ${post.user}`} loading="lazy"/><span>View moment ↗</span></button>
-              <div className="zen-moment-caption"><div><h3>{post.user}</h3>{post.caption && <p>{post.caption}</p>}</div><button type="button" onClick={() => like(post.id)} aria-label={`Like photo by ${post.user}`} aria-pressed={Boolean(likedIds[post.id])}><Heart size={18} fill={Boolean(likedIds[post.id]) ? 'currentColor' : 'none'}/><span>{post.likes}</span></button></div>
+              <button type="button" className="zen-moment-image" onClick={() => openLightbox(post)} aria-label="Open Zen Café photo"><img src={post.image} alt={post.caption || 'Zen Café gallery moment'} loading="lazy"/><span>View moment ↗</span></button>
+              <div className="zen-moment-caption">{post.caption ? <p className="zen-moment-text">{post.caption}</p> : <span className="zen-moment-text" aria-hidden="true" />}<button type="button" onClick={() => like(post.id)} aria-label="Like gallery photo" aria-pressed={Boolean(likedIds[post.id])}><Heart size={18} fill={Boolean(likedIds[post.id]) ? 'currentColor' : 'none'}/><span>{post.likes}</span></button></div>
             </article>)}</div>
             {posts.length > GALLERY_PAGE_SIZE && (
               <nav className="zen-gallery-pagination" aria-label="Gallery photo pages">
@@ -1476,7 +1476,7 @@ export default function CommunityGallery({
                         openLightbox(post)
                       }
                       className="gallery-slide-media gallery-photo-trigger"
-                      aria-label={`View photo by ${post.user}`}
+                      aria-label="View gallery photo"
                     >
                       <img
                         src={post.image}
@@ -1528,7 +1528,7 @@ export default function CommunityGallery({
                           Guest moment
                         </p>
 
-                        <h4>{post.user}</h4>
+                        <h4>Zen Café Moment</h4>
                         <p>{post.caption}</p>
                       </div>
 

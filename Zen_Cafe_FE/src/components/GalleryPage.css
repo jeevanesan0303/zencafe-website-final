@@ -48,39 +48,116 @@
 @media(max-width:1000px){#zen-gallery-page .zen-moments-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:600px){#zen-gallery-page main{padding-top:94px}#zen-gallery-page .zen-gallery-hero{min-height:340px;padding:36px 20px;background-position:65% center}#zen-gallery-page .gallery-section-inner{padding:28px 18px 42px}#zen-gallery-page .zen-moments-grid{grid-template-columns:1fr}#zen-gallery-page .zen-moments-toolbar{align-items:flex-start;flex-direction:column;gap:4px}#zen-gallery-page .gallery-upload-head{align-items:flex-start}#zen-gallery-page .gallery-upload-head h3{font-size:26px!important}}
 @media(prefers-reduced-motion:reduce){#zen-gallery-page *,#zen-gallery-page *::before{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
-/* ==========================================
-   ZEN CAFÉ — COMPACT PUBLIC GALLERY ONLY
-   Preserves original hero and upload styling
-========================================== */
+/* ZEN CAFÉ — PUBLIC GALLERY CARD CORRECTIONS ONLY
+   APPEND to the END of your ORIGINAL gallery stylesheet.
+   Do not replace the original CSS. */
 
 #zen-gallery-page .zen-moments-grid {
+  display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
 }
 
 #zen-gallery-page .zen-moment-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  overflow: hidden;
   border-radius: 15px;
 }
 
 #zen-gallery-page .zen-moment-image {
-  aspect-ratio: auto;
+  display: block;
+  width: 100%;
   height: auto;
-  background: transparent;
+  aspect-ratio: 4 / 3;
+  flex: none;
+  overflow: hidden;
+  background: #eadbca;
 }
 
 #zen-gallery-page .zen-moment-image img {
+  display: block !important;
+  position: static !important;
   width: 100% !important;
-  height: auto !important;
-  object-fit: contain !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
+  transform: none !important;
 }
 
 #zen-gallery-page .zen-moment-caption {
-  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 48px;
+  padding: 9px 11px;
+  margin-top: auto;
 }
 
-#zen-gallery-page .zen-moment-caption h3 {
-  font-size: 15px !important;
+#zen-gallery-page .zen-moment-caption .zen-moment-text {
+  display: block;
+  min-width: 0;
+  margin: 0;
+  color: var(--gallery-ink);
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+#zen-gallery-page .zen-moment-caption button {
+  flex-shrink: 0;
+  padding: 7px 9px;
+}
+
+#zen-gallery-page .zen-gallery-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+#zen-gallery-page .zen-gallery-page-summary {
+  color: #80675b;
+  font-size: 12px;
+}
+
+#zen-gallery-page .zen-gallery-page-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+#zen-gallery-page .zen-gallery-page-controls button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid #d5b9a7;
+  border-radius: 10px;
+  background: var(--gallery-paper);
+  color: var(--gallery-ink);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+#zen-gallery-page .zen-gallery-page-controls button.is-active {
+  background: #a52224;
+  border-color: #a52224;
+  color: #fff;
+}
+
+#zen-gallery-page .zen-gallery-page-controls button:disabled {
+  opacity: .4;
+  cursor: not-allowed;
 }
 
 @media (max-width: 1000px) {
@@ -92,5 +169,14 @@
 @media (max-width: 600px) {
   #zen-gallery-page .zen-moments-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #zen-gallery-page .zen-moment-caption {
+    padding: 8px;
+  }
+
+  #zen-gallery-page .zen-gallery-pagination {
+    justify-content: center;
   }
 }
