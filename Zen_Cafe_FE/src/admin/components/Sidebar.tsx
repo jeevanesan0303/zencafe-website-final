@@ -8,6 +8,7 @@ import {
   CalendarDays,
   Gamepad2,
   House,
+  Images,
   LogOut,
   Settings,
   Tags,
@@ -65,6 +66,11 @@ const links: {
     id: 'bookings',
     label: 'Room Bookings',
     icon: CalendarDays,
+  },
+  {
+    id: 'moments-gallery',
+    label: 'Moments Gallery',
+    icon: Images,
   },
 ]
 

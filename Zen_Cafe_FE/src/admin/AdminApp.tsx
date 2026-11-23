@@ -9,6 +9,7 @@ import AddProduct from './pages/AddProduct'
 import Offers from './pages/Offers'
 import Games from './pages/Games'
 import Bookings from './pages/RoomBookings'
+import Gallery from './pages/Gallery'
 import Settings from './pages/Settings'
 
 import type { SettingsTab } from './pages/Settings'
@@ -28,6 +29,7 @@ export type AdminPage =
   | 'offers'
   | 'games'
   | 'bookings'
+  | 'moments-gallery'
   | 'settings'
 
 /* ==========================================
@@ -138,9 +140,11 @@ export default function AdminApp() {
     // Logout behavior must use the application's
     // actual authentication mechanism.
     // This resets local admin UI state only.
+
     setPage('dashboard')
     setQuery('')
     setSettingsTab('general')
+
     scrollToTop()
   }, [scrollToTop])
 
@@ -215,6 +219,18 @@ export default function AdminApp() {
       case 'bookings':
         return (
           <Bookings
+            onNavigate={navigate}
+            query={query}
+          />
+        )
+
+      /* --------------------------------------
+         MOMENTS GALLERY
+      -------------------------------------- */
+
+      case 'moments-gallery':
+        return (
+          <Gallery
             onNavigate={navigate}
             query={query}
           />
