@@ -32,9 +32,6 @@ import {
   readGameConfig,
   fetchGameConfig,
   subscribeGameConfig,
-  DEFAULT_SCRATCH_COUNT,
-  MIN_SCRATCH_COUNT,
-  MAX_SCRATCH_COUNT,
   type GameConfig,
   type GamePrize,
 } from './data/gameStore'
@@ -47,8 +44,8 @@ import './games.css'
 const SCRATCH_WIDTH = 480
 const SCRATCH_HEIGHT = 280
 
-// Reveal only after 70% of the coating has been erased.
-const REVEAL_COVERAGE = 0.7
+// Reveal after 75% of the coating has been erased.
+const REVEAL_COVERAGE = 0.75
 const MIN_POINTER_MOVEMENT = 1.5
 const SCRATCH_BRUSH_SIZE = 36
 
@@ -87,42 +84,42 @@ const cards = [
 
 const floatingItems = [
   {
-    emoji: 'ðŸŽ²',
+    emoji: '🎲',
     x: 12,
     y: 17,
     size: 30,
     delay: -2,
   },
   {
-    emoji: 'ðŸŽ®',
+    emoji: '🎮',
     x: 91,
     y: 37,
     size: 34,
     delay: -6,
   },
   {
-    emoji: 'âœ¨',
+    emoji: '✨',
     x: 6,
     y: 61,
     size: 23,
     delay: -3,
   },
   {
-    emoji: 'ðŸŽ²',
+    emoji: '🎲',
     x: 87,
     y: 67,
     size: 32,
     delay: -8,
   },
   {
-    emoji: 'ðŸ•¹ï¸',
+    emoji: '🕹️',
     x: 8,
     y: 87,
     size: 26,
     delay: -5,
   },
   {
-    emoji: 'ðŸ‘¾',
+    emoji: '👾',
     x: 92,
     y: 91,
     size: 25,
@@ -166,29 +163,12 @@ type ScratchCardProps = {
   result: GameResult
   enabled: boolean
   revealed: boolean
-  requiredScratches: number
   onReveal: () => void
 }
 
 /* =========================================================
    GAME CONFIGURATION
 ========================================================= */
-
-function getRequiredScratches(
-  config: GameConfig
-): number {
-  const count = config.scratchCount
-
-  if (
-    !Number.isInteger(count) ||
-    count < MIN_SCRATCH_COUNT ||
-    count > MAX_SCRATCH_COUNT
-  ) {
-    return DEFAULT_SCRATCH_COUNT
-  }
-
-  return count
-}
 
 /*
    Preserve the admin-defined winning cards.
@@ -294,16 +274,14 @@ function WinCelebration() {
    - No customer-facing scratch count.
    - No progress bar.
    - No "clear card" button.
-   - Each valid mouse/touch gesture counts once.
-   - Keyboard scratch actions count once each.
-   - Reveal requires admin scratch count AND 70% coverage.
+   - Reveal automatically at 75% coating removal.
+   - No customer-visible scratch counter.
 ========================================================= */
 
 function ScratchCard({
   result,
   enabled,
   revealed,
-  requiredScratches,
   onReveal,
 }: ScratchCardProps) {
   const canvasRef =
@@ -316,9 +294,6 @@ function ScratchCard({
     useRef<Point | null>(null)
 
   const keyboardRowRef = useRef(0)
-  const scratchGesturesRef = useRef(0)
-  const gestureMovedRef = useRef(false)
-  const [scratchGestures, setScratchGestures] = useState(0)
   const initialAlphaRef = useRef<Uint8ClampedArray | null>(null)
 
   const completedRef =
@@ -467,7 +442,7 @@ function ScratchCard({
       '600 14px system-ui'
 
     context.fillText(
-      'ZEN CAFÃ‰ Â· PLAY CORNER',
+      'ZEN CAFÉ · PLAY CORNER',
       canvas.width / 2,
       63
     )
@@ -503,7 +478,7 @@ function ScratchCard({
       '22px Georgia'
 
     context.fillText(
-      'âœ¦',
+      '✦',
       canvas.width / 2,
       237
     )
@@ -515,9 +490,6 @@ function ScratchCard({
 
   useEffect(() => {
     keyboardRowRef.current = 0
-    scratchGesturesRef.current = 0
-    gestureMovedRef.current = false
-    setScratchGestures(0)
     initialAlphaRef.current = null
 
     completedRef.current = false
@@ -661,8 +633,7 @@ function ScratchCard({
     }
     if (
       original > 0 &&
-      removed / original >= REVEAL_COVERAGE &&
-      scratchGesturesRef.current >= requiredScratches
+      removed / original >= REVEAL_COVERAGE
     ) {
       finishGame()
     }
@@ -697,7 +668,6 @@ function ScratchCard({
     }
     if (Math.hypot(point.x - previous.x, point.y - previous.y) < MIN_POINTER_MOVEMENT) return
     drawScratchStroke(previous, point)
-    gestureMovedRef.current = true
     previousPointRef.current = point
     checkCoverage()
   }
@@ -744,7 +714,6 @@ function ScratchCard({
     activePointerRef.current =
       event.pointerId
 
-    gestureMovedRef.current = false
 
     previousPointRef.current =
       point
@@ -806,20 +775,8 @@ function ScratchCard({
       processScratchMovement(event)
     }
 
-    const countGesture =
-      event.type === 'pointerup' &&
-      gestureMovedRef.current &&
-      !completedRef.current
-
     activePointerRef.current = null
     previousPointRef.current = null
-    gestureMovedRef.current = false
-
-    if (countGesture) {
-      scratchGesturesRef.current += 1
-      setScratchGestures(scratchGesturesRef.current)
-      checkCoverage()
-    }
 
     try {
       if (
@@ -853,15 +810,12 @@ function ScratchCard({
     if (!enabled || revealed || finishing || completedRef.current || canvasUnavailable) return
     const canvas = canvasRef.current
     if (!canvas) return
-    // Each activation erases a new horizontal band using the same brush
-    // and the same 70% area check as mouse/touch input.
+    // Each activation erases a horizontal band; reveal at 75% coverage.
     const step = SCRATCH_BRUSH_SIZE * 0.8
     const rowCount = Math.ceil(canvas.height / step)
     const y = Math.min(canvas.height - 1, keyboardRowRef.current * step + step / 2)
     drawScratchStroke({ x: 0, y }, { x: canvas.width, y })
     keyboardRowRef.current = (keyboardRowRef.current + 1) % rowCount
-    scratchGesturesRef.current += 1
-    setScratchGestures(scratchGesturesRef.current)
     checkCoverage()
   }
 
@@ -897,7 +851,7 @@ function ScratchCard({
             >
               {won
                 ? result.offer.emoji
-                : 'ðŸ¥º'}
+                : '🥺'}
             </span>
 
             <span className="zg-eyebrow">
@@ -939,7 +893,7 @@ function ScratchCard({
 
             <span>
               {finishing
-                ? 'Revealing your little surpriseâ€¦'
+                ? 'Revealing your little surprise…'
                 : 'A little surprise is waiting for you'}
             </span>
           </div>
@@ -1011,8 +965,8 @@ function ScratchCard({
             {canvasUnavailable
               ? 'Scratch surface unavailable. Please reload.'
               : finishing
-                ? 'Revealing your surpriseâ€¦'
-                : `Scratch the card ${requiredScratches} times and clear 70% to reveal (${Math.min(scratchGestures, requiredScratches)}/${requiredScratches}).`}
+                ? 'Revealing your surprise…'
+                : 'Scratch the card to discover your surprise.'}
           </p>
 
           {/* KEYBOARD-ONLY CONTROL */}
@@ -1059,16 +1013,6 @@ function GamesExperience() {
     setGameConfig,
   ] = useState<GameConfig>(
     () => readGameConfig()
-  )
-
-  const [
-    roundScratchCount,
-    setRoundScratchCount,
-  ] = useState<number>(
-    () =>
-      getRequiredScratches(
-        readGameConfig()
-      )
   )
 
   const [
@@ -1265,17 +1209,6 @@ function GamesExperience() {
         gameConfig
       )
 
-    /*
-       Freeze the scratch requirement
-       for the current game round.
-    */
-
-    setRoundScratchCount(
-      getRequiredScratches(
-        gameConfig
-      )
-    )
-
     setResult(
       selectedResult
     )
@@ -1327,7 +1260,7 @@ function GamesExperience() {
     phase === 'choose'
       ? 'The game is temporarily unavailable.'
       : phase === 'intro'
-        ? 'Your little adventure beginsâ€¦'
+        ? 'Your little adventure begins…'
         : choosing
           ? 'Choose your winning card'
           : phase === 'centering'
@@ -1363,7 +1296,7 @@ function GamesExperience() {
             <Gamepad2 size={15} />
 
             <span>
-              ZEN CAFÃ‰ Â· PLAY CORNER
+              ZEN CAFÉ · PLAY CORNER
             </span>
 
             <i aria-hidden="true" />
@@ -1417,8 +1350,8 @@ function GamesExperience() {
               Please check back later.
             </p>
           )}
-          <a href="#game" className="zg-hero-cta">Letâ€™s play <Gamepad2 size={18} /></a>
-          <p className="zg-hero-disclaimer">Just for fun Â· Demo rewards only</p>
+          <a href="#game" className="zg-hero-cta">Let’s play <Gamepad2 size={18} /></a>
+          <p className="zg-hero-disclaimer">Just for fun · Demo rewards only</p>
           </div>
         </section>
         <div className="zg-step-cards" aria-label="How to play"><div><b>01</b><span>Choose your card<small>Follow your feeling.</small></span></div><div><b>02</b><span>Scratch to reveal<small>Use your finger or mouse.</small></span></div><div><b>03</b><span>Enjoy the surprise<small>A little moment of Zen.</small></span></div></div>
@@ -1484,7 +1417,7 @@ function GamesExperience() {
               <span />
 
               <b>
-                âœ¦
+                ✦
               </b>
 
               <span />
@@ -1600,7 +1533,7 @@ function GamesExperience() {
                             className="zg-photo-fallback"
                             aria-hidden="true"
                           >
-                            âœ¦
+                            ✦
                           </span>
 
                           <img
@@ -1648,8 +1581,8 @@ function GamesExperience() {
                               >
                                 {revealed &&
                                 !won
-                                  ? 'â™¡'
-                                  : 'âœ¦'}
+                                  ? '♡'
+                                  : '✦'}
                               </span>
 
                               <span className="zg-eyebrow">
@@ -1679,9 +1612,6 @@ function GamesExperience() {
                                 revealed={
                                   revealed
                                 }
-                                requiredScratches={
-                                  roundScratchCount
-                                }
                                 onReveal={
                                   revealResult
                                 }
@@ -1689,7 +1619,7 @@ function GamesExperience() {
 
                               <span className="zg-back-signature">
                                 with love,
-                                Zen CafÃ©
+                                Zen Café
                               </span>
                             </>
                           )}
@@ -1732,8 +1662,8 @@ function GamesExperience() {
                   >
                     {result.kind ===
                     'win'
-                      ? 'ðŸ¥³'
-                      : 'ðŸ¥º'}
+                      ? '🥳'
+                      : '🥺'}
                   </span>
 
                   <strong>
@@ -1753,8 +1683,8 @@ function GamesExperience() {
                   <span className="zg-result-note">
                     {result.kind ===
                     'win'
-                      ? 'Demo reward â€” not a redeemable voucher.'
-                      : 'Demo game â€” a fresh chance awaits each round.'}
+                      ? 'Demo reward — not a redeemable voucher.'
+                      : 'Demo game — a fresh chance awaits each round.'}
                   </span>
 
                   <button
@@ -1767,8 +1697,8 @@ function GamesExperience() {
                   >
                     {result.kind ===
                     'win'
-                      ? 'Play again â†»'
-                      : 'Try my luck again â†»'}
+                      ? 'Play again ↻'
+                      : 'Try my luck again ↻'}
                   </button>
                 </div>
               )}
