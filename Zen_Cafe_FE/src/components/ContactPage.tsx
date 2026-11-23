@@ -1,3 +1,4 @@
+
 import { useState, useRef, type FormEvent } from 'react'
 import {
   MapPin,
@@ -9,30 +10,44 @@ import {
   Flower2,
   CheckCircle2,
 } from 'lucide-react'
+
 import Header from './Header'
 import PremiumFooter from './PremiumFooter'
 import './ContactPage.css'
 
+/* ==========================================
+   ZEN CAFÉ — CONTACT CONFIGURATION
+========================================== */
+
 const MAP = 'https://maps.app.goo.gl/1UiuxUG5MKE6ANDc6'
 const INSTAGRAM = 'https://www.instagram.com/zen.srilanka/'
-
-// Use the existing public HTTPS URL for your Zen Cafe API.
-// If your website already proxies /api/* to Hostinger,
-// this relative endpoint is correct.
 const CONTACT_API = '/api/contact'
 
 type SubmitStatus = 'idle' | 'sending' | 'success' | 'error'
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+const PHONE_REGEX = /^07[0-9]{8}$/
+
+/* ==========================================
+   ZEN CAFÉ — CONTACT PAGE
+========================================== */
+
 export default function ContactPage() {
   const [status, setStatus] = useState<SubmitStatus>('idle')
   const [error, setError] = useState('')
+
   const submittingRef = useRef(false)
   const formRef = useRef<HTMLFormElement>(null)
+  const successTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  /* ==========================================
+     FORM SUBMISSION
+  ========================================== */
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
-    if (submittingRef.current) return
+    if (submittingRef.current || status === 'success') return
 
     const form = event.currentTarget
     const data = new FormData(form)
@@ -46,8 +61,26 @@ export default function ContactPage() {
     const subject = value('subject')
     const message = value('message')
 
-    if (!name || !email || !subject || message.length < 5) {
+    if (!name || !email || !phone || !subject || message.length < 5) {
       setError('Please complete all required fields.')
+      setStatus('error')
+      return
+    }
+
+    /* Email validation */
+
+    if (!EMAIL_REGEX.test(email)) {
+      setError('Please enter a valid email address.')
+      setStatus('error')
+      return
+    }
+
+    /* Sri Lankan mobile number validation */
+
+    if (!PHONE_REGEX.test(phone)) {
+      setError(
+        'Please enter a valid 10-digit mobile number starting with 07.'
+      )
       setStatus('error')
       return
     }
@@ -86,11 +119,15 @@ export default function ContactPage() {
       setError('')
       formRef.current?.reset()
 
-      // Return button to normal after successful submission.
-      window.setTimeout(() => {
+      if (successTimeoutRef.current) {
+        clearTimeout(successTimeoutRef.current)
+      }
+
+      successTimeoutRef.current = setTimeout(() => {
         setStatus(current =>
           current === 'success' ? 'idle' : current
         )
+        successTimeoutRef.current = null
       }, 4000)
     } catch (err) {
       setStatus('error')
@@ -104,6 +141,10 @@ export default function ContactPage() {
     }
   }
 
+  /* ==========================================
+     FORM CHANGE HANDLER
+  ========================================== */
+
   function handleFormChange() {
     if (status === 'error') {
       setError('')
@@ -111,11 +152,19 @@ export default function ContactPage() {
     }
   }
 
+  /* ==========================================
+     CONTACT PAGE UI
+  ========================================== */
+
   return (
     <div className="zen-contact-page">
       <Header />
 
       <main id="contact-main">
+        {/* =====================================
+            HERO SECTION
+        ===================================== */}
+
         <section
           className="zc-hero"
           aria-labelledby="zc-title"
@@ -144,6 +193,10 @@ export default function ContactPage() {
 
         <div className="zc-wrap zc-content">
           <div className="zc-columns">
+            {/* =====================================
+                CONTACT INFORMATION
+            ===================================== */}
+
             <aside
               className="zc-info"
               aria-labelledby="zc-info-title"
@@ -209,6 +262,10 @@ export default function ContactPage() {
               />
             </aside>
 
+            {/* =====================================
+                CONTACT FORM
+            ===================================== */}
+
             <section
               className="zc-form-card"
               id="contact-form"
@@ -235,11 +292,14 @@ export default function ContactPage() {
                 onChange={handleFormChange}
               >
                 <div className="zc-fields">
+                  {/* NAME */}
+
                   <label>
                     Your name <span>*</span>
 
                     <input
                       name="name"
+                      type="text"
                       autoComplete="name"
                       placeholder="Enter your full name"
                       required
@@ -248,6 +308,8 @@ export default function ContactPage() {
                     />
                   </label>
 
+                  {/* EMAIL */}
+
                   <label>
                     Your email <span>*</span>
 
@@ -255,25 +317,37 @@ export default function ContactPage() {
                       name="email"
                       type="email"
                       autoComplete="email"
+                      inputMode="email"
                       placeholder="you@example.com"
                       required
                       maxLength={150}
+                      pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
+                      title="Please enter a valid email address, such as customer@gmail.com"
                       disabled={status === 'sending'}
                     />
                   </label>
 
+                  {/* PHONE NUMBER */}
+
                   <label>
-                    Phone number
+                    Phone number <span>*</span>
 
                     <input
                       name="phone"
                       type="tel"
-                      autoComplete="tel"
-                      placeholder="+94"
-                      maxLength={30}
+                      autoComplete="tel-national"
+                      inputMode="numeric"
+                      placeholder="0771234567"
+                      required
+                      minLength={10}
+                      maxLength={10}
+                      pattern="07[0-9]{8}"
+                      title="Enter exactly 10 digits starting with 07, for example 0771234567"
                       disabled={status === 'sending'}
                     />
                   </label>
+
+                  {/* SUBJECT */}
 
                   <label>
                     Subject <span>*</span>
@@ -297,6 +371,8 @@ export default function ContactPage() {
                   </label>
                 </div>
 
+                {/* MESSAGE */}
+
                 <label>
                   Your message <span>*</span>
 
@@ -311,7 +387,8 @@ export default function ContactPage() {
                   />
                 </label>
 
-                {/* Hidden spam protection field */}
+                {/* SPAM PROTECTION */}
+
                 <div
                   style={{
                     position: 'absolute',
@@ -324,6 +401,7 @@ export default function ContactPage() {
                 >
                   <label>
                     Website
+
                     <input
                       name="website"
                       type="text"
@@ -333,11 +411,15 @@ export default function ContactPage() {
                   </label>
                 </div>
 
+                {/* FORM NOTE */}
+
                 <p className="zc-form-note">
                   Your enquiry will be sent directly to the
                   Zen Café team. Enquiries do not confirm
                   a booking.
                 </p>
+
+                {/* SUBMIT BUTTON */}
 
                 <button
                   className="zc-button"
@@ -366,6 +448,8 @@ export default function ContactPage() {
                   )}
                 </button>
 
+                {/* ERROR MESSAGE */}
+
                 {error && (
                   <p
                     role="alert"
@@ -381,6 +465,10 @@ export default function ContactPage() {
               </form>
             </section>
           </div>
+
+          {/* =====================================
+              SOCIAL MEDIA
+          ===================================== */}
 
           <section
             className="zc-social"
@@ -406,6 +494,10 @@ export default function ContactPage() {
               </a>
             </div>
           </section>
+
+          {/* =====================================
+              LOCATION SECTION
+          ===================================== */}
 
           <section
             className="zc-location"
