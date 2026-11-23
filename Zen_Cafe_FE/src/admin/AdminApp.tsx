@@ -67,11 +67,10 @@ export default function AdminApp() {
     (nextPage: AdminPage): void => {
       setPage(nextPage)
 
-      // Clear the previous section's search.
+      // Clear previous section search.
       setQuery('')
 
-      // Normal Settings navigation opens
-      // Café Information by default.
+      // Default Settings tab.
       if (nextPage === 'settings') {
         setSettingsTab('general')
       }
@@ -87,9 +86,7 @@ export default function AdminApp() {
 
   const openSettings = useCallback(
     (tab: 'profile' | 'security'): void => {
-      // Preserve the requested Settings tab.
       setSettingsTab(tab)
-
       setPage('settings')
       setQuery('')
 
@@ -132,6 +129,20 @@ export default function AdminApp() {
     },
     []
   )
+
+  /* ==========================================
+     LOGOUT HANDLER
+  ========================================== */
+
+  const handleLogout = useCallback((): void => {
+    // Logout behavior must use the application's
+    // actual authentication mechanism.
+    // This resets local admin UI state only.
+    setPage('dashboard')
+    setQuery('')
+    setSettingsTab('general')
+    scrollToTop()
+  }, [scrollToTop])
 
   /* ==========================================
      PAGE RENDERING
@@ -248,6 +259,7 @@ export default function AdminApp() {
       onQuery={setQuery}
       onOpenSettings={openSettings}
       onConfirmLogout={confirmLogout}
+      onLogout={handleLogout}
     >
       {renderPage()}
     </AdminLayout>
