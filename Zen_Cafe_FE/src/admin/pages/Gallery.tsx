@@ -22,7 +22,7 @@ import {
   UploadCloud,
   User,
   X,
-  XCircle,
+  EyeOff,
 } from 'lucide-react'
 
 import type { AdminPage } from '../AdminApp'
@@ -67,15 +67,16 @@ type ApiResponse = {
   error?: string
   message?: string
   photos?: GalleryPhoto[]
+  count?: number
 }
 
 /* ==========================================
    CONSTANTS
 ========================================== */
 
-const MAX_PHOTOS = 2
+const MAX_BATCH_PHOTOS = 2
 const MAX_CAPTION_LENGTH = 1000
-const MAX_REQUEST_BYTES = 15 * 1024 * 1024
+const MAX_BATCH_BYTES = 14 * 1024 * 1024
 
 const ACCEPTED_TYPES = [
   'image/jpeg',
@@ -186,6 +187,11 @@ export default function Gallery({
 
   const uploadingRef =
     useRef(false)
+
+  const [uploadedCount, setUploadedCount] = useState(0)
+  const [uploadTotal, setUploadTotal] = useState(0)
+  const [completedBatches, setCompletedBatches] = useState(0)
+  const [totalBatches, setTotalBatches] = useState(0)
 
   /* ==========================================
      LOAD PHOTOS FROM POSTGRESQL
@@ -363,45 +369,19 @@ export default function Gallery({
 
     const current = previewsRef.current
 
-    if (
-      current.length + selected.length >
-      MAX_PHOTOS
-    ) {
-      setUploadError(
-        `You can upload a maximum of ${MAX_PHOTOS} photos at once.`
-      )
-      return
-    }
-
     for (const file of selected) {
       if (!ACCEPTED_TYPES.includes(file.type)) {
-        setUploadError(
-          'Only JPG, PNG and WebP images are supported.'
-        )
+        setUploadError('Only JPG, PNG and WebP images are supported.')
         return
       }
-
       if (file.size === 0) {
-        setUploadError(
-          'One of the selected images is empty.'
-        )
+        setUploadError('One of the selected images is empty.')
         return
       }
-    }
-
-    const totalBytes = [
-      ...current.map(item => item.file),
-      ...selected,
-    ].reduce(
-      (total, file) => total + file.size,
-      0
-    )
-
-    if (totalBytes > MAX_REQUEST_BYTES) {
-      setUploadError(
-        'The selected photos exceed the 15 MB request limit.'
-      )
-      return
+      if (file.size > MAX_BATCH_BYTES) {
+        setUploadError(`${file.name} exceeds the safe 14 MB per-photo limit.`)
+        return
+      }
     }
 
     const next = [
@@ -483,80 +463,93 @@ export default function Gallery({
 
     if (!confirmed) return
 
+    // Preserve the backend's two-photo and 15 MB request limits.
+    // Admins may select any total number of photos.
+    const batches: UploadPreview[][] = []
+    let batch: UploadPreview[] = []
+    let batchBytes = 0
+
+    for (const item of uploadPreviews) {
+      if (item.file.size > MAX_BATCH_BYTES) {
+        setUploadError(`${item.file.name} exceeds the safe 14 MB per-photo limit.`)
+        return
+      }
+      if (
+        batch.length >= MAX_BATCH_PHOTOS ||
+        batchBytes + item.file.size > MAX_BATCH_BYTES
+      ) {
+        if (batch.length) batches.push(batch)
+        batch = []
+        batchBytes = 0
+      }
+      batch.push(item)
+      batchBytes += item.file.size
+    }
+    if (batch.length) batches.push(batch)
+
     uploadingRef.current = true
     setUploading(true)
     setUploadError('')
+    setUploadedCount(0)
+    setUploadTotal(uploadPreviews.length)
+    setCompletedBatches(0)
+    setTotalBatches(batches.length)
+
+    let succeeded = 0
+    let finishedBatches = 0
 
     try {
-      const formData = new FormData()
+      for (const items of batches) {
+        const formData = new FormData()
+        formData.append('caption', uploadCaption.trim())
+        for (const item of items) {
+          formData.append('photos', item.file, item.file.name)
+        }
 
-      formData.append(
-        'caption',
-        uploadCaption.trim()
-      )
+        const headers = new Headers(getAdminAuthHeaders())
+        // The browser must set the multipart boundary itself.
+        headers.delete('Content-Type')
 
-      uploadPreviews.forEach(item => {
-        formData.append(
-          'photos',
-          item.file,
-          item.file.name
-        )
-      })
-
-      const authHeaders =
-        getAdminAuthHeaders()
-
-      const headers = new Headers(authHeaders)
-
-      // Browser must generate the multipart boundary.
-      headers.delete('Content-Type')
-
-      const response = await fetch(
-        '/api/gallery/admin/upload',
-        {
+        const response = await fetch('/api/gallery/admin/upload', {
           method: 'POST',
           headers,
           body: formData,
+        })
+        const data = await readApiResponse(response)
+        if (!response.ok || !data.success) {
+          throw new Error(data.error || `Upload failed (${response.status}).`)
         }
-      )
-
-      const data =
-        await readApiResponse(response)
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.error ||
-            `Upload failed (${response.status}).`
-        )
+        succeeded += items.length
+        finishedBatches++
+        setUploadedCount(succeeded)
+        setCompletedBatches(finishedBatches)
       }
 
       resetUpload()
       setUploadOpen(false)
       setActiveTab('approved')
-
       await loadPhotos()
-
       await AdminAlert.success(
         'Photos Published',
-        'Your Zen Café moments have been uploaded successfully.'
+        `${succeeded} Zen Café photos were published successfully.`
       )
     } catch (err) {
-      console.error(
-        'Admin gallery upload failed:',
-        err
+      console.error('Admin gallery upload failed:', err)
+      const message = err instanceof Error ? err.message : 'Unable to upload photos.'
+
+      // Keep unsubmitted photos selected so a retry does not
+      // automatically resubmit batches that were confirmed successful.
+      const confirmedItems = batches.slice(0, finishedBatches).flat()
+      const confirmedUrls = new Set(confirmedItems.map(item => item.url))
+      confirmedItems.forEach(item => URL.revokeObjectURL(item.url))
+      updateUploadPreviews(
+        previewsRef.current.filter(item => !confirmedUrls.has(item.url))
       )
 
-      const message =
-        err instanceof Error
-          ? err.message
-          : 'Unable to upload photos.'
-
-      setUploadError(message)
-
-      await AdminAlert.error(
-        'Upload Failed',
-        message
-      )
+      const notice = `${succeeded} of ${uploadPreviews.length} photos confirmed uploaded. ${message} The failed batch may have reached the server; check the gallery before retrying.`
+      setUploadError(notice)
+      await loadPhotos()
+      await AdminAlert.error('Upload Interrupted', notice)
     } finally {
       uploadingRef.current = false
       setUploading(false)
@@ -574,9 +567,9 @@ export default function Gallery({
 
     const confirmed =
       await AdminAlert.confirm(
-        'Approve Photo',
-        `Publish this photo by ${photo.customerName || 'customer'} to the public Community Gallery?`,
-        'Yes, Approve'
+        'Show Photo',
+        `Show this photo by ${photo.customerName || 'customer'} in the public gallery?`,
+        'Yes, Show'
       )
 
     if (!confirmed) return
@@ -598,7 +591,7 @@ export default function Gallery({
       if (!response.ok || !data.success) {
         throw new Error(
           data.error ||
-            'Failed to approve photo.'
+            'Failed to show photo.'
         )
       }
 
@@ -623,15 +616,15 @@ export default function Gallery({
       )
 
       await AdminAlert.success(
-        'Photo Approved',
+        'Photo Visible',
         'Photo is now live in the public community gallery.'
       )
     } catch (err) {
       await AdminAlert.error(
-        'Approval Failed',
+        'Show Failed',
         err instanceof Error
           ? err.message
-          : 'Unable to approve photo.'
+          : 'Unable to show photo.'
       )
     } finally {
       setActionInProgress(null)
@@ -649,9 +642,9 @@ export default function Gallery({
 
     const confirmed =
       await AdminAlert.confirm(
-        'Reject Photo',
-        'Reject this photo from public display? The photo will not appear in the public gallery.',
-        'Yes, Reject'
+        'Hide Photo',
+        'Hide this photo from the public gallery? You can show it again later.',
+        'Yes, Hide'
       )
 
     if (!confirmed) return
@@ -673,7 +666,7 @@ export default function Gallery({
       if (!response.ok || !data.success) {
         throw new Error(
           data.error ||
-            'Failed to reject photo.'
+            'Failed to hide photo.'
         )
       }
 
@@ -698,15 +691,15 @@ export default function Gallery({
       )
 
       await AdminAlert.warning(
-        'Photo Rejected',
-        'Photo marked as rejected and hidden from public display.'
+        'Photo Hidden',
+        'Photo is hidden from public view and can be restored later.'
       )
     } catch (err) {
       await AdminAlert.error(
-        'Rejection Failed',
+        'Hide Failed',
         err instanceof Error
           ? err.message
-          : 'Unable to reject photo.'
+          : 'Unable to hide photo.'
       )
     } finally {
       setActionInProgress(null)
@@ -883,7 +876,7 @@ export default function Gallery({
         </div>
 
         <div className="za-product-summary-card">
-          <span>Approved (Public)</span>
+          <span>Published (Public)</span>
 
           <strong
             style={{
@@ -899,7 +892,7 @@ export default function Gallery({
         </div>
 
         <div className="za-product-summary-card">
-          <span>Rejected</span>
+          <span>Hidden</span>
 
           <strong
             style={{
@@ -976,7 +969,7 @@ export default function Gallery({
               className="mr-1"
             />
 
-            Approved ({stats.approved})
+            Published ({stats.approved})
           </button>
 
           <button
@@ -990,12 +983,12 @@ export default function Gallery({
               setActiveTab('rejected')
             }
           >
-            <XCircle
+            <EyeOff
               size={14}
               className="mr-1"
             />
 
-            Rejected ({stats.rejected})
+            Hidden ({stats.rejected})
           </button>
 
           <button
@@ -1148,7 +1141,7 @@ export default function Gallery({
                     {isRejected && (
                       <span className="inline-flex items-center gap-1 rounded-full bg-rose-600 px-2.5 py-1 text-[11px] font-bold text-white">
                         <X size={12} />
-                        Rejected
+                        Hidden
                       </span>
                     )}
                   </div>
@@ -1227,11 +1220,11 @@ export default function Gallery({
                       >
                         <Check size={14} />
 
-                        Approve
+                        Show
                       </button>
                     )}
 
-                    {!isRejected && (
+                    {isApproved && (
                       <button
                         type="button"
                         disabled={isBusy}
@@ -1240,9 +1233,9 @@ export default function Gallery({
                         }}
                         className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl bg-amber-600 px-2 py-2 text-xs font-semibold text-white transition hover:bg-amber-700 disabled:opacity-50"
                       >
-                        <X size={14} />
+                        <EyeOff size={14} />
 
-                        Reject
+                        Hide
                       </button>
                     )}
 
@@ -1339,9 +1332,7 @@ export default function Gallery({
               <button
                 type="button"
                 disabled={
-                  uploading ||
-                  uploadPreviews.length >=
-                    MAX_PHOTOS
+                  uploading
                 }
                 onClick={() =>
                   fileInputRef.current?.click()
@@ -1361,7 +1352,7 @@ export default function Gallery({
                 </span>
 
                 <span className="mt-1 text-[11px] text-stone-400">
-                  Maximum 2 photos per upload
+                  No total photo limit — uploaded in safe batches
                 </span>
               </button>
 
@@ -1375,7 +1366,7 @@ export default function Gallery({
                     </h3>
 
                     <span className="text-xs text-stone-400">
-                      {uploadPreviews.length}/{MAX_PHOTOS}
+                      {uploadPreviews.length} selected
                     </span>
                   </div>
 
@@ -1465,6 +1456,25 @@ export default function Gallery({
                   />
 
                   <span>{uploadError}</span>
+                </div>
+              )}
+
+              {/* BATCH UPLOAD PROGRESS */}
+              {(uploading || uploadedCount > 0) && (
+                <div className="mt-4">
+                  <div className="mb-2 flex justify-between text-xs font-semibold text-stone-700">
+                    <span>Uploaded {uploadedCount} of {uploadTotal}</span>
+                    <span>{uploadTotal ? Math.round(uploadedCount / uploadTotal * 100) : 0}%</span>
+                  </div>
+                  <div className="h-2 overflow-hidden rounded-full bg-stone-200">
+                    <div
+                      className="h-full rounded-full bg-emerald-600 transition-all"
+                      style={{ width: `${uploadTotal ? Math.round(uploadedCount / uploadTotal * 100) : 0}%` }}
+                    />
+                  </div>
+                  <p className="mt-2 text-[11px] text-stone-500">
+                    {completedBatches} of {totalBatches} batches completed
+                  </p>
                 </div>
               )}
 
@@ -1639,12 +1649,12 @@ export default function Gallery({
                   >
                     <Check size={16} />
 
-                    Approve Photo
+                    Show Photo
                   </button>
                 )}
 
-                {previewPhoto.status !==
-                  'rejected' && (
+                {previewPhoto.status ===
+                  'approved' && (
                   <button
                     type="button"
                     disabled={
@@ -1657,9 +1667,9 @@ export default function Gallery({
                     }}
                     className="inline-flex items-center gap-1.5 rounded-2xl bg-amber-600 px-4 py-2.5 text-xs font-bold text-white disabled:opacity-50"
                   >
-                    <X size={16} />
+                    <EyeOff size={16} />
 
-                    Reject Photo
+                    Hide Photo
                   </button>
                 )}
 
