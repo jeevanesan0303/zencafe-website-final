@@ -1,50 +1,75 @@
-#zen-gallery-page{--gallery-paper:#fff8ee;--gallery-ink:#492920;--gallery-red:#a52224;background:#fbf1e5;color:var(--gallery-ink);min-height:100vh}
-#zen-gallery-page *{box-sizing:border-box}
-#zen-gallery-page main{padding-top:110px}
-#zen-gallery-page .zen-gallery-hero{min-height:360px;display:grid;place-items:center;padding:55px 24px;background:#fff7ec url('/assets/gallery/gallery-sakura-cafe.png') center/cover no-repeat;text-align:center;position:relative;isolation:isolate}
-#zen-gallery-page .zen-gallery-hero::before{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#fff8ed60,#fff8edc9 35%,#fff8edb5 65%,#fff8ed20)}
-#zen-gallery-page .zen-gallery-hero-copy{max-width:790px;animation:zenGalleryEnter .65s ease both}
-#zen-gallery-page .zen-gallery-eyebrow{color:#9b2725;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:0 0 18px}
-#zen-gallery-page .zen-gallery-hero h1{font-family:'Zen Mareka Local',Georgia,serif!important;font-size:clamp(44px,5vw,76px)!important;text-transform:none!important;line-height:1.12!important;letter-spacing:0!important;color:#492920!important;margin:0 0 20px}
-#zen-gallery-page .zen-gallery-hero h1 em{color:#a52224;font-style:normal}
-#zen-gallery-page .zen-gallery-hero-copy>p:last-of-type{font-size:16px;line-height:1.8;color:#63493e}
-#zen-gallery-page .zen-gallery-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:26px}
-#zen-gallery-page .zen-gallery-actions a,#zen-gallery-page .zen-gallery-empty button{background:#a52224;color:#fff!important;border:1px solid #a52224;padding:13px 23px;border-radius:999px;font-size:13px;font-weight:700;text-decoration:none;transition:background .2s,transform .2s}
-#zen-gallery-page .zen-gallery-actions a+ a{background:#fff8eedb;color:#922022!important;border-color:#cbb3a1}
-#zen-gallery-page .zen-gallery-actions a:hover{transform:translateY(-2px);background:#731d20;color:white!important}
-#zen-gallery-page .zen-gallery-grid-mode{background:transparent!important;opacity:1!important;transform:none!important;overflow:visible;padding:0!important}
-#zen-gallery-page .gallery-section-inner{max-width:1440px;padding:42px 32px 70px}
-#zen-gallery-page .gallery-section-head,#zen-gallery-page .gallery-to-footer-fade{display:none}
-#zen-gallery-page .gallery-main-grid{display:flex;flex-direction:column;gap:60px}
-#zen-gallery-page .zen-moments-collection{order:0;min-width:0}
-#zen-gallery-page .gallery-upload-form{order:1;max-width:900px;width:100%;margin:auto;background:var(--gallery-paper)!important;border:1px solid #d5b9a77a;border-radius:24px;padding:clamp(22px,4vw,45px);box-shadow:0 16px 45px #673f2310;scroll-margin-top:125px}
-#zen-gallery-page #gallery{scroll-margin-top:120px}
-#zen-gallery-page .zen-moments-toolbar{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:24px}
-#zen-gallery-page .zen-moments-toolbar>span{font-size:13px;color:#80675b}
-#zen-gallery-page .zen-moments-toolbar h2,#zen-gallery-page .gallery-upload-head h3{font-family:'Zen Mareka Local',Georgia,serif!important;font-size:clamp(25px,3vw,38px)!important;line-height:1.3!important;color:var(--gallery-ink)!important;text-transform:none!important;margin:8px 0}
-#zen-gallery-page .zen-moments-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;align-items:start}
-#zen-gallery-page .zen-moment-card{min-width:0;overflow:hidden;border:1px solid #d5b9a77a;border-radius:18px;background:var(--gallery-paper);box-shadow:0 8px 24px #673f2310;animation:zenGalleryEnter .5s ease both}
-#zen-gallery-page .zen-moment-image{width:100%;aspect-ratio:4/3;display:block;position:relative;overflow:hidden;background:#eadbca;border:0;padding:0;cursor:zoom-in}
-#zen-gallery-page .zen-moment-image img{position:static!important;display:block!important;width:100%!important;height:100%!important;max-width:100%!important;object-fit:contain!important;transform:none!important}
-#zen-gallery-page .zen-moment-image>span{position:absolute;bottom:12px;right:12px;padding:7px 12px;border-radius:30px;background:#fff9efed;color:#6b2923;font-size:11px;opacity:0;transition:opacity .2s}
-#zen-gallery-page .zen-moment-image:hover>span,#zen-gallery-page .zen-moment-image:focus-visible>span{opacity:1}
-#zen-gallery-page .zen-moment-caption{padding:19px;display:flex;gap:12px;justify-content:space-between;align-items:flex-start}
-#zen-gallery-page .zen-moment-caption>div{min-width:0}
-#zen-gallery-page .zen-moment-caption h3{font-family:Georgia,serif!important;text-transform:none!important;color:var(--gallery-ink)!important;font-size:20px!important;line-height:1.3!important;overflow-wrap:anywhere;margin:0 0 6px}
-#zen-gallery-page .zen-moment-caption p{font-size:13px;line-height:1.7;overflow-wrap:anywhere;margin:0;color:var(--gallery-ink)}
-#zen-gallery-page .zen-moment-caption button{display:flex;gap:5px;align-items:center;flex-shrink:0;color:#a52224;background:#efdacf66;border:0;border-radius:99px;padding:9px;font-size:12px}
-#zen-gallery-page .zen-gallery-empty{padding:50px 20px;text-align:center;border:1px dashed #c8aa97;border-radius:20px;display:grid;justify-items:center;gap:16px}
-#zen-gallery-page .gallery-upload-form input,#zen-gallery-page .gallery-upload-form textarea{max-width:100%;color:var(--gallery-ink);background:var(--gallery-paper)}
-#zen-gallery-page .zen-gallery-notice{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);width:min(92%,560px);z-index:200}
-#zen-gallery-page .zen-gallery-notice>span{display:flex;align-items:center;justify-content:space-between;gap:15px;background:#742326;color:#fff;padding:17px 22px;border-radius:16px;box-shadow:0 10px 32px #0003}
-#zen-gallery-page .zen-gallery-notice button{background:none;border:0;color:inherit;font-size:24px}
-#zen-gallery-page :is(a,button,input,textarea):focus-visible{outline:3px solid #c7463e;outline-offset:4px}
-[data-theme="dark"] #zen-gallery-page{--gallery-paper:#291e1b;--gallery-ink:#f8e9d8;background:#1d1614;color:#f8e9d8}
-[data-theme="dark"] #zen-gallery-page .zen-gallery-hero::before{background:#1d1614b8}
-[data-theme="dark"] #zen-gallery-page .zen-gallery-hero h1,[data-theme="dark"] #zen-gallery-page .zen-gallery-hero-copy>p{color:#fff0dd!important}
-[data-theme="dark"] #zen-gallery-page .zen-gallery-hero h1 em{color:#ff9891}
-[data-theme="dark"] #zen-gallery-page .zen-moments-toolbar>span{color:#d7bcaa}
-@keyframes zenGalleryEnter{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@media(max-width:1000px){#zen-gallery-page .zen-moments-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:600px){#zen-gallery-page main{padding-top:94px}#zen-gallery-page .zen-gallery-hero{min-height:340px;padding:36px 20px;background-position:65% center}#zen-gallery-page .gallery-section-inner{padding:28px 18px 42px}#zen-gallery-page .zen-moments-grid{grid-template-columns:1fr}#zen-gallery-page .zen-moments-toolbar{align-items:flex-start;flex-direction:column;gap:4px}#zen-gallery-page .gallery-upload-head{align-items:flex-start}#zen-gallery-page .gallery-upload-head h3{font-size:26px!important}}
-@media(prefers-reduced-motion:reduce){#zen-gallery-page *,#zen-gallery-page *::before{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* Add these rules at the END of your existing public gallery CSS file. */
+/* Compact four-column gallery, three rows per page on desktop. */
+#zen-gallery-page .zen-moments-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+#zen-gallery-page .zen-moment-card {
+  min-width: 0;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 18px #673f2310;
+}
+#zen-gallery-page .zen-moment-image {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: auto;
+  overflow: hidden;
+  background: transparent;
+}
+#zen-gallery-page .zen-moment-image img {
+  display: block !important;
+  position: static !important;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  object-fit: initial !important;
+  transform: none !important;
+}
+#zen-gallery-page .zen-moment-caption {
+  padding: 12px;
+  gap: 8px;
+}
+#zen-gallery-page .zen-moment-caption h3 {
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+}
+#zen-gallery-page .zen-moment-caption p { font-size: 12px; line-height: 1.5; }
+#zen-gallery-page .zen-moment-caption button { padding: 7px; }
+#zen-gallery-page .zen-gallery-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 28px;
+  padding: 18px 0;
+  border-top: 1px solid #d5b9a77a;
+}
+#zen-gallery-page .zen-gallery-page-summary { font-size: 12px; color: #80675b; }
+#zen-gallery-page .zen-gallery-page-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+#zen-gallery-page .zen-gallery-page-controls button {
+  min-width: 36px;
+  height: 36px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 9px;
+  border-radius: 11px;
+  border: 1px solid #dcc6b6;
+  background: #fff8ee;
+  color: #633b31;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#zen-gallery-page .zen-gallery-page-controls button.is-active { background: #a52224; border-color: #a52224; color: #fff; }
+#zen-gallery-page .zen-gallery-page-controls button:disabled { opacity: .35; cursor: not-allowed; }
+[data-theme="dark"] #zen-gallery-page .zen-gallery-page-controls button { background: #291e1b; color: #f8e9d8; border-color: #694a40; }
+[data-theme="dark"] #zen-gallery-page .zen-gallery-page-controls button.is-active { background: #a52224; color: #fff; }
+@media (max-width: 1000px) { #zen-gallery-page .zen-moments-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 700px) { #zen-gallery-page .zen-moments-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; } }
+@media (max-width: 420px) { #zen-gallery-page .zen-moments-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; } #zen-gallery-page .zen-moment-caption { padding: 9px; } #zen-gallery-page .zen-gallery-pagination { justify-content: center; } }
