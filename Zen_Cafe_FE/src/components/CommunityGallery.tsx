@@ -25,7 +25,6 @@ import {
 
 type Post = {
   id: string
-  user: string
   caption: string
   image: string
   likes: number
@@ -58,9 +57,6 @@ type UploadResponse = {
 
 type PublicPhoto = {
   id: string | number
-  user?: string
-  name?: string
-  title?: string
   caption?: string
   description?: string
   image?: string
@@ -213,11 +209,6 @@ function normalizePublicPhotos(
 
       return {
         id,
-        user:
-          photo.user ||
-          photo.name ||
-          photo.title ||
-          'Zen Guest',
         caption:
           photo.caption ||
           photo.description ||
@@ -1524,12 +1515,7 @@ export default function CommunityGallery({
 
                     <div className="gallery-slide-info">
                       <div>
-                        <p className="gallery-slide-kicker">
-                          Guest moment
-                        </p>
-
-                        <h4>Zen Café Moment</h4>
-                        <p>{post.caption}</p>
+                        <h4>{post.caption}</h4>
                       </div>
 
                       <button
@@ -1690,12 +1676,7 @@ export default function CommunityGallery({
 
               <div className="gallery-lightbox-info">
                 <div>
-                  <p className="gallery-lightbox-kicker">
-                    Guest moment
-                  </p>
-
-                  <h4>{lightbox.user}</h4>
-                  <p>{lightbox.caption}</p>
+                  <h4>{lightbox.caption}</h4>
                 </div>
 
                 <button
