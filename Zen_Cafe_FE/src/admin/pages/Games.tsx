@@ -34,6 +34,8 @@ import {
   readGameConfig,
   fetchGameConfig,
   saveGameConfig,
+  fetchScratchStats,
+  type ScratchStats,
   subscribeGameConfig,
   type GameConfig,
   type GamePrize,
@@ -63,7 +65,7 @@ const TOTAL_CARDS = 5
 const REQUIRED_WINNERS = 2
 
 const DEFAULT_SCRATCH_COUNT = 25
-const MIN_SCRATCH_COUNT = 5
+const MIN_SCRATCH_COUNT = 1
 const MAX_SCRATCH_COUNT = 100
 
 const CARD_IMAGES = [
@@ -212,6 +214,36 @@ export default function Games({
 
   const [saving, setSaving] = useState(false)
   const savingRef = useRef(false)
+  const [stats, setStats] = useState<ScratchStats | null>(null)
+  const [statsError, setStatsError] = useState('')
+  const [statsRevision, setStatsRevision] = useState(0)
+
+  useEffect(() => {
+    let active = true
+    let timer: number | undefined
+    const controller = new AbortController()
+    const refresh = async () => {
+      try {
+        const latest = await fetchScratchStats(controller.signal)
+        if (active) {
+          setStats(latest)
+          setStatsError('')
+        }
+      } catch (error) {
+        if (active) {
+          setStatsError(error instanceof Error ? error.message : 'Unable to load live statistics.')
+        }
+      } finally {
+        if (active) timer = window.setTimeout(refresh, 10000)
+      }
+    }
+    void refresh()
+    return () => {
+      active = false
+      controller.abort()
+      window.clearTimeout(timer)
+    }
+  }, [statsRevision])
 
   /* ==========================================
      LOAD CONFIGURATION
@@ -481,7 +513,7 @@ export default function Games({
     try {
       const confirmed = await AdminAlert.confirm(
         'Save Games & Rewards?',
-        `Save the five scratch cards, selected rewards, and ${scratchCount} required scratches?`,
+        `Save the five scratch cards, selected rewards, and ${scratchCount} required completed plays?`,
         'Yes, Save Changes'
       )
 
@@ -562,11 +594,13 @@ export default function Games({
       }
 
       setSavedConfig(nextConfig)
+      setStats(null)
+      setStatsRevision(value => value + 1)
       setProducts(latestProducts)
 
       await AdminAlert.success(
         'Game Settings Saved',
-        `Your game settings have been saved. Customers must complete ${scratchCount} scratches to reveal their result.`
+        `Your game settings have been saved. Every ${scratchCount}th completed play is eligible to win if a winning card is selected.`
       )
     } catch (error) {
       console.error(
@@ -711,7 +745,12 @@ export default function Games({
             icon: Gift,
           },
           {
-            label: 'Required Scratches',
+            label: 'Total Completed Plays',
+            value: stats?.totalPlays ?? '—',
+            icon: Gamepad2,
+          },
+          {
+            label: 'Required Plays',
             value: scratchCount,
             icon: Hand,
           },
@@ -872,9 +911,8 @@ export default function Games({
             </h2>
 
             <p style={descriptionStyle}>
-              Choose how many complete scratch
-              gestures a customer must perform
-              before the prize is revealed.
+              Set the global completed-play interval for prize eligibility.
+              Each customer reveals their result after scratching 75% of one card.
             </p>
           </div>
         </div>
@@ -906,11 +944,11 @@ export default function Games({
                   color: COLORS.heading,
                 }}
               >
-                Required Scratches
+                Required Plays
               </div>
 
               <p style={descriptionStyle}>
-                Default: 25 scratches
+                Default: 25 completed plays
               </p>
             </div>
 
@@ -1018,7 +1056,7 @@ export default function Games({
                 Number(event.target.value)
               )
             }
-            aria-label="Adjust required scratches"
+            aria-label="Adjust required completed plays"
             style={{
               width: '100%',
               accentColor: COLORS.primary,
@@ -1034,8 +1072,8 @@ export default function Games({
               color: COLORS.text,
             }}
           >
-            <span>{MIN_SCRATCH_COUNT} scratches</span>
-            <span>{MAX_SCRATCH_COUNT} scratches</span>
+            <span>{MIN_SCRATCH_COUNT} plays</span>
+            <span>{MAX_SCRATCH_COUNT} plays</span>
           </div>
 
           <div
@@ -1061,7 +1099,7 @@ export default function Games({
                   color: COLORS.heading,
                 }}
               >
-                Customer Scratch Counter
+                Global Completed Play Counter
               </strong>
 
               <span
@@ -1071,7 +1109,7 @@ export default function Games({
                   color: COLORS.primary,
                 }}
               >
-                0 / {scratchCount}
+                {stats ? `${stats.progress} / ${stats.scratchCount}` : '—'}
               </span>
             </div>
 
@@ -1086,7 +1124,7 @@ export default function Games({
             >
               <div
                 style={{
-                  width: '0%',
+                  width: stats ? `${100 * stats.progress / stats.scratchCount}%` : '0%',
                   height: '100%',
                   background: COLORS.primary,
                 }}
@@ -1099,9 +1137,8 @@ export default function Games({
                 marginTop: 11,
               }}
             >
-              The customer will see their reward
-              after completing {scratchCount} valid
-              scratch gestures.
+              {stats ? `Total completed: ${stats.totalPlays}. Remaining: ${stats.remaining}. Next eligible play: ${stats.nextMilestone}.` : 'Waiting for live statistics.'}
+              {statsError && <span role="status" style={{ display: 'block', color: '#A15B5B' }}>{stats ? 'Last known values (refresh failed): ' : ''}{statsError}</span>}
             </p>
           </div>
 
@@ -1546,9 +1583,7 @@ export default function Games({
                 marginRight: 7,
               }}
             />
-            Customers must complete the
-            configured number of scratch
-            gestures before revealing the result.
+            Each completed card counts once globally. Only every configured milestone play can win, and only when a winning card is selected. A losing selection consumes that milestone.
           </div>
 
           <div>

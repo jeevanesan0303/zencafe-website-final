@@ -29,6 +29,11 @@ import PremiumFooter from './components/PremiumFooter'
 import { useSiteTheme } from './theme'
 
 import {
+  startScratchGame,
+  completeScratchGame,
+  getScratchErrorMessage,
+  ScratchApiError,
+  type ScratchSession,
   readGameConfig,
   fetchGameConfig,
   subscribeGameConfig,
@@ -160,7 +165,7 @@ type GamePhase =
   | 'revealed'
 
 type ScratchCardProps = {
-  result: GameResult
+  result: GameResult | null
   enabled: boolean
   revealed: boolean
   onReveal: () => void
@@ -169,40 +174,6 @@ type ScratchCardProps = {
 /* =========================================================
    GAME CONFIGURATION
 ========================================================= */
-
-/*
-   Preserve the admin-defined winning cards.
-
-   A card with a configured prize wins.
-   A card without a prize loses.
-*/
-
-function createResult(
-  cardIndex: number,
-  config: GameConfig
-): GameResult {
-  const cardId = cardIndex + 1
-
-  const selectedCard = config.cards.find(
-    card => card.cardId === cardId
-  )
-
-  if (
-    !config.enabled ||
-    !selectedCard?.prize
-  ) {
-    return {
-      kind: 'lose',
-    }
-  }
-
-  return {
-    kind: 'win',
-    offer: {
-      ...selectedCard.prize,
-    },
-  }
-}
 
 /* =========================================================
    BACKGROUND
@@ -820,7 +791,7 @@ function ScratchCard({
   }
 
   const won =
-    result.kind === 'win'
+    result?.kind === 'win'
 
   /* -------------------------------------------------------
      RENDER
@@ -850,7 +821,7 @@ function ScratchCard({
               aria-hidden="true"
             >
               {won
-                ? result.offer.emoji
+                ? result?.kind === 'win' ? result.offer.emoji : ''
                 : '🥺'}
             </span>
 
@@ -862,19 +833,19 @@ function ScratchCard({
 
             <h3>
               {won
-                ? result.offer.title
+                ? result?.kind === 'win' ? result.offer.title : ''
                 : 'Good Luck Next Time!'}
             </h3>
 
             <p>
               {won
-                ? result.offer.detail
+                ? result?.kind === 'win' ? result.offer.detail : ''
                 : 'Your next little surprise is waiting.'}
             </p>
 
             <span className="zg-demo-badge">
               {won
-                ? 'Demo reward'
+                ? 'Reward recorded'
                 : 'Another chance awaits'}
             </span>
           </div>
@@ -1035,6 +1006,13 @@ function GamesExperience() {
     setRound,
   ] = useState(0)
 
+  const [session, setSession] = useState<ScratchSession | null>(null)
+  const [busy, setBusy] = useState(false)
+  const [gameError, setGameError] = useState('')
+  const [completionFailed, setCompletionFailed] = useState(false)
+  const [restartRequired, setRestartRequired] = useState(false)
+  const completionLock = useRef(false)
+
   const selectionLock =
     useRef(false)
 
@@ -1189,35 +1167,23 @@ function GamesExperience() {
      SELECT CARD
   ------------------------------------------------------- */
 
-  const chooseCard = (
-    index: number
-  ) => {
-    if (
-      phase !== 'choose' ||
-      selectionLock.current ||
-      !gameConfig.enabled
-    ) {
-      return
+  const chooseCard = async (index: number) => {
+    if (phase !== 'choose' || selectionLock.current || !gameConfig.enabled) return
+    selectionLock.current = true
+    setBusy(true)
+    setGameError('')
+    try {
+      const started = await startScratchGame(index + 1)
+      setSession(started)
+      setSelected(started.cardId - 1)
+      setResult(null)
+      setPhase('centering')
+    } catch (error) {
+      setGameError(getScratchErrorMessage(error))
+      selectionLock.current = false
+    } finally {
+      setBusy(false)
     }
-
-    selectionLock.current =
-      true
-
-    const selectedResult =
-      createResult(
-        index,
-        gameConfig
-      )
-
-    setResult(
-      selectedResult
-    )
-
-    setSelected(index)
-
-    setPhase(
-      'centering'
-    )
   }
 
   /* -------------------------------------------------------
@@ -1225,6 +1191,11 @@ function GamesExperience() {
   ------------------------------------------------------- */
 
   const resetGame = () => {
+    if (completionLock.current || busy) return
+    setSession(null)
+    setGameError('')
+    setCompletionFailed(false)
+    setRestartRequired(false)
     selectionLock.current =
       false
 
@@ -1243,12 +1214,26 @@ function GamesExperience() {
      REVEAL RESULT
   ------------------------------------------------------- */
 
-  const revealResult = () => {
-    setPhase(current =>
-      current === 'scratch'
-        ? 'revealed'
-        : current
-    )
+  const revealResult = async () => {
+    if (!session || completionLock.current || phase !== 'scratch') return
+    completionLock.current = true
+    setBusy(true)
+    setGameError('')
+    setCompletionFailed(false)
+    try {
+      const completed = await completeScratchGame(session.sessionId)
+      setResult(completed.isWinner && completed.prize
+        ? { kind: 'win', offer: completed.prize }
+        : { kind: 'lose' })
+      setPhase('revealed')
+    } catch (error) {
+      setGameError(getScratchErrorMessage(error))
+      setCompletionFailed(true)
+      setRestartRequired(error instanceof ScratchApiError && [401, 404, 410].includes(error.status))
+    } finally {
+      completionLock.current = false
+      setBusy(false)
+    }
   }
 
   const choosing =
@@ -1262,7 +1247,7 @@ function GamesExperience() {
       : phase === 'intro'
         ? 'Your little adventure begins…'
         : choosing
-          ? 'Choose your winning card'
+          ? 'Choose your mystery card'
           : phase === 'centering'
             ? 'Your choice. Your moment.'
             : phase === 'flipping'
@@ -1351,7 +1336,7 @@ function GamesExperience() {
             </p>
           )}
           <a href="#game" className="zg-hero-cta">Let’s play <Gamepad2 size={18} /></a>
-          <p className="zg-hero-disclaimer">Just for fun · Demo rewards only</p>
+          <p className="zg-hero-disclaimer">Just for fun · Guest play · Terms apply</p>
           </div>
         </section>
         <div className="zg-step-cards" aria-label="How to play"><div><b>01</b><span>Choose your card<small>Follow your feeling.</small></span></div><div><b>02</b><span>Scratch to reveal<small>Use your finger or mouse.</small></span></div><div><b>03</b><span>Enjoy the surprise<small>A little moment of Zen.</small></span></div></div>
@@ -1402,7 +1387,7 @@ function GamesExperience() {
                   Choose your{' '}
 
                   <em>
-                    winning card
+                    mystery card
                   </em>
                 </>
               ) : (
@@ -1456,7 +1441,7 @@ function GamesExperience() {
 
                 const canChoose =
                   phase === 'choose' &&
-                  gameConfig.enabled
+                  gameConfig.enabled && !busy
 
                 const cardStyle = {
                   '--card-color':
@@ -1573,7 +1558,7 @@ function GamesExperience() {
                         }
                       >
                         {isSelected &&
-                          result && (
+                          session && (
                             <>
                               <span
                                 className="zg-back-emblem"
@@ -1634,6 +1619,14 @@ function GamesExperience() {
           {/* RESULT CAPTION */}
 
           <div className="zg-stage-caption">
+            {busy && <p role="status">Please wait…</p>}
+            {gameError && <p role="alert">{gameError}</p>}
+            {completionFailed && !busy && (
+              <button type="button" className="zg-reset"
+                onClick={restartRequired ? resetGame : () => void revealResult()}>
+                {restartRequired ? 'Start again' : 'Retry result'}
+              </button>
+            )}
             {scratchEnabled && (
               <p>
                 Scratch the card to
@@ -1683,8 +1676,8 @@ function GamesExperience() {
                   <span className="zg-result-note">
                     {result.kind ===
                     'win'
-                      ? 'Demo reward — not a redeemable voucher.'
-                      : 'Demo game — a fresh chance awaits each round.'}
+                      ? 'Reward recorded — redemption is not yet available.'
+                      : 'Please wait before playing again.'}
                   </span>
 
                   <button
