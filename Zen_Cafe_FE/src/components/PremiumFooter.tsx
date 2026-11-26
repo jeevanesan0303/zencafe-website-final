@@ -38,7 +38,7 @@ export default function PremiumFooter({ kitchen = false }: Props) {
               <div><MapPin size={16} aria-hidden="true" /><a href="https://maps.app.goo.gl/1UiuxUG5MKE6ANDc6" target="_blank" rel="noopener noreferrer">Zen Café, Kaladdy Junction,<br />Kokkuvil, Sri Lanka</a></div>
               <div><Phone size={15} aria-hidden="true" /><a href="tel:+94705175174">+94 70 517 5174</a></div>
               <div><Instagram size={15} aria-hidden="true" /><a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer">zen.srilanka</a></div>
-              <div><Clock3 size={16} aria-hidden="true" /><span>Open daily<br />9:00 AM – 12:00 AM</span></div>
+              <div><Clock3 size={16} aria-hidden="true" /><span>Open daily<br />11:00 AM – 12:00 AM</span></div>
             </address>
           </div>
         </div>

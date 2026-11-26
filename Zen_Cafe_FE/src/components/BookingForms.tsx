@@ -77,7 +77,7 @@ const HOURS = Array.from(
   (_, index) => index + 1
 )
 
-const MINUTES = ['00', '15', '30', '45']
+const MINUTES = ['00']
 
 const OCCASIONS = [
   'Family gathering',
@@ -562,6 +562,11 @@ export function RoomBooking({
     minute: string,
     meridiem: Meridiem
   ) => {
+    const validHour = meridiem === 'AM'
+      ? hour === '11'
+      : /^(12|[1-9]|10)$/.test(hour)
+
+    hour = validHour ? hour : ''
     setSelectedHour(hour)
     setSelectedMinute(minute)
     setSelectedMeridiem(meridiem)
@@ -655,7 +660,7 @@ export function RoomBooking({
         'Choose today or a future date.'
     }
 
-    if (!form.time) {
+    if (!/^(11|12|13|14|15|16|17|18|19|20|21|22):00$/.test(form.time)) {
       nextErrors.time =
         'Please select a booking time.'
     }
@@ -1464,7 +1469,7 @@ export function RoomBooking({
                   >
                     <option value="">Hour</option>
 
-                    {HOURS.map(hour => (
+                    {HOURS.filter(hour => selectedMeridiem === 'AM' ? hour === 11 : hour !== 11).map(hour => (
                       <option
                         key={hour}
                         value={hour}
