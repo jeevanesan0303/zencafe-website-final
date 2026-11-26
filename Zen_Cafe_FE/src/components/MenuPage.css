@@ -101,3 +101,36 @@ html[data-theme=dark] #zen-menu-page{--paper:#201915;--ink:#f8e6ce;--card:#30231
 [data-theme="dark"] #zen-menu-page .zm-compact-caption p{color:#e6d0be!important}
 [data-theme="dark"] #zen-menu-page .zm-slide-arrow{background:#3b2822!important;color:#ffe8cf!important;border-color:#a7755e!important}
 [data-theme="dark"] #zen-menu-page .zm-character-dots button[aria-pressed="true"] span{background:#f1ad99}
+/* ==========================================
+   ZEN CAFÉ — CHARACTER TRANSPARENCY FIX
+========================================== */
+
+#zen-menu-page .zm-compact-stage,
+#zen-menu-page .zm-slide,
+#zen-menu-page .zm-slide .zm-slide-visual {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+#zen-menu-page .zm-slide .zm-slide-visual img {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  filter: none !important;
+  mix-blend-mode: normal !important;
+  border: none !important;
+  outline: none !important;
+}
+
+#zen-menu-page .zm-slide--active,
+#zen-menu-page .zm-slide--previous,
+#zen-menu-page .zm-slide--next {
+  filter: none !important;
+}
+
+#zen-menu-page .zm-slide .zm-slide-visual::before,
+#zen-menu-page .zm-slide .zm-slide-visual::after {
+  display: none !important;
+}
