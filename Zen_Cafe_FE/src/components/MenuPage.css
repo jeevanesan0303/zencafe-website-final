@@ -134,3 +134,17 @@ html[data-theme=dark] #zen-menu-page{--paper:#201915;--ink:#f8e6ce;--card:#30231
 #zen-menu-page .zm-slide .zm-slide-visual::after {
   display: none !important;
 }
+/* Remove Enquire buttons from menu cards */
+#zen-menu-page .zm-card-copy a {
+  display: none !important;
+}
+
+/* Remove unnecessary empty space */
+#zen-menu-page .zm-card-copy > div {
+  display: none !important;
+}
+
+#zen-menu-page .zm-card-copy p {
+  min-height: 0 !important;
+  margin-bottom: 0 !important;
+}
