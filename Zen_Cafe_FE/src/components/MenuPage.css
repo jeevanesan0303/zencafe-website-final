@@ -148,3 +148,10 @@ html[data-theme=dark] #zen-menu-page{--paper:#201915;--ink:#f8e6ce;--card:#30231
   min-height: 0 !important;
   margin-bottom: 0 !important;
 }
+/* ==========================================
+   ZEN CAFÉ — REMOVE FAVOURITE BUTTON
+========================================== */
+
+#zen-menu-page .zm-card .zm-heart {
+  display: none !important;
+}
