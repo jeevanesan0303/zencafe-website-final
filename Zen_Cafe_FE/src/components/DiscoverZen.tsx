@@ -71,11 +71,30 @@ const getMenuItemCount = (): number => {
 }
 
 /* ==========================================
+   REGISTERED CUSTOMER COUNT API
+========================================== */
+
+const CUSTOMER_COUNT_API = '/api/stats/customers'
+
+interface CustomerCountResponse {
+  success: boolean
+  count: number
+}
+
+/* ==========================================
    ZEN CAFÉ — DISCOVER SECTION
 ========================================== */
 
 export default function DiscoverZen() {
-  const [menuCount, setMenuCount] = useState<number | null>(null)
+  const [menuCount, setMenuCount] =
+    useState<number | null>(null)
+
+  const [customerCount, setCustomerCount] =
+    useState<number | null>(null)
+
+  /* ==========================================
+     LOAD LIVE MENU COUNT
+  ========================================== */
 
   useEffect(() => {
     let mounted = true
@@ -113,6 +132,109 @@ export default function DiscoverZen() {
   }, [])
 
   /* ==========================================
+     LOAD LIVE REGISTERED CUSTOMER COUNT
+  ========================================== */
+
+  useEffect(() => {
+    let mounted = true
+    let controller: AbortController | null = null
+
+    const refreshCustomerCount = async () => {
+      controller?.abort()
+
+      const currentController = new AbortController()
+      controller = currentController
+
+      try {
+        const response = await fetch(
+          CUSTOMER_COUNT_API,
+          {
+            method: 'GET',
+            cache: 'no-store',
+            headers: {
+              Accept: 'application/json',
+            },
+            signal: currentController.signal,
+          }
+        )
+
+        if (!response.ok) {
+          throw new Error(
+            `Customer count request failed: ${response.status}`
+          )
+        }
+
+        const data =
+          (await response.json()) as CustomerCountResponse
+
+        if (
+          data.success !== true ||
+          !Number.isSafeInteger(data.count) ||
+          data.count < 0
+        ) {
+          throw new Error(
+            'Invalid customer count response.'
+          )
+        }
+
+        if (
+          mounted &&
+          !currentController.signal.aborted
+        ) {
+          setCustomerCount(data.count)
+        }
+      } catch (error) {
+        if (
+          currentController.signal.aborted ||
+          !mounted
+        ) {
+          return
+        }
+
+        console.error(
+          'Unable to load Zen Café customer count:',
+          error
+        )
+      }
+    }
+
+    // Fetch immediately when the homepage loads.
+    void refreshCustomerCount()
+
+    // Refresh the count every 60 seconds.
+    const refreshInterval = window.setInterval(() => {
+      if (document.visibilityState === 'visible') {
+        void refreshCustomerCount()
+      }
+    }, 60000)
+
+    // Refresh when the customer returns to the website tab.
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshCustomerCount()
+      }
+    }
+
+    document.addEventListener(
+      'visibilitychange',
+      handleVisibilityChange
+    )
+
+    return () => {
+      mounted = false
+
+      controller?.abort()
+
+      window.clearInterval(refreshInterval)
+
+      document.removeEventListener(
+        'visibilitychange',
+        handleVisibilityChange
+      )
+    }
+  }, [])
+
+  /* ==========================================
      HOMEPAGE STATISTICS
   ========================================== */
 
@@ -123,7 +245,10 @@ export default function DiscoverZen() {
       icon: Soup,
     },
     {
-      value: '10K+',
+      value:
+        customerCount === null
+          ? '—'
+          : customerCount.toLocaleString('en-US'),
       label: 'Happy customers',
       icon: Users,
     },
