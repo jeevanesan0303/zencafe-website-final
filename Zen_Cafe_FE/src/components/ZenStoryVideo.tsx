@@ -57,8 +57,8 @@ export default function ZenStoryVideo() {
         <h2 id="zen-story-title">Escape the Ordinary.<br /><span>Find Your Zen.</span></h2>
         <p className="zen-story__description">Japanese-inspired flavours. Warm conversations. Moments worth slowing down for. Join us at Zen Café and make yourself at home.</p>
         <div className="zen-story__actions">
-          <a className="zen-story__primary" href="/#menu">Explore our menu <ArrowUpRight size={18} /></a>
-          <a className="zen-story__secondary" href="/#room-booking">Plan your celebration <ArrowUpRight size={18} /></a>
+          <a className="zen-story__primary" href="/menu">Explore our menu <ArrowUpRight size={18} /></a>
+          <a className="zen-story__secondary" href="/room-booking">Plan your celebration <ArrowUpRight size={18} /></a>
         </div>
         <p className="zen-story__location">Kaladdy Junction, Kokkuvil · Made for memorable moments</p>
       </div>

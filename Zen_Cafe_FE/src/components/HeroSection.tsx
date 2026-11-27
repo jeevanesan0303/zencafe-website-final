@@ -88,7 +88,7 @@ export default function HeroSection() {
     }
   }, [resetVideo])
 
-  const go = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  
 
   const startVideo = useCallback(async () => {
     const video = videoRef.current
@@ -252,7 +252,7 @@ export default function HeroSection() {
         {/* Party Room — same page scroll */}
         <button
           type="button"
-          onClick={() => go('room-booking')}
+          onClick={() => window.location.assign('/room-booking')}
           className="hero-primary-btn"
         >
           <DoorOpen size={16} />
